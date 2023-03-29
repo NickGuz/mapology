@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 17.x
       - run: npm install
+        working-directory: server
       - run: npm install
         working-directory: client
       - run: npm run build --if-present
@@ -26,3 +27,4 @@ jobs:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: 'mapology-1'
           heroku_email: 'nguzzardo3@gmail.com'
+          appdir: "server"
