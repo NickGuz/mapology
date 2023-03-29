@@ -5,7 +5,7 @@
   "main": "AuthRouter.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/AuthRouter.js"
+    "start": "node AuthRouter.js"
   },
   "author": "",
   "license": "ISC",
