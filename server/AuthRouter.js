@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 
 const router = express();
-router.use(express.static(path.join(process.cwd() + "/client/build")));
+router.use(express.static(path.join(__dirpath + "/build")));
 const port = process.env.PORT || 5000
 
 // Handles ask if user logged in request
