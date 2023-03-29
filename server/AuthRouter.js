@@ -1,8 +1,10 @@
-import * as AuthController from './AuthController.js';
-import express from 'express';
+const AuthController = require('./AuthController.js');
+const express = require('express');
+const path = require('path');
 
 const router = express();
-const port = 8000;
+router.use(express.static(path.join(process.cwd() + "/public")));
+const port = process.env.PORT || 5000
 
 // Handles ask if user logged in request
 // TODO
