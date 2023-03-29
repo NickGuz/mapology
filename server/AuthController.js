@@ -1,24 +1,24 @@
-export const loggedIn = () => {
+exports.loggedIn = () => {
     // TODO
 }
 
-export const login = () => {
+exports.login = () => {
     // TODO
 }
 
-export const logout = () => {
+exports.logout = () => {
     // TODO
 }
 
-export const register = () => {
+exports.register = () => {
     // TODO
 }
 
-export const changePassword = () => {
+exports.changePassword = () => {
     // TODO
 }
 
-export const deleteUser = () => {
+exports.deleteUser = () => {
     // TODO
 }
 
