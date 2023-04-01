@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import RegisterScreen from './components/RegisterScreen';
 import './App.css';
 
