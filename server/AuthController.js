@@ -10,8 +10,8 @@ exports.logout = () => {
     // TODO
 }
 
-exports.register = () => {
-    // TODO
+exports.register = (req, res) => {
+    res.sendStatus(200);
 }
 
 exports.changePassword = () => {
