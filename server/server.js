@@ -3,6 +3,7 @@ require("dotenv").config();
 const cors = require("cors");
 const db = require("./models/db");
 const User = require("./sequelize");
+const path = require('path');
 
 const app = express();
 app.use(express.json()); // parses incoming requests with JSON payloads

@@ -1,6 +1,5 @@
 const AuthController = require('../controllers/AuthController.js');
 const express = require('express');
-const path = require('path');
 
 const router = express();
 // router.use(express.static(path.join(process.cwd() + "/build")));
