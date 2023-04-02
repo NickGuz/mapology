@@ -10,12 +10,12 @@ app.use(express.json()); // parses incoming requests with JSON payloads
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.static(path.join(process.cwd() + "/build")));
 
-app.get('/register', async (req, res) => {
+app.get('/users', async (req, res) => {
   const users = await User.findAll();
   res.json(users);
 })
 
-app.post('/register', async (req, res) => {
+app.post('/users', async (req, res) => {
   const users = await User.create(req.body);
   res.json(users);
 })
