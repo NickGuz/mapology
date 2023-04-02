@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  Users = sequelize.define('test', {
+  Users = sequelize.define('post', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,

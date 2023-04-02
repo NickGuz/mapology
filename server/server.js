@@ -7,7 +7,7 @@ const path = require('path');
 
 const app = express();
 app.use(express.json()); // parses incoming requests with JSON payloads
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.static(path.join(process.cwd() + "/build")));
 
 app.get('/register', async (req, res) => {
@@ -21,7 +21,7 @@ app.post('/register', async (req, res) => {
 })
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
