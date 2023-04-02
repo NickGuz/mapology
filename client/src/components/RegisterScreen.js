@@ -52,7 +52,7 @@ export default function RegisterScreen() {
                                 Create Your Account
                             </Typography>
                             <Typography component="h1" variant="subtitle2">
-                                Create an accoutn to save and view your maps
+                                Create an account to save and view your maps
                             </Typography>
                             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                                 <Grid container spacing={2}>
