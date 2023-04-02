@@ -1,11 +1,12 @@
 import React, { createContext, useState } from "react";
 import {useNavigate} from 'react-router-dom';
-import api from './auth-request-api'
+import api from './auth-request-api/AuthRequestApi'
 
 export const AuthContext = createContext({});
 
 const AuthActionType = {
     REGISTER_USER: "REGISTER_USER",
+    GET_ALL_USERS: "GET_ALL_USERS"
 }
 
 function AuthContextProvider(props) {
@@ -52,6 +53,21 @@ function AuthContextProvider(props) {
         }
     }
    
+    auth.getAllUsers = async function() {
+        const response = await api.getAllUsers();
+        console.log(response);
+        return response;
+
+        // if (response.status === 200) {
+        //     authReducer({
+        //         type: AuthActionType.GET_ALL_USERS,
+        //         payload: {
+        //             users: response.data.users
+        //         }
+        //     });
+        //     navigate("/");
+        // }
+    }
 
 
     auth.registerUser = async function(username, email, password, confirmPassword) {
