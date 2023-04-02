@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useContext } from 'react';
-import AuthContext from '../auth';
+import { useContext, useState, useEffect } from 'react';
+import AuthContext from '../auth/AuthContextProvider';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import FormGroup from '@mui/material/FormGroup';
@@ -12,11 +12,22 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 
 
 export default function RegisterScreen() {
+    const [users, setUsers] = useState(null); // TODO temp - delete
     const { auth } = useContext(AuthContext);
+
+    // TODO temp - delete
+    useEffect(() => {
+        auth.getAllUsers().then((res) => {
+            setUsers(res.data);
+        });
+    }, [auth]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -27,6 +38,11 @@ export default function RegisterScreen() {
             formData.get('password'),
             formData.get('confirmPassword')
         );
+
+        // TODO temp - delete
+        auth.getAllUsers().then((res) => {
+            setUsers(res.data);
+        })
      
     };
 
@@ -122,6 +138,20 @@ export default function RegisterScreen() {
                                         </Link>
                                     </Grid>
                                 </Grid>
+
+                                {/* TODO temp - delete */}
+                                <Typography component="h3">Registered Users</Typography>
+                                <List dense={true}>
+                                    {users && users.map(user => { return (
+                                        <ListItem>
+                                            <ListItemText
+                                                primary={user.username}
+                                                secondary={null}
+                                            />
+                                        </ListItem>
+                                    )
+                                    })}
+                                </List>
                             </Box>
                         </Box>
                     </Container>
