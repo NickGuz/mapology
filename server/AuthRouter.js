@@ -30,6 +30,4 @@ router.put('/changepass', AuthController.changePassword);
 // TODO
 router.delete('/delete', AuthController.deleteUser);
 
-router.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-});
+module.exports = router;

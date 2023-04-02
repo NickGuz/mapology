@@ -1,10 +1,13 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const config = require('./db.config');
+
+// TODO Don't keep SQL connection in Users, this is just temporary
 const sequelize = new Sequelize(
-    'DB_NAME',
-    'DB_USERNAME',
-    'DB_PASSWORD',
+    config.DB,
+    config.USER,
+    config.PASS,
     {
-        host: 'DB_HOST', //server url or ip address
+        host: config.HOST,
         dialect: 'mysql'
     }
 );
@@ -56,3 +59,5 @@ sequelize.sync().then(() => {
 }).catch((error) => {
     console.error('Unable to create table: ', error);
 });
+
+module.exports = { Users, sequelize };
