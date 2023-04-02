@@ -1,4 +1,4 @@
-const AuthController = require('./AuthController.js');
+const AuthController = require('../controllers/AuthController.js');
 const express = require('express');
 const path = require('path');
 
