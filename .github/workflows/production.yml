@@ -6,6 +6,37 @@ on:
       - main
 
 jobs:
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cypress run
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          build: npm run build
+          start: npm start
+
+    
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Use Node.js 17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 17.x
+      - name: Install server npm modules
+        run: npm install
+        working-directory: server
+      - name: Install client npm modules
+        run: npm install
+        working-directory: client
+      - name: Backend tests
+        run: npm run test
+        working-directory: server
+
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -24,9 +55,6 @@ jobs:
       - name: Build react project
         run: npm run build --if-present
         working-directory: client
-      - name: Backend tests
-        run: npm run test
-        working-directory: server
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
