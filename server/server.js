@@ -2,11 +2,13 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const db = require("./models/db")
+const path = require('path');
 // const routes = require("./routers/AuthRouter");
 
 const app = express();
 app.use(express.json()); // parses incoming requests with JSON payloads
 app.use(cors());
+app.use(express.static(path.join(process.cwd() + "/build")));
 
 // route
 // app.use("/", routes);
@@ -52,6 +54,8 @@ app.put("/register", (req, res) => {
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+module.exports = server;
