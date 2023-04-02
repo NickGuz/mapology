@@ -58,11 +58,11 @@ export default function RegisterScreen() {
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} >
                                         <TextField
-                                            autoComplete="userName"
-                                            name="userName"
+                                            autoComplete="username"
+                                            name="username"
                                             required
                                             fullWidth
-                                            id="userName"
+                                            id="username"
                                             label=" Username"
                                             autoFocus
                                         />
@@ -93,8 +93,8 @@ export default function RegisterScreen() {
                                         <TextField
                                             required
                                             fullWidth
-                                            name="confrimPassword"
-                                            label="Confrim Password"
+                                            name="confirmPassword"
+                                            label="Confirm Password"
                                             type="password"
                                             id="confirmPassword"
                                             autoComplete="new-password"

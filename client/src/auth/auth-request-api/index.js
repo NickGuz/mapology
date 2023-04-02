@@ -5,9 +5,9 @@ const api = axios.create({
 })
 
 // post request to register user
-export const registerUser = (userName, email, password, confirmPassword) => {
+export const registerUser = (username, email, password, confirmPassword) => {
     return api.post(`/register/`, {
-        userName : userName,
+        username : username,
         email : email,
         password : password,
         confirmPassword : confirmPassword
