@@ -1,8 +1,14 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
+
+console.log('match', window.location.origin.includes(":3000"));
+const dev = 'http://localhost:4000';
+const baseURL = window.location.origin.includes(":3000") ? dev : window.location.origin;
+
 const api = axios.create({
-    baseURL: 'http://localhost:4000/',
-})
+    //baseURL: 'http://localhost:4000/',
+    baseURL: baseURL
+});
 
 // post request to register user
 export const registerUser = (username, email, password, confirmPassword) => {
