@@ -6,7 +6,7 @@ const api = axios.create({
 
 // post request to register user
 export const registerUser = (username, email, password, confirmPassword) => {
-    return api.post(`/register`, {
+    return api.post(`/users`, {
         username : username,
         email : email,
         password : password,
@@ -15,8 +15,17 @@ export const registerUser = (username, email, password, confirmPassword) => {
         return error.response
     });
 }
+
+export const getAllUsers = () => {
+    return api.get('/users')
+        .catch((err) => {
+            return err.response;
+        });
+}
+
 const apis = {
     registerUser,
+    getAllUsers
 }
 
 export default apis
