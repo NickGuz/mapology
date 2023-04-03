@@ -1,8 +1,12 @@
 const supertest = require('supertest');
 const server = require('../server');
-const { User, sequelize } = require('../sequelizeTest');
+const sequelize = require('../sequelize');
+const { models } = require('../sequelize');
 
+// sequelize.authenticate().then();
+// sequelize.sync().then();
 const app = server;
+const User = models.post;
 
 /** 
  * Test register a new user

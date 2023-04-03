@@ -1,6 +1,11 @@
+/**
+ * Placeholder file for now
+ * We want to include test DB info here once we create one
+ */
+
 const Sequelize = require("sequelize");
-const UserModel = require("./models/usertest");
-const config = require("./config/db.config")
+const UserModel = require("./models/usertest.model");
+const config = require("../config/db.config")
 
 const sequelize = new Sequelize(
   config.DB, 
@@ -27,7 +32,7 @@ sequelize
 const User = UserModel(sequelize, Sequelize);
 
 sequelize
-  .sync()
+  .sync(/*{ force: true }*/)
   .then(() => {
     console.log("Users table created successfully");
   })
@@ -35,4 +40,4 @@ sequelize
     console.error("Unable to create table: ", error);
   });
 
-module.exports = User;
+module.exports = { User, sequelize };
