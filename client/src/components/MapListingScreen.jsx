@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MapCard from './MapCard';
-import TagsInput from './TagsInput';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import TagsInput from './TagsInput';
 
 const SortByValue = {
     FEATURED: "FEATURED",
@@ -17,7 +17,7 @@ const MapListingScreen = (props) => {
     }
 
     return (
-        <div style={{ paddingTop: '100px', margin: '80px' }}>
+        <div style={{ paddingTop: '100px', margin: '50px', marginLeft: '20%', marginRight: '20%' }}>
             <Grid container spacing={2}>
                 <Grid item xs={2}>
 
