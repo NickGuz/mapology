@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapCard from './MapCard';
+import MapGrid from './MapGrid';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import TagsInput from './TagsInput';
 
@@ -17,8 +17,8 @@ const MapListingScreen = (props) => {
     }
 
     return (
-        <div style={{ paddingTop: '100px', margin: '50px', marginLeft: '20%', marginRight: '20%' }}>
-            <Grid container spacing={2}>
+        <div style={{ paddingTop: '100px' }}>
+            <Grid container spacing={2} style={{ paddingLeft: '20%' }}>
                 <Grid item xs={2}>
 
                     <FormControl fullWidth>
@@ -42,13 +42,7 @@ const MapListingScreen = (props) => {
                 </Grid>
             </Grid>
             
-            <Grid container spacing={2} style={{ marginTop: '5px' }}>
-                {mapData.map((data) => (
-                    <Grid item xs={4}>
-                        <MapCard title={data.title} description={data.description} />
-                    </Grid>
-                ))}
-            </Grid>
+            <MapGrid mapData={mapData} />
         </div>
     )
 }
