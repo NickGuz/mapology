@@ -13,10 +13,12 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, InputBase } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = (props) => {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
+    const navigate = useNavigate();
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -54,7 +56,7 @@ const Navbar = (props) => {
     }
 
     const handleBrowse = () => {
-
+        navigate("/map-listings/");
     }
 
     const handleProfile = () => {
