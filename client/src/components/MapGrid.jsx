@@ -22,6 +22,7 @@ const MapGrid = (props) => {
                             description={data.description} 
                             author={props.type === MapGridType.BROWSE ? data.author : null}
                             image={data.imgPath} 
+                            tags={data.tags}
                         />
                     </Grid>
                 ))}

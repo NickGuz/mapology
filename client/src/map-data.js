@@ -3,7 +3,7 @@ const mapData = [
         title: "Italy",
         description: "A map of Italy",
         author: 'john123',
-        tags: ['modern'],
+        tags: ['modern', 'italy'],
         imgPath: require("./assets/italy.gif")
     },
     {
