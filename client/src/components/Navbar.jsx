@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
@@ -10,26 +10,23 @@ import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, InputBase } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../auth/AuthContextProvider';
+import GlobalStoreContext from '../store/store';
+import LoginModal from './LoginModal';
+import ImportModal from './ImportModal';
 
 const Navbar = (props) => {
-    const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const navigate = useNavigate();
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
+    const navigate = useNavigate();
+    const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
     };
 
     const handleCloseUserMenu = () => {
@@ -39,11 +36,13 @@ const Navbar = (props) => {
     const handleRegister = () => {
         // close the user menu
         setAnchorElUser(null);
+        navigate('/register/');
     }
 
     const handleLogin = () => {
         // close the user menu
         setAnchorElUser(null);
+        auth.openLoginDialog();
     }
 
     const handleLogout = () => {
@@ -52,7 +51,7 @@ const Navbar = (props) => {
     }
 
     const handleImport = () => {
-
+        store.setOpenImportDialog(true);
     }
 
     const handleBrowse = () => {
@@ -60,7 +59,8 @@ const Navbar = (props) => {
     }
 
     const handleProfile = () => {
-
+        setAnchorElUser(null);
+        navigate('/profile/');
     }
 
     const handleSettings = () => {
@@ -115,20 +115,24 @@ const Navbar = (props) => {
 
     const getGuestButtons = () => {
         return (
-            <>
+            <div>
             <MenuItem key={'Log In'} onClick={handleLogin}>
                 <Typography textAlign="center">Log In</Typography>
             </MenuItem>
             <MenuItem key={'Register'} onClick={handleRegister}>
                 <Typography textAlign="center">Register</Typography>
             </MenuItem>
-            </>
+            {/* TEMPORARY */}
+            <MenuItem key='Profile' onClick={handleProfile}>
+                <Typography textAlign='center'>Profile</Typography>
+            </MenuItem>
+            </div>
         )
     }
 
     const getLoggedInButtons = () => {
         return (
-            <>
+            <div>
             <MenuItem key={'Profile'} onClick={handleProfile}>
                 <Typography textAlign="center">Log In</Typography>
             </MenuItem>
@@ -138,13 +142,14 @@ const Navbar = (props) => {
             <MenuItem key={'Log Out'} onClick={handleLogout}>
                 <Typography textAlign="center">Register</Typography>
             </MenuItem>
-            </>
+            </div>
         )
     }
 
     return (
+        <div>
         <AppBar position="static">
-            <Container maxWidth="xl">
+            <Container maxWidth="100%">
                 <Toolbar disableGutters>
                     <Typography
                         variant="h6"
@@ -163,63 +168,17 @@ const Navbar = (props) => {
                         Mapology
                     </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton 
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuItem />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
-                        >
-                            <MenuItem key='Import' onClick={handleImport}>
-                                <Typography textAlign='center'>Import</Typography>
-                            </MenuItem>
+                    <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+                        <Search sx={{ flexGrow: 0, height: '80%' }}>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search..."
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </Search>
 
-                            <MenuItem key='Browse' onClick={handleBrowse}>
-                                <Typography textAlign='center'>Browse</Typography>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href=""
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontWeight: 700,
-                            letterSpacing: '.1rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         <Button
                             key='Import'
                             onClick={handleImport}
@@ -237,15 +196,6 @@ const Navbar = (props) => {
                         </Button>
                     </Box>
 
-                    <Search sx={{ flexGrow: 0 }}>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search..."
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search>
 
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
@@ -272,6 +222,9 @@ const Navbar = (props) => {
                 </Toolbar>
             </Container>
         </AppBar>
+        <LoginModal />
+        <ImportModal />
+        </div>
     );
 }
 
