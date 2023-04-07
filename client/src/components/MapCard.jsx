@@ -6,10 +6,10 @@ import { Button, CardActions, Typography } from '@mui/material';
 
 const MapCard = (props) => {
     return (
-        <Card variant="outlined" sx={{ maxWidth: 345 }}>
+        <Card variant="outlined" sx={{ maxWidth: 400 }}>
             <CardMedia
                 sx={{ height: 140 }}
-                image=""
+                image={props.image} 
                 title="map"
             />
             <CardContent>
@@ -19,6 +19,10 @@ const MapCard = (props) => {
                 <Typography variant="body2" color="text.secondary">
                     {props.description || "Description"}
                 </Typography>
+                {props.author &&
+                <Typography variant="body2" color="text.secondary">
+                    by {props.author}
+                </Typography>}
             </CardContent>
             <CardActions>
                 <Button size="small">Duplicate</Button>

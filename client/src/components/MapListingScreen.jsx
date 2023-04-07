@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import MapGrid from './MapGrid';
+import MapGrid, { MapGridType } from './MapGrid';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import TagsInput from './TagsInput';
+import mapData from '../map-data';
 
 const SortByValue = {
     FEATURED: "FEATURED",
@@ -18,7 +19,7 @@ const MapListingScreen = (props) => {
 
     return (
         <div style={{ paddingTop: '100px' }}>
-            <Grid container spacing={2} style={{ paddingLeft: '20%' }}>
+            <Grid container spacing={2} style={{ paddingLeft: '10%' }}>
                 <Grid item xs={2}>
 
                     <FormControl fullWidth>
@@ -29,6 +30,7 @@ const MapListingScreen = (props) => {
                             value={sortBy}
                             label="Sort By"
                             onChange={handleSortByChange}
+                            sx={{ maxWidth: '300px' }}
                         >
                             <MenuItem value={SortByValue.FEATURED}>Featured</MenuItem>
                             <MenuItem value={SortByValue.TOP_RATED}>Top Rated</MenuItem>
@@ -38,46 +40,13 @@ const MapListingScreen = (props) => {
                 </Grid>
 
                 <Grid item xs={2}>
-                    <TagsInput />
+                    <TagsInput sx={{ maxWidth: '300px' }} />
                 </Grid>
             </Grid>
             
-            <MapGrid mapData={mapData} />
+            <MapGrid mapData={mapData} type={MapGridType.BROWSE} />
         </div>
     )
 }
-
-const mapData = [
-    {
-        title: "Italy",
-        description: "A map of Italy",
-        imgPath: ""
-    },
-    {
-        title: "Germany",
-        description: "A map of Germany",
-        imgPath: ""
-    },
-    {
-        title: "USA",
-        description: "A map of the USA",
-        imgPath: ""
-    },
-    {
-        title: "China",
-        description: "A map of China",
-        imgPath: ""
-    },
-    {
-        title: "Japan",
-        description: "A map of Japan",
-        imgPath: ""
-    },
-    {
-        title: "Russia",
-        description: "A map of Russia",
-        imgPath: ""
-    },
-]
 
 export default MapListingScreen;

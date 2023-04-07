@@ -1,8 +1,9 @@
 import React from 'react';
-import MapGrid from './MapGrid';
+import MapGrid, { MapGridType } from './MapGrid';
 import Banner from './Banner';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import mapData from '../map-data';
 import { styled } from '@mui/material/styles';
 import { Avatar, Grid } from '@mui/material';
 
@@ -40,42 +41,9 @@ const ProfileScreen = (props) => {
                 </Grid>
             </Grid>
         </InfoBanner>
-        <MapGrid mapData={data} />
+        <MapGrid mapData={mapData} type={MapGridType.PROFILE}/>
         </>
     );
 }
-
-const data = [
-    {
-        title: "Italy",
-        description: "A map of Italy",
-        imgPath: ""
-    },
-    {
-        title: "Germany",
-        description: "A map of Germany",
-        imgPath: ""
-    },
-    {
-        title: "USA",
-        description: "A map of the USA",
-        imgPath: ""
-    },
-    {
-        title: "China",
-        description: "A map of China",
-        imgPath: ""
-    },
-    {
-        title: "Japan",
-        description: "A map of Japan",
-        imgPath: ""
-    },
-    {
-        title: "Russia",
-        description: "A map of Russia",
-        imgPath: ""
-    },
-];
 
 export default ProfileScreen;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useContext, useState, useEffect } from 'react';
+import { useContext } from 'react';
 import AuthContext from '../auth/AuthContextProvider';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -12,22 +12,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 
 
 
 export default function RegisterScreen() {
-    const [users, setUsers] = useState(null); // TODO temp - delete
     const { auth } = useContext(AuthContext);
-
-    // TODO temp - delete
-    useEffect(() => {
-        auth.getAllUsers().then((res) => {
-            setUsers(res.data);
-        });
-    }, [auth]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -38,21 +27,12 @@ export default function RegisterScreen() {
             formData.get('password'),
             formData.get('confirmPassword')
         );
-
-        // TODO temp - delete
-        auth.getAllUsers().then((res) => {
-            setUsers(res.data);
-        })
-     
     };
 
     return (
         <Box sx = {{flexGrow:1}}>
             <Grid container spacing={1}>
-                <Grid item xs= {4}>
-                    
-                </Grid>
-                <Grid item xs= {8} >
+                <Grid item xs={12} >
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
                         <Box
@@ -133,25 +113,12 @@ export default function RegisterScreen() {
                                 </Button>
                                 <Grid container justifyContent="flex-end">
                                     <Grid item>
-                                        <Link href="/login/" variant="body2">
+                                        <Link component="button" onClick={auth.openLoginDialog} variant="body2">
                                             Already have an account? Sign in
                                         </Link>
                                     </Grid>
                                 </Grid>
 
-                                {/* TODO temp - delete */}
-                                <Typography component="h3">Registered Users</Typography>
-                                <List dense={true}>
-                                    {users && users.map(user => { return (
-                                        <ListItem>
-                                            <ListItemText
-                                                primary={user.username}
-                                                secondary={null}
-                                            />
-                                        </ListItem>
-                                    )
-                                    })}
-                                </List>
                             </Box>
                         </Box>
                     </Container>

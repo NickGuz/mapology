@@ -6,7 +6,9 @@ export const AuthContext = createContext({});
 
 const AuthActionType = {
     REGISTER_USER: "REGISTER_USER",
-    GET_ALL_USERS: "GET_ALL_USERS"
+    GET_ALL_USERS: "GET_ALL_USERS",
+    OPEN_LOGIN_DIALOG: "OPEN_LOGIN_DIALOG",
+    CLOSE_LOGIN_DIALOG: "CLOSE_LOGIN_DIALOG"
 }
 
 function AuthContextProvider(props) {
@@ -20,6 +22,7 @@ function AuthContextProvider(props) {
         shortPass: false,
         notSamePass: false,
         registered: false,
+        loginDialogOpen: false
     });
     const navigate = useNavigate();
 
@@ -48,9 +51,33 @@ function AuthContextProvider(props) {
                     guest: false,
                 })
             }
+            case AuthActionType.OPEN_LOGIN_DIALOG: {
+                return setAuth({
+                    ...auth,
+                    loginDialogOpen: true
+                });
+            }
+            case AuthActionType.CLOSE_LOGIN_DIALOG: {
+                return setAuth({
+                    ...auth,
+                    loginDialogOpen: false
+                });
+            }
             default:
                 return auth;
         }
+    }
+
+    auth.openLoginDialog = () => {
+        authReducer({
+            type: AuthActionType.OPEN_LOGIN_DIALOG
+        });
+    }
+
+    auth.closeLoginDialog = () => {
+        authReducer({
+            type: AuthActionType.CLOSE_LOGIN_DIALOG
+        });
     }
    
     auth.getAllUsers = async function() {

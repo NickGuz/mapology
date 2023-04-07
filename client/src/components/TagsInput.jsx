@@ -4,6 +4,7 @@ import { Autocomplete, TextField } from '@mui/material';
 const TagsInput = (props) => {
     return (
         <Autocomplete
+            sx={props.sx}
             multiple
             id="tags-outlined"
             options={data}
