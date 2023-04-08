@@ -31,7 +31,12 @@ const MapCard = (props) => {
                 </Typography>}
 
                 {props.tags.map((tag) => (
-                    <Chip sx={{marginTop: '8px', marginRight: '4px'}} label={tag} onClick={handleTagClick} />
+                    <Chip 
+                        key={tag}
+                        sx={{marginTop: '8px', marginRight: '4px'}} 
+                        label={tag} 
+                        onClick={handleTagClick} 
+                    />
                 ))}
             </CardContent>
             <CardActions>
