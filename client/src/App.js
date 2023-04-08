@@ -7,6 +7,7 @@ import MapListingScreen from './components/MapListingScreen'
 import RegisterScreen from './components/RegisterScreen';
 import HomeScreen from './components/HomeScreen';
 import ProfileScreen from './components/ProfileScreen';
+import AccountRecoveryScreen from './components/AccountRecoveryScreen';
 import { GlobalStoreContextProvider } from './store/store';
 
 
@@ -21,6 +22,7 @@ const App = () => {
                         <Route path = '/register/' element = {<RegisterScreen/>}/>
                         <Route path = "/map-listings/" element = {<MapListingScreen/>}/>
                         <Route path='/profile/' element={<ProfileScreen/>}/>
+                        <Route path='/account-recovery/' element={<AccountRecoveryScreen/>}/>
                     </Routes>
                 </GlobalStoreContextProvider>
             </AuthContextProvider>  
