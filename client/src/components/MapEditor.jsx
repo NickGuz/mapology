@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { MapContainer, GeoJSON, ZoomControl } from "react-leaflet";
 import Control from 'react-leaflet-custom-control'
 import mapData from '../example-data/countries.json';
 import { Stack, Button } from '@mui/material';
-
 import "leaflet/dist/leaflet.css";
 import ChangeNameModal from "./ChangeNameModal";
 import Drawer from '@mui/material/Drawer';
@@ -14,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import { styled, useTheme } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-
+import GlobalStoreContext from '../store/store';
 
 const drawerWidth = 240;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -36,15 +35,16 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
   );
 const DrawerHeader = styled('div')(({ theme }) => ({
-display: 'flex',
-alignItems: 'center',
-padding: theme.spacing(0, 1),
-// necessary for content to be below app bar
-...theme.mixins.toolbar,
-justifyContent: 'flex-end',
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
 }));
 
 export default function MapEditor() {
+    const { store } = useContext(GlobalStoreContext);
     const [editOpen, setEditOpen] = useState(false);
     const [regionName, setName] = useState("");
     const [currLayer, setLayer] = useState();
@@ -76,14 +76,26 @@ export default function MapEditor() {
             mouseout: (event) => {
                 event.target.setStyle({
                     fillColor: "blue"
+                    
                 });
             },
+            click: () => {
+                console.log(store.editingAttributes)
+
+
+            }
         });
     }
     const rename = (event, country, feature, layer)=>{
         setName(country);
         setEditOpen(true);
         setLayer(layer);         
+    }
+
+    const editAttribute = () =>{
+        store.setEditAttribute(true);
+        console.log(store.editingAttributes)
+
     }
     
     return (
@@ -123,7 +135,7 @@ export default function MapEditor() {
                                     <Button  sx = {{color: "black", backgroundColor: "white"}}>
                                         Merge region
                                     </Button>
-                                    <Button  sx = {{color: "black", backgroundColor: "white"}}>
+                                    <Button onClick={editAttribute} sx = {{color: "black", backgroundColor: "white"}}>
                                         Edit attribute
                                     </Button>
                                     <Button  sx = {{color: "black", backgroundColor: "white"}}>

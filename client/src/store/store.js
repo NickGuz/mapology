@@ -7,7 +7,8 @@ export const GlobalStoreContext = createContext({});
 
 export const GlobalStoreActionType = {
     CHANGE_PAGE_VIEW: "CHANGE_PAGE_VIEW",
-    SET_OPEN_IMPORT_DIALOG: "SET_OPEN_IMPORT_DIALOG"
+    SET_OPEN_IMPORT_DIALOG: "SET_OPEN_IMPORT_DIALOG",
+    SET_EDIT_ATTRIBUTE: "SET_EDIT_ATTRIBUTE",
 }
 
 export const PageViewTypes = {
@@ -18,7 +19,8 @@ export const PageViewTypes = {
 function GlobalStoreContextProvider(props) {
     const [store, setStore] = useState({
         pageView: PageViewTypes.HOME,
-        importDialogOpen: false
+        importDialogOpen: false,
+        editingAttributes: false,
     });
 
     // const navigate = useNavigate();
@@ -39,6 +41,12 @@ function GlobalStoreContextProvider(props) {
                     importDialogOpen: payload
                 });
             }
+            case GlobalStoreActionType.SET_EDIT_ATTRIBUTE: {
+                return setStore({
+                    ...store,
+                    editingAttributes: payload
+                });
+            }
             default: {
                 return store;
             }
@@ -51,6 +59,13 @@ function GlobalStoreContextProvider(props) {
             payload: open
         });
     } 
+
+    store.setEditAttribute = (edit) => {
+        storeReducer({
+            type: GlobalStoreActionType.SET_EDIT_ATTRIBUTE,
+            payload: edit
+        });
+    }
 
     store.changeView = function (view){
         storeReducer({
