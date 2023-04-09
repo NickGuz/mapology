@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import { MapContainer, GeoJSON, ZoomControl } from "react-leaflet";
 import Control from 'react-leaflet-custom-control'
 import mapData from '../example-data/countries.json';
-import { Stack, Button } from '@mui/material';
+import { Stack, Button, Typography } from '@mui/material';
 import "leaflet/dist/leaflet.css";
 import ChangeNameModal from "./ChangeNameModal";
 import Drawer from '@mui/material/Drawer';
@@ -48,10 +48,18 @@ export default function MapEditor() {
     const [editOpen, setEditOpen] = useState(false);
     const [regionName, setName] = useState("");
     const [currLayer, setLayer] = useState();
+    const [regionProps, setRegionProps] = useState();
     const theme = useTheme();
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = useState(false);
 
-    const handleDrawerOpen = () => {
+    const handleDrawerOpen = (event) => {
+        /**
+         * if editingattributes is true the drawer should open when it's inside the if
+         */
+        if(store.editingAttributes == true){
+            console.log("edit set to true")
+        }
+        setRegionProps(event.target.feature.properties)
         setOpen(true);
     };
 
@@ -79,8 +87,9 @@ export default function MapEditor() {
                     
                 });
             },
-            click: () => {
-                console.log(store.editingAttributes)
+            click: (event) => {
+            
+                handleDrawerOpen(event);
 
 
             }
@@ -106,27 +115,35 @@ export default function MapEditor() {
                         map editing options
                     </Box>
                     <Box>
-                        <MapContainer style={{ height:"90vh" }} zoomControl ={false} zoom={2} doubleClickZoom = {false} center={[20,100]}>
-                            <Drawer
-                                sx={{
+                        <Drawer
+                            sx={{
+                            width: drawerWidth,
+                            flexShrink: 0,
+                            '& .MuiDrawer-paper': {
                                 width: drawerWidth,
-                                flexShrink: 0,
-                                '& .MuiDrawer-paper': {
-                                    width: drawerWidth,
-                                    boxSizing: 'border-box',
-                                },
-                                }}
-                                variant="persistent"
-                                anchor="left"
-                                open={open}
-                            >
-                                <DrawerHeader>
+                                boxSizing: 'border-box',
+                            },
+                            }}
+                            variant="persistent"
+                            anchor="left"
+                            open={open}
+                        >
+                            <DrawerHeader>
                                 <IconButton onClick={handleDrawerClose}>
                                     {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                                 </IconButton>
-                                </DrawerHeader>
+                            </DrawerHeader>
+                            <Box>
+                                {
+                                    JSON.stringify(regionProps, null, 2)
+                                }
                                 
-                            </Drawer>
+                            </Box>
+                           
+                            
+                        </Drawer>
+                        <MapContainer style={{ height:"90vh" }} zoomControl ={false} zoom={2} doubleClickZoom = {false} center={[20,100]}>
+                            
                             <GeoJSON style = {mapStyle} data={mapData.features}  onEachFeature = {onFeature} />
                             <ZoomControl position = "topright"/>
                             <Control position='topright' >
@@ -141,6 +158,7 @@ export default function MapEditor() {
                                     <Button  sx = {{color: "black", backgroundColor: "white"}}>
                                         Custom attribute
                                     </Button>
+                        
                                     
                                 </Stack>
                             </Control>
@@ -152,7 +170,7 @@ export default function MapEditor() {
                     
                 </Grid>
                 <Grid item xs={2} >
-                    edit tools 
+                    {store.editingAttributes.toString()}
                 </Grid>
             </Grid>
         </Box>

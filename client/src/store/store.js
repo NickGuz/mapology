@@ -45,6 +45,8 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     ...store,
                     editingAttributes: payload
+                    
+
                 });
             }
             default: {
@@ -61,6 +63,7 @@ function GlobalStoreContextProvider(props) {
     } 
 
     store.setEditAttribute = (edit) => {
+        console.log(store.editingAttributes)
         storeReducer({
             type: GlobalStoreActionType.SET_EDIT_ATTRIBUTE,
             payload: edit
