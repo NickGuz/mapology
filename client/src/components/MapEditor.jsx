@@ -175,8 +175,8 @@ export default function MapEditor() {
                   sx={{
                     width: drawerWidth,
                     boxSizing: "border-box",
-                  },
-                }}
+                  }
+                }
                 variant="persistent"
                 anchor="left"
                 open={open}
