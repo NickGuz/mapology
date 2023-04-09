@@ -26,7 +26,11 @@ import {
 import TextEditor from './TextEditor';
 import RegionEditor from './RegionEditor';
 import LegendEditor from './LegendEditor';
-
+import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import SaveIcon from '@mui/icons-material/Save';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const drawerWidth = 350;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -127,6 +131,8 @@ export default function MapEditor() {
       }
       
   }
+
+      
   let customdata = {
     Region : "Information"
   }
@@ -136,24 +142,37 @@ export default function MapEditor() {
   (customAttr)?<JsonTree data = {customdata}/>:
    <Box>other</Box>
    
-  return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={1}>
-        <Grid item xs={10}>
-          <Box>map editing options</Box>
-          <Box>
-            <MapContainer
-              style={{ height: "90vh" }}
-              zoomControl={false}
-              zoom={2}
-              doubleClickZoom={false}
-              center={[20, 100]}
-            >
-              <Drawer
-                sx={{
-                  width: drawerWidth,
-                  flexShrink: 0,
-                  "& .MuiDrawer-paper": {
+    return (
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid container spacing={1}>
+          <Grid item xs={10}>
+            <Box>
+            <IconButton>
+              <UndoIcon />
+            </IconButton>
+            <IconButton>
+              <RedoIcon />
+            </IconButton>
+            <IconButton>
+              <ContentCopyIcon />
+            </IconButton>
+            <IconButton>
+              <SaveIcon />
+            </IconButton>
+            <IconButton>
+              <DownloadIcon />
+            </IconButton>
+            </Box>
+            <Box>
+              <MapContainer
+                style={{ height: "90vh" }}
+                zoomControl={false}
+                zoom={2}
+                doubleClickZoom={false}
+                center={[20, 100]}
+              >
+                <Drawer
+                  sx={{
                     width: drawerWidth,
                     boxSizing: "border-box",
                   },
