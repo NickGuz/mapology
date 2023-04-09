@@ -49,13 +49,13 @@ const Comment = () => {
 
   return (
     <Box
-        sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "90vh",
-            alignItems: "center",
-            justifyContent: "space-between",
-        }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "90vh",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
     >
         <Box sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto" }}>
             {comments.length > 0 ? (
@@ -76,6 +76,7 @@ const Comment = () => {
                     alt="User Profile Image"
                     src={require("../assets/avatar.jpg")}
                 />
+                <Typography sx={{ marginLeft: 1 }}>John:</Typography>
                 <Typography sx={{ flex: 1, marginLeft: 1 }}>{comment}</Typography>
                 <IconButton
                     onClick={() => handleCommentDeleteClick(index)}
@@ -99,18 +100,18 @@ const Comment = () => {
             }}
         >
             <TextField
-            label="Add a comment..."
-            variant="outlined"
-            multiline
-            rows={4}
-            value={commentText}
-            onChange={handleCommentChange}
-            fullWidth
-            margin="normal"
-            sx={{ flex: 1, mr: 1 }}
+                label="Add a comment..."
+                variant="outlined"
+                multiline
+                rows={4}
+                value={commentText}
+                onChange={handleCommentChange}
+                fullWidth
+                margin="normal"
+                sx={{ flex: 1, mr: 1 }}
             />
             <Button variant="contained" onClick={handleCommentSubmit}>
-            Comment
+                Comment
             </Button>
         </Box>
         <Dialog open={confirmDeleteOpen} onClose={handleConfirmDeleteClose}>
