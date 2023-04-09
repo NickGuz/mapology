@@ -14,8 +14,16 @@ import { styled, useTheme } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import GlobalStoreContext from '../store/store';
+import {
+    JsonTree,
+    ADD_DELTA_TYPE,
+    REMOVE_DELTA_TYPE,
+    UPDATE_DELTA_TYPE,
+    DATA_TYPES,
+    INPUT_USAGE_TYPES,
+} from 'react-editable-json-tree'
 
-const drawerWidth = 240;
+const drawerWidth = 350;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
       flexGrow: 1,
@@ -125,12 +133,7 @@ export default function MapEditor() {
                                     {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                                 </IconButton>
                             </DrawerHeader>
-                            <Box>
-                                {
-                                    JSON.stringify(regionProps, null, 2)
-                                }
-                                
-                            </Box>
+                            <JsonTree data = {regionProps}/>
                            
                             
                         </Drawer>
