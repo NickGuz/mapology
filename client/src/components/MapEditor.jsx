@@ -53,18 +53,15 @@ export default function MapEditor() {
     const [open, setOpen] = useState(false);
 
     const handleDrawerOpen = (event) => {
-        /**
-         * if editingattributes is true the drawer should open when it's inside the if
-         */
-        if(store.editingAttributes == true){
-            console.log("edit set to true")
-        }
         setRegionProps(event.target.feature.properties)
         setOpen(true);
+        
+        
     };
 
     const handleDrawerClose = () => {
         setOpen(false);
+
     };
     const mapStyle = {
         fillColor: "blue",
@@ -88,10 +85,7 @@ export default function MapEditor() {
                 });
             },
             click: (event) => {
-            
                 handleDrawerOpen(event);
-
-
             }
         });
     }
@@ -103,8 +97,6 @@ export default function MapEditor() {
 
     const editAttribute = () =>{
         store.setEditAttribute(true);
-        console.log(store.editingAttributes)
-
     }
     
     return (
@@ -152,9 +144,6 @@ export default function MapEditor() {
                                     <Button  sx = {{color: "black", backgroundColor: "white"}}>
                                         Merge region
                                     </Button>
-                                    <Button onClick={editAttribute} sx = {{color: "black", backgroundColor: "white"}}>
-                                        Edit attribute
-                                    </Button>
                                     <Button  sx = {{color: "black", backgroundColor: "white"}}>
                                         Custom attribute
                                     </Button>
@@ -170,7 +159,8 @@ export default function MapEditor() {
                     
                 </Grid>
                 <Grid item xs={2} >
-                    {store.editingAttributes.toString()}
+                    editing tools
+
                 </Grid>
             </Grid>
         </Box>
