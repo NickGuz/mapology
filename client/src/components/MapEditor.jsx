@@ -15,6 +15,9 @@ import { styled, useTheme } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
+import TextEditor from './TextEditor';
+import RegionEditor from './RegionEditor';
+import LegendEditor from './LegendEditor';
 
 const drawerWidth = 240;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -87,63 +90,78 @@ export default function MapEditor() {
     }
     
     return (
-        <Box sx = {{flexGrow:1}}>
-            <Grid container spacing={1}>
-                <Grid item xs={10} >
-                    <Box>
-                        map editing options
-                    </Box>
-                    <Box>
-                        <MapContainer style={{ height:"90vh" }} zoomControl ={false} zoom={2} doubleClickZoom = {false} center={[20,100]}>
-                            <Drawer
-                                sx={{
-                                width: drawerWidth,
-                                flexShrink: 0,
-                                '& .MuiDrawer-paper': {
-                                    width: drawerWidth,
-                                    boxSizing: 'border-box',
-                                },
-                                }}
-                                variant="persistent"
-                                anchor="left"
-                                open={open}
-                            >
-                                <DrawerHeader>
-                                <IconButton onClick={handleDrawerClose}>
-                                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                                </IconButton>
-                                </DrawerHeader>
-                                
-                            </Drawer>
-                            <GeoJSON style = {mapStyle} data={mapData.features}  onEachFeature = {onFeature} />
-                            <ZoomControl position = "topright"/>
-                            <Control position='topright' >
-                                <Stack direction='column'>
-                                    
-                                    <Button  sx = {{color: "black", backgroundColor: "white"}}>
-                                        Merge region
-                                    </Button>
-                                    <Button  sx = {{color: "black", backgroundColor: "white"}}>
-                                        Edit attribute
-                                    </Button>
-                                    <Button  sx = {{color: "black", backgroundColor: "white"}}>
-                                        Custom attribute
-                                    </Button>
-                                    
-                                </Stack>
-                            </Control>
-                            <ChangeNameModal layer = {currLayer} name = {regionName} show = {editOpen} rename = {(name) => setName(name)} close = {() => setEditOpen(false)} />
-
-                        </MapContainer>
-                    </Box>
-                    
-                    
-                </Grid>
-                <Grid item xs={2} >
-                    edit tools 
-                </Grid>
-            </Grid>
-        </Box>
-            
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid container spacing={1}>
+          <Grid item xs={10}>
+            <Box>map editing options</Box>
+            <Box>
+              <MapContainer
+                style={{ height: "90vh" }}
+                zoomControl={false}
+                zoom={2}
+                doubleClickZoom={false}
+                center={[20, 100]}
+              >
+                <Drawer
+                  sx={{
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    "& .MuiDrawer-paper": {
+                      width: drawerWidth,
+                      boxSizing: "border-box",
+                    },
+                  }}
+                  variant="persistent"
+                  anchor="left"
+                  open={open}
+                >
+                  <DrawerHeader>
+                    <IconButton onClick={handleDrawerClose}>
+                      {theme.direction === "ltr" ? (
+                        <ChevronLeftIcon />
+                      ) : (
+                        <ChevronRightIcon />
+                      )}
+                    </IconButton>
+                  </DrawerHeader>
+                </Drawer>
+                <GeoJSON
+                  style={mapStyle}
+                  data={mapData.features}
+                  onEachFeature={onFeature}
+                />
+                <ZoomControl position="topright" />
+                <Control position="topright">
+                  <Stack direction="column">
+                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                      Merge region
+                    </Button>
+                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                      Edit attribute
+                    </Button>
+                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                      Custom attribute
+                    </Button>
+                  </Stack>
+                </Control>
+                <ChangeNameModal
+                  layer={currLayer}
+                  name={regionName}
+                  show={editOpen}
+                  rename={(name) => setName(name)}
+                  close={() => setEditOpen(false)}
+                />
+              </MapContainer>
+            </Box>
+          </Grid>
+          <Grid item xs={2}>
+            <Box sx={{ borderLeft: "1px solid", borderRight: "1px solid", borderColor: "darkgray" }}>
+              <TextEditor />
+              <RegionEditor />
+              <LegendEditor />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
     );
 }
