@@ -2,12 +2,19 @@ import { Button, Checkbox, Dialog, DialogContent, DialogTitle, FormControlLabel,
 import Box from '@mui/material/Box';
 import React, { useContext } from 'react';
 import AuthContext from '../auth/AuthContextProvider';
+import { useNavigate } from 'react-router-dom';
 
 const LoginModal = (props) => {
     const { auth } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const handleSubmit = () => {
         auth.closeLoginDialog();
+    }
+
+    const handleForgotPassword = () => {
+        auth.closeLoginDialog();
+        navigate('/account-recovery/');
     }
 
     return (
@@ -55,7 +62,7 @@ const LoginModal = (props) => {
                 </Button>
 
                 <Box textAlign='right'>
-                    <Button>Forgot Password?</Button>
+                    <Button onClick={handleForgotPassword}>Forgot Password?</Button>
                 </Box>
 
             </DialogContent>
