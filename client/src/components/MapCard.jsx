@@ -17,6 +17,9 @@ const MapCard = (props) => {
         navigate("/map-editor/");
 
     }
+    const handleOpenInfo = (event) => {
+        navigate("/map-info/");
+    };
 
     return (
         <Card variant="outlined" sx={{ maxWidth: 400 }}>
@@ -56,7 +59,7 @@ const MapCard = (props) => {
                     ))}
             <CardActions>
                 <Button size="small">Duplicate</Button>
-                <Button size="small">Details</Button>
+                <Button onClick={handleOpenInfo} size="small">Details</Button>
                 <Button onClick={handleOpenEdit} size="small">Open Editor</Button>
             </CardActions>
         </Card> 
