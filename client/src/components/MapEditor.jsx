@@ -54,6 +54,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
+    backgroundColor: '#03a9f4',
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
@@ -65,15 +66,15 @@ export default function MapEditor() {
     const [editOpen, setEditOpen] = useState(false);
     const [regionName, setName] = useState("");
     const [currLayer, setLayer] = useState();
-    const [regionProps, setRegionProps] = useState();
+    const [regionProps, setRegionProps] = useState(null);
+    const [editingAttr, setEdit] = useState(false);
     const theme = useTheme();
     const [open, setOpen] = useState(false);
+    const [customAttr, setCustomAttr] = useState(false);
 
-    const handleDrawerOpen = (event) => {
-        setRegionProps(event.target.feature.properties)
-        setOpen(true);
-        
-        
+    const handleDrawerOpen = () => {
+        //store.setCurrentFeature(regionProps)
+        setOpen(true) 
     };
 
     const handleDrawerClose = () => {
@@ -87,24 +88,27 @@ export default function MapEditor() {
         weight: 1
     }
     const onFeature = (feature, layer) => {
-        let country = feature.properties.name;
-        layer.on({
-            dblclick: (event) => {rename(event, country, feature, layer)},
-            mouseover: (event) => {
-                event.target.setStyle({
-                    fillColor: "purple"
-                });
-            },
-            mouseout: (event) => {
-                event.target.setStyle({
-                    fillColor: "blue"
-                    
-                });
-            },
-            click: (event) => {
-                handleDrawerOpen(event);
+      let selected = [];
+      let country = feature.properties.name;
+      layer.on({
+          dblclick: (event) => {rename(event, country, feature, layer)},
+          mouseover: (event) => {
+            event.target.setStyle({
+                fillColor: "purple"
+            });
+          },
+          mouseout: (event) => {
+            if (!selected.includes(event.target)){
+              event.target.setStyle({
+                fillColor: "blue"
+                
+              });
             }
-        });
+          },
+          click: (event) => {
+            setRegionProps(event.target.feature.properties);
+          }
+      });
     }
     const rename = (event, country, feature, layer)=>{
         setName(country);
@@ -112,10 +116,32 @@ export default function MapEditor() {
         setLayer(layer);         
     }
 
-    const editAttribute = () =>{
-        store.setEditAttribute(true);
+    const editAttribute = (event) =>{
+        setEdit(true);
+        setCustomAttr(false);
+        if(regionProps != null){
+          handleDrawerOpen();
+        }
     }
-    
+    const customAttribute = (event) =>{
+      setCustomAttr(true);
+      setEdit(false);
+      if(regionProps != null){
+        handleDrawerOpen();
+      }
+      
+  }
+
+      
+  let customdata = {
+    Region : "Information"
+  }
+
+  let DrawerContent = 
+  (editingAttr)?<JsonTree data = {regionProps}/>: 
+  (customAttr)?<JsonTree data = {customdata}/>:
+   <Box>other</Box>
+   
     return (
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={1}>
@@ -148,63 +174,62 @@ export default function MapEditor() {
                 <Drawer
                   sx={{
                     width: drawerWidth,
-                    flexShrink: 0,
-                    "& .MuiDrawer-paper": {
-                      width: drawerWidth,
-                      boxSizing: "border-box",
-                    },
-                  }}
-                  variant="persistent"
-                  anchor="left"
-                  open={open}
-                >
-                  <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                      {theme.direction === "ltr" ? (
-                        <ChevronLeftIcon />
-                      ) : (
-                        <ChevronRightIcon />
-                      )}
-                    </IconButton>
-                  </DrawerHeader>
-                </Drawer>
-                <GeoJSON
-                  style={mapStyle}
-                  data={mapData.features}
-                  onEachFeature={onFeature}
-                />
-                <ZoomControl position="topright" />
-                <Control position="topright">
-                  <Stack direction="column">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
-                      Merge region
-                    </Button>
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
-                      Edit attribute
-                    </Button>
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
-                      Custom attribute
-                    </Button>
-                  </Stack>
-                </Control>
-                <ChangeNameModal
-                  layer={currLayer}
-                  name={regionName}
-                  show={editOpen}
-                  rename={(name) => setName(name)}
-                  close={() => setEditOpen(false)}
-                />
-              </MapContainer>
-            </Box>
-          </Grid>
-          <Grid item xs={2}>
-            <Box sx={{ borderLeft: "1px solid", borderRight: "1px solid", borderColor: "darkgray" }}>
-              <TextEditor />
-              <RegionEditor />
-              <LegendEditor />
-            </Box>
-          </Grid>
+                    boxSizing: "border-box",
+                  },
+                }}
+                variant="persistent"
+                anchor="left"
+                open={open}
+              >
+                <DrawerHeader>
+                  <IconButton onClick={handleDrawerClose}>
+                    {theme.direction === "ltr" ? (
+                      <ChevronLeftIcon />
+                    ) : (
+                      <ChevronRightIcon />
+                    )}
+                  </IconButton>
+                </DrawerHeader>
+                {DrawerContent}
+
+              </Drawer>
+              <GeoJSON
+                style={mapStyle}
+                data={mapData.features}
+                onEachFeature={onFeature}
+              />
+              <ZoomControl position="topright" />
+              <Control position="topright">
+                <Stack direction="column">
+                  <Button sx={{ color: "black", backgroundColor: "white" }}>
+                    Merge region
+                  </Button>
+                  <Button onClick={editAttribute} sx={{ color: "black", backgroundColor: "white" }}>
+                    Edit attribute
+                  </Button>
+                  <Button  onClick={customAttribute} sx={{ color: "black", backgroundColor: "white" }}>
+                    Custom attribute
+                  </Button>
+                </Stack>
+              </Control>
+              <ChangeNameModal
+                layer={currLayer}
+                name={regionName}
+                show={editOpen}
+                rename={(name) => setName(name)}
+                close={() => setEditOpen(false)}
+              />
+            </MapContainer>
+          </Box>
         </Grid>
-      </Box>
-    );
+        <Grid item xs={2}>
+          <Box sx={{ borderLeft: "1px solid", borderRight: "1px solid", borderColor: "darkgray" }}>
+            <TextEditor />
+            <RegionEditor />
+            <LegendEditor />
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
 }

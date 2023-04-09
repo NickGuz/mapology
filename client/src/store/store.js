@@ -9,6 +9,7 @@ export const GlobalStoreActionType = {
     CHANGE_PAGE_VIEW: "CHANGE_PAGE_VIEW",
     SET_OPEN_IMPORT_DIALOG: "SET_OPEN_IMPORT_DIALOG",
     SET_EDIT_ATTRIBUTE: "SET_EDIT_ATTRIBUTE",
+    CURR_FEATURE: "CURR_FEATURE"
 }
 
 export const PageViewTypes = {
@@ -21,6 +22,7 @@ function GlobalStoreContextProvider(props) {
         pageView: PageViewTypes.HOME,
         importDialogOpen: false,
         editingAttributes: false,
+        currentFeature: null,
     });
 
     // const navigate = useNavigate();
@@ -45,7 +47,12 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     ...store,
                     editingAttributes: payload
-                    
+                });
+            }
+            case GlobalStoreActionType.CURR_FEATURE: {
+                return setStore({
+                    ...store,
+                    currentFeature: payload
 
                 });
             }
@@ -67,6 +74,16 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.SET_EDIT_ATTRIBUTE,
             payload: edit
         });
+    }
+
+    store.setCurrentFeature = (feature) => {
+        storeReducer({
+            type: GlobalStoreActionType.CURR_FEATURE,
+            payload: feature
+        });
+        console.log(store.currentFeature);
+
+        
     }
 
     store.changeView = function (view){
