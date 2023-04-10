@@ -1,8 +1,11 @@
 const Sequelize = require("sequelize");
 const UserModel = require("./models/usertest");
 const config = require("./config/db.config")
+const SequelizeMock = require('sequelize-mock');
 
-const sequelize = new Sequelize(
+// use env var to use mock db here instead if running tests
+const sequelize = process.env.TEST ? new SequelizeMock()
+  : new Sequelize(
   config.DB, 
   config.USER, 
   config.PASS, {
@@ -15,24 +18,28 @@ const sequelize = new Sequelize(
   }); 
 
 // confirms the connection
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection has been established successfully.");
-  })
-  .catch((error) => {
-    console.error("Unable to connect to the database: ", error);
-  });
+if (!process.env.TEST) {
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log("Connection has been established successfully.");
+    })
+    .catch((error) => {
+      console.error("Unable to connect to the database: ", error);
+    });
+}
 
 const User = UserModel(sequelize, Sequelize);
 
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Users table created successfully");
-  })
-  .catch((error) => {
-    console.error("Unable to create table: ", error);
-  });
+if (!process.env.TEST) {
+  sequelize
+    .sync()
+    .then(() => {
+      console.log("Users table created successfully");
+    })
+    .catch((error) => {
+      console.error("Unable to create table: ", error);
+    });
+}
 
-module.exports = User;
+module.exports = { sequelize, User};

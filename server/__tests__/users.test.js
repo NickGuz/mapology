@@ -1,6 +1,8 @@
+process.env.TEST = true;
+
 const supertest = require('supertest');
 const server = require('../server');
-const { User, sequelize } = require('../sequelizeTest');
+const { sequelize, User } = require('../sequelize');
 
 const app = server;
 
@@ -9,6 +11,7 @@ const app = server;
  */
 test("POST /users", async () => {
     const data = {
+        id: 1,
         email: "test@test.com",
         username: "testuser",
         password: "123"
@@ -29,7 +32,11 @@ test("POST /users", async () => {
             expect(response.body.password).toBe(data.password);
 
             // Check the data in the database
-            const user = await User.findOne({ where: { id: response.body.id }});
+
+            // TODO for some reason, sequelize-mock only gives us back the data which we query for,
+            // so here passing in the entire body so we get back every field.
+            // Another way around this is to make separate Mock models, but that's kinda dumb
+            const user = await User.findOne({ where: response.body });
             expect(user).toBeTruthy();
             expect(user.email).toBe(data.email);
             expect(user.username).toBe(data.username);
@@ -83,8 +90,10 @@ test("GET /users", async () => {
 });
 
 afterAll((done) => {
-    sequelize.close();
+    // TODO use env var to close this if not testing
+    // actually nevermind, always testing if running this file
+    // sequelize.close();
     app.close();
     server.close();
     done();
-})
+});
