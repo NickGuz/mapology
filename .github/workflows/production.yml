@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  frontend-tests:
-    name: Frontend Tests
+  component-tests:
+    name: Component Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,11 +18,20 @@ jobs:
           working-directory: client
           component: true
           browser: chrome
-          build: npm run build
-          start: npm start
           wait-on: 'http://localhost:3000'
 
-
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cypress run
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          working-directory: client
+          browser: chrome
+          wait-on: 'http://localhost:3000'
     
   backend-tests:
     name: Backend Tests
