@@ -65,6 +65,9 @@ const Comment = () => {
                 <Box
                 key={index}
                 sx={{
+                    border: 1,
+                    borderColor: "grey.300",
+                    borderRadius: "5px",
                     padding: "10px",
                     margin: "10px 0",
                     display: "flex",
