@@ -55,6 +55,7 @@ const Comment = () => {
         height: "90vh",
         alignItems: "center",
         justifyContent: "space-between",
+        maxWidth: 'auto'
       }}
       
     >

@@ -44,7 +44,7 @@ const MapInfoScreen = (props) => {
     
     <div style={{ display: "flex", width: "100%" }}>
         <Box sx={{ flex: "3 0 75%"}}>
-          <Box sx= {{display: 'flex'}}>
+          <Box sx= {{display: 'flex', mt: 2}}>
             <Typography variant='h5' sx={{ml: 2}}> {italy.title}</Typography>
           </Box>
           
@@ -52,7 +52,7 @@ const MapInfoScreen = (props) => {
 
           <img src={italy.imgPath}  style={{maxHeight: "100%"}}  />
           
-          <Box border={1} sx={{flexDirection:'column' ,display:'flex' , ml: 2, height: "100px", width: "90%"}}>
+          <Box border={1} borderColor={'gray'} borderRadius={'10px'} sx={{flexDirection:'column' ,display:'flex' , ml: 2, mt: 10, height: "100px", width: "90%"}}>
             <Box sx={{ display:'flex', justifyContent:"flex-end"}}>
               <Typography variant='subtitle1' sx={{ml: 2}}> {italy.description}</Typography>
               <IconButton sx={{ml:'auto'}} onClick={handleLike}> <ThumbUpIcon/> 0 </IconButton>
