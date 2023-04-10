@@ -58,7 +58,7 @@ const Comment = () => {
       }}
       
     >
-        <Box border={1} sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto" }}>
+        <Box sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto" }}>
             {comments.length > 0 ? (
             comments.map((comment, index) => (
                 <Box
