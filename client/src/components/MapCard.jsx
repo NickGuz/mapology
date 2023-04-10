@@ -4,7 +4,7 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
-import { Button, ButtonBase, CardActions, Typography } from '@mui/material';
+import { Button, CardActions, Typography } from '@mui/material';
 
 const MapCard = (props) => {
     const navigate = useNavigate();

@@ -40,19 +40,23 @@ const MapInfoScreen = (props) => {
     setDeleteOpen(true);
   }
 
+  const handleOpenEditor = () => {
+    navigate('/map-editor/');
+  }
+
   return (
     
-    <div style={{ display: "flex", width: "100%" }}>
-        <Box sx={{ flex: "3 0 75%"}}>
+    <div style={{ display: "flex", width: "100%", justifyContent: 'center' }}>
+        <Box sx={{ flex: "3 0 75%", ml: 5 }}>
           <Box sx= {{display: 'flex', mt: 2}}>
             <Typography variant='h5' sx={{ml: 2}}> {italy.title}</Typography>
           </Box>
           
           <Typography variant='subtitle1' sx={{ml: 2}}> by {italy.author}</Typography>
 
-          <img src={italy.imgPath}  style={{maxHeight: "100%"}}  />
+          <img alt='italy' src={italy.imgPath}  style={{maxHeight: "100%"}}  />
           
-          <Box border={1} borderColor={'gray'} borderRadius={'10px'} sx={{flexDirection:'column' ,display:'flex' , ml: 2, mt: 10, height: "100px", width: "90%"}}>
+          <Box border={1} borderColor={'gray'} borderRadius={'10px'} sx={{flexDirection:'column' ,display:'flex' , ml: 2, mt: 10, height: "130px", width: "90%"}}>
             <Box sx={{ display:'flex', justifyContent:"flex-end"}}>
               <Typography variant='subtitle1' sx={{ml: 2}}> {italy.description}</Typography>
               <IconButton sx={{ml:'auto'}} onClick={handleLike}> <ThumbUpIcon/> 0 </IconButton>
@@ -69,6 +73,9 @@ const MapInfoScreen = (props) => {
                 />
               ))}
               <IconButton onClick={handleDeleteMapDialog} sx={{ml:'auto', mr: 2}}><DeleteIcon/> </IconButton>
+            </Box>
+            <Box display='flex' justifyContent='right'>
+                <Button onClick={handleOpenEditor}>Open Editor</Button>
             </Box>
           </Box>
         </Box>

@@ -11,6 +11,8 @@ import {
   Typography,
   IconButton,
   Avatar,
+  Paper,
+  Grid
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -48,14 +50,20 @@ const Comment = () => {
   };
 
   return (
-    <Box
+    <Paper
+      elevation={3}
       sx={{
+        marginRight: 5,
+        marginTop: 2,
         display: "flex",
         flexDirection: "column",
-        height: "90vh",
+        height: "80vh",
         alignItems: "center",
         justifyContent: "space-between",
-        maxWidth: 'auto'
+        maxWidth: 600,
+        paddingLeft: 1,
+        paddingBottom: 1,
+        paddingRight: 1
       }}
       
     >
@@ -92,30 +100,28 @@ const Comment = () => {
             <Typography sx={{ml: 2}}>No comments yet</Typography>
             )}
         </Box>
-        <Box
-            sx={{
-            width: "100%",
-            maxWidth: 600,
-            display: "flex",
-            justifyContent: "flex-end",
-            padding: "10px",
-            }}
+        <Grid
+            container
+            spacing={1}
         >
-            <TextField
-                label="Add a comment..."
-                variant="outlined"
-                multiline
-                rows={4}
-                value={commentText}
-                onChange={handleCommentChange}
-                fullWidth
-                margin="normal"
-                sx={{ flex: 1, mr: 1 }}
-            />
-            <Button variant="contained" onClick={handleCommentSubmit}>
-                Comment
-            </Button>
-        </Box>
+            <Grid item xs={8}>
+                <TextField
+                    label="Add a comment..."
+                    variant="outlined"
+                    multiline
+                    maxRows={4}
+                    value={commentText}
+                    onChange={handleCommentChange}
+                    fullWidth
+                    sx={{ flex: 1, mr: 1 }}
+                />
+            </Grid>
+            <Grid item xs={4}>
+                <Button sx={{height: '100%'}} variant="contained" onClick={handleCommentSubmit}>
+                    Comment
+                </Button>
+            </Grid>
+        </Grid>
         <Dialog open={confirmDeleteOpen} onClose={handleConfirmDeleteClose}>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogContent>
@@ -130,7 +136,7 @@ const Comment = () => {
             </Button>
             </DialogActions>
         </Dialog>
-    </Box>
+    </Paper>
   );
 };
 
