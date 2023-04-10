@@ -29,6 +29,10 @@ export default function RegisterScreen() {
         );
     };
 
+    const handleLogin = () => {
+        auth.openLoginDialog();
+    }
+
     return (
         <Box sx = {{flexGrow:1}}>
             <Grid container spacing={1}>
@@ -113,7 +117,7 @@ export default function RegisterScreen() {
                                 </Button>
                                 <Grid container justifyContent="flex-end">
                                     <Grid item>
-                                        <Link component="button" onClick={auth.openLoginDialog} variant="body2">
+                                        <Link component="button" onClick={handleLogin} variant="body2">
                                             Already have an account? Sign in
                                         </Link>
                                     </Grid>
