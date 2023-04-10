@@ -10,8 +10,6 @@ const MapCard = (props) => {
     const navigate = useNavigate();
     const handleTagClick = (event) => {
     }
-    const handleCardClick = (event) => {
-    }
 
     const handleOpenEdit = (event) =>{
         navigate("/map-editor/");
@@ -28,27 +26,20 @@ const MapCard = (props) => {
                     image={props.image} 
                     title="map"
             />
-            <ButtonBase
-                onClick={handleCardClick}
-                sx={{ width: '100%' }}
-                style={{justifyContent: "flex-start"}}
-            >
-                
-                <CardContent  sx={{ paddingBottom: 0 }}>
-                    <Typography gutterBottom variant="h5" component="div" align='left'>
-                        {props.title || 'Map'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" align='left'>
-                        {props.description || "Description"}
-                    </Typography>
-                    {props.author &&
-                    <Typography variant="body2" color="text.secondary" align='left'>
-                        by {props.author}
-                    </Typography>}
+            <CardContent  sx={{ paddingBottom: 0 }}>
+                <Typography gutterBottom variant="h5" component="div" align='left'>
+                    {props.title || 'Map'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align='left'>
+                    {props.description || "Description"}
+                </Typography>
+                {props.author &&
+                <Typography variant="body2" color="text.secondary" align='left'>
+                    by {props.author}
+                </Typography>}
 
                     
-                </CardContent>
-            </ButtonBase>
+            </CardContent>
             {props.tags.map((tag) => (
                         <Chip 
                             key={tag}

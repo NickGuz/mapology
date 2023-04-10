@@ -56,16 +56,14 @@ const Comment = () => {
         alignItems: "center",
         justifyContent: "space-between",
       }}
+      
     >
-        <Box sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto" }}>
+        <Box sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto", paddingTop: "10px" }}>
             {comments.length > 0 ? (
             comments.map((comment, index) => (
                 <Box
                 key={index}
                 sx={{
-                    border: 1,
-                    borderColor: "grey.300",
-                    borderRadius: "5px",
                     padding: "10px",
                     margin: "10px 0",
                     display: "flex",
@@ -87,7 +85,7 @@ const Comment = () => {
                 </Box>
             ))
             ) : (
-            <Typography>No comments yet</Typography>
+            <Typography sx={{ml: 2}}>No comments yet</Typography>
             )}
         </Box>
         <Box
