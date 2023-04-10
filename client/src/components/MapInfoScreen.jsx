@@ -56,7 +56,7 @@ const MapInfoScreen = (props) => {
 
           <img alt='italy' src={italy.imgPath}  style={{maxHeight: "100%"}}  />
           
-          <Box border={1} borderColor={'gray'} borderRadius={'10px'} sx={{flexDirection:'column' ,display:'flex' , ml: 2, mt: 10, height: "130px", width: "90%"}}>
+          <Box border={1} borderColor={'gray'} borderRadius={'10px'} sx={{flexDirection:'column' ,display:'flex' , ml: 2, mt: 10, height: "14%", width: "90%"}}>
             <Box sx={{ display:'flex', justifyContent:"flex-end"}}>
               <Typography variant='subtitle1' sx={{ml: 2}}> {italy.description}</Typography>
               <IconButton sx={{ml:'auto'}} onClick={handleLike}> <ThumbUpIcon/> 0 </IconButton>
@@ -74,7 +74,8 @@ const MapInfoScreen = (props) => {
               ))}
               <IconButton onClick={handleDeleteMapDialog} sx={{ml:'auto', mr: 2}}><DeleteIcon/> </IconButton>
             </Box>
-            <Box display='flex' justifyContent='right'>
+            <Box display='flex' justifyContent='left' marginTop='20px'>
+                <Button>Duplicate</Button>
                 <Button onClick={handleOpenEditor}>Open Editor</Button>
             </Box>
           </Box>
