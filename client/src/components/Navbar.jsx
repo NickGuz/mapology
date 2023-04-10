@@ -17,6 +17,7 @@ import AuthContext from '../auth/AuthContextProvider';
 import GlobalStoreContext from '../store/store';
 import LoginModal from './LoginModal';
 import ImportModal from './ImportModal';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 const Navbar = (props) => {
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -197,7 +198,8 @@ const Navbar = (props) => {
                     </Box>
 
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{ display: 'flex', flexGrow: 0, alignItems: 'center' }}>
+                        <DarkModeIcon sx={{ width: 30, height: 30, mr: 1 }}/>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Avatar alt="Avatar" src="" />

@@ -12,6 +12,7 @@ const MapGrid = (props) => {
         <div style={{ 
             marginLeft: '10%',
             marginRight: '10%',
+            marginBottom: '3%'
             }}
         >
             <Grid container spacing={2} style={{ marginTop: '5px' }}>

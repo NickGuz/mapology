@@ -22,7 +22,7 @@ const MapCard = (props) => {
     return (
         <Card variant="outlined" sx={{ maxWidth: 400 }}>
             <CardMedia
-                    sx={{ height: 140 }}
+                    sx={{ height: 280 }}
                     image={props.image} 
                     title="map"
             />

@@ -1,5 +1,5 @@
 import './App.css';
-import { React } from 'react'
+import { React, useEffect } from 'react'
 import { BrowserRouter, Route, Routes} from 'react-router-dom'
 import { AuthContextProvider } from './auth/AuthContextProvider';
 import Navbar from './components/Navbar';
@@ -14,6 +14,10 @@ import MapInfoScreen from './components/MapInfoScreen';
 
 
 const App = () => {   
+    useEffect(() => {
+        document.title = "Mapology";
+    });
+
     return (
         <BrowserRouter>
             <AuthContextProvider>
