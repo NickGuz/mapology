@@ -1,4 +1,8 @@
 describe('template spec', () => {
+  it('Exists', () => {
+    cy.visit('http://localhost:3000/');
+  });
+
   it('Import modal opens', () => {
     cy.visit('http://localhost:3000/');
     cy.get('.MuiAppBar-root').should('exist');
