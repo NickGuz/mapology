@@ -32,6 +32,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 
+let selected = [];
 const drawerWidth = 350;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
@@ -88,7 +89,6 @@ export default function MapEditor() {
         weight: 1
     }
     const onFeature = (feature, layer) => {
-      let selected = [];
       let country = feature.properties.name;
       layer.on({
           dblclick: (event) => {rename(event, country, feature, layer)},
@@ -106,7 +106,26 @@ export default function MapEditor() {
             }
           },
           click: (event) => {
-            setRegionProps(event.target.feature.properties);
+            if (!selected.includes(event.target)){
+              selected.push(event.target);
+              event.target.setStyle({
+                fillColor: "purple"
+              });
+            }
+            else if (selected.includes(event.target)){
+              selected.splice(selected.indexOf(event.target),1);
+              event.target.setStyle({
+                fillColor: "purple"
+              });
+            }
+            
+            if (selected.length == 0){
+              setRegionProps({});
+              handleDrawerClose();
+            }
+            else{setRegionProps(selected[selected.length -1].feature.properties);}
+            
+            console.log(selected)
           }
       });
     }
@@ -130,12 +149,9 @@ export default function MapEditor() {
         handleDrawerOpen();
       }
       
-  }
-
-      
-  let customdata = {
-    Region : "Information"
-  }
+  }  
+  let customdata = 
+  (selected.length >0)? {Region : selected[selected.length -1].feature.properties.name} : {}
 
   let DrawerContent = 
   (editingAttr)?<JsonTree data = {regionProps}/>: 
