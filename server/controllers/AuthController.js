@@ -1,4 +1,4 @@
-const db = require("../models/db")
+const {User} = require("../sequelize/sequelize");
 
 exports.loggedIn = () => {
   // TODO
@@ -12,9 +12,15 @@ exports.logout = () => {
   // TODO
 };
 
-exports.register = () => {
-  // TODO
+exports.register = async (req, res) => {
+    const user = await User.create(req.body);
+    res.json(user);
 };
+
+exports.getAllUsers = async (req, res) => {
+    const users = await User.findAll();
+    res.json(users);
+}
 
 exports.changePassword = () => {
   // TODO

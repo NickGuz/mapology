@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const config = require('./db.config');
+const config = require('../../config/db.config');
 
 // TODO Don't keep SQL connection in Users, this is just temporary
 const sequelize = new Sequelize(

@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const UserModel = require("./models/usertest");
-const config = require("./config/db.config")
+const config = require("../config/db.config")
 const SequelizeMock = require('sequelize-mock');
 
 // use env var to use mock db here instead if running tests
@@ -35,10 +35,10 @@ if (!process.env.TEST) {
   sequelize
     .sync()
     .then(() => {
-      console.log("Users table created successfully");
+      console.log("SQL tables created successfully");
     })
     .catch((error) => {
-      console.error("Unable to create table: ", error);
+      console.error("Unable to create SQL tables: ", error);
     });
 }
 
