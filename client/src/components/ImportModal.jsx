@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import TagsInput from './TagsInput';
 import FileUpload from 'react-mui-fileuploader';
 import { Alert } from '@mui/material';
+import { createMap } from '../store/GlobalStoreHttpRequestApi';
 
 const ImportModal = (props) => {
     const [filesToUpload, setFilesToUpload] = useState([]);
@@ -17,7 +18,15 @@ const ImportModal = (props) => {
 
     const handleSubmit = () => {
         store.setOpenImportDialog(false);
-        console.log(filesToUpload);
+        console.log('selected files', filesToUpload);
+
+        let fileReader = new FileReader();
+        fileReader.onload = async (event) => { 
+            let data = JSON.parse(event.target.result);
+            console.log('parsed json', data);
+            await createMap(null, 4, "test-title", "test-desc", ['test1', 'test2'], data);
+        }
+        fileReader.readAsText(filesToUpload[0]);
     }
 
     const handleClose = () => {
@@ -43,7 +52,7 @@ const ImportModal = (props) => {
                     title=""
                     header=">[Drag and drop]<"
                     maxUploadFiles={2}
-                    allowedExtensions={['geo.json', 'shp', 'dbf']}
+                    allowedExtensions={['json', 'shp', 'dbf']}
                     showPlaceholderImage={true}
                     ContainerProps={{
                         elevation: 0,
