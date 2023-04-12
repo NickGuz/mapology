@@ -27,6 +27,12 @@ app.post('/users', async (req, res) => {
     res.json(users);
 });
 
+// Fix Heroku routing
+// KEEP AS LOWER-MOST ROUTE
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'build', 'index.html'));
+});
+
 // app.get('*', (req, res) => {
 //     let route = req.params['0'].substring(1);
 //     console.log('req.params', req.params);
