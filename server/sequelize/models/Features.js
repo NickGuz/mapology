@@ -16,22 +16,22 @@ module.exports = (sequelize, DataTypes) => {
         properties: {
             // type: DataTypes.JSON,
             type: DataTypes.TEXT,
-            get: () => {
+            get: function() {
                 return JSON.parse(this.getDataValue('properties'));
             },
-            set: (value) => {
-                return this.setDataValue('properties', value);
+            set: function(value) {
+                return this.setDataValue('properties', JSON.stringify(value));
             },
             allowNull: false
         },
         geometry: {
             // type: DataTypes.JSON,
             type: DataTypes.TEXT,
-            get: () => {
+            get: function() {
                 return JSON.parse(this.getDataValue('geometry'));
             },
-            set: (value) => {
-                return this.setDataValue('geometry', value);
+            set: function(value) {
+                return this.setDataValue('geometry', JSON.stringify(value));
             },
             allowNull: false
         }

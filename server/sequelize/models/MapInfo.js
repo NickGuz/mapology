@@ -44,22 +44,28 @@ module.exports = (sequelize, DataTypes) => {
 
         imagePath: {
             type: DataTypes.STRING(500),
-            allowNull: true
+            allowNull: true,
         },
 
         isFeatured: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: false,
+            defaultValue: false
         },
 
         textProps: {
             // type: DataTypes.JSON,
             type: DataTypes.TEXT,
-            get: () => {
-                return JSON.parse(this.getDataValue('textProps'));
+            get: function() {
+                let data = this.getDataValue('textProps');
+                if (data) {
+                    return JSON.parse(data);
+                }
+
+                return null;
             },
-            set: (value) => {
-                return this.setDataValue('textProps', value);
+            set: function(value) {
+                return this.setDataValue('textProps', JSON.stringify(value));
             },
             allowNull: true
         }

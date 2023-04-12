@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
         props: {
             // type: DataTypes.JSON,
             type: DataTypes.TEXT,
-            get: () => {
+            get: function() {
                 return JSON.parse(this.getDataValue('props'));
             },
-            set: (value) => {
-                return this.setDataValue('props', value);
+            set: function(value) {
+                return this.setDataValue('props', JSON.stringify(value));
             },
             allowNull: false
         }

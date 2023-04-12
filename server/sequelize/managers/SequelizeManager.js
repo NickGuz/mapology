@@ -12,6 +12,7 @@ exports.createMap = async (duplicatedId, authorId, title, description, tags, jso
     const mapInfo = await MapInfo.create({
         duplicatedId: duplicatedId,
         type: json.type,
+        title: title,
         authorId: authorId,
         description: description
     });
@@ -20,7 +21,7 @@ exports.createMap = async (duplicatedId, authorId, title, description, tags, jso
     let features = json.features;
     for (let feature of features) {
          await Features.create({
-             mapId: map.id,
+             mapId: mapInfo.id,
              type: feature.type,
              properties: feature.properties,
              geometry: feature.geometry
@@ -30,7 +31,7 @@ exports.createMap = async (duplicatedId, authorId, title, description, tags, jso
     // Load in map tags
     for (let tag of tags) {
         await Tags.create({
-            mapId: map.id,
+            mapId: mapInfo.id,
             tagName: tag
         });
     }
