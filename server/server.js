@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const db = require("./models/db");
-const { User } = require("./sequelize");
+const User = require("./sequelize");
 const path = require('path');
 
 const prod = 'https://mapology-1.herokuapp.com/';
