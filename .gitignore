@@ -10,6 +10,7 @@
 # testing
 /coverage
 /client/cypress/videos
+/client/cypress/screenshots
 
 # production
 /build
@@ -24,3 +25,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/.idea
