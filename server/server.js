@@ -15,7 +15,7 @@ app.use(cors({ credentials: true, origin: url }));
 app.use(express.static(path.join(process.cwd() + "/build")));
 
 // List of all the files that should be served as-is
-const protectedFiles = ['transformed.js', 'main.js', 'main.css', 'favicon.ico'];
+// const protectedFiles = ['transformed.js', 'main.js', 'main.css', 'favicon.ico'];
 
 app.get('/users', async (req, res) => {
     const users = await User.findAll();
@@ -27,18 +27,18 @@ app.post('/users', async (req, res) => {
     res.json(users);
 });
 
-app.get('*', (req, res) => {
-    let route = req.params['0'].substring(1);
-    console.log('req.params', req.params);
-
-    if (protectedFiles.includes(route)) {
-        // Return the actual file
-        res.sendFile(path.join(process.cwd(), 'build', route));
-    } else {
-        // Otherwise, redirect to /build/index.html
-        res.sendFile(path.join(process.cwd(), 'build', 'index.html'));
-    }
-});
+// app.get('*', (req, res) => {
+//     let route = req.params['0'].substring(1);
+//     console.log('req.params', req.params);
+//
+//     if (protectedFiles.includes(route)) {
+//         // Return the actual file
+//         res.sendFile(path.join(process.cwd(), 'build', route));
+//     } else {
+//         // Otherwise, redirect to /build/index.html
+//         res.sendFile(path.join(process.cwd(), 'build', 'index.html'));
+//     }
+// });
 
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;
