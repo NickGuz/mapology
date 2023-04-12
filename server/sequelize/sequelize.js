@@ -1,7 +1,9 @@
 const Sequelize = require("sequelize");
-const UserModel = require("./models/usertest");
+const { DataTypes } = require('sequelize');
 const config = require("../config/db.config")
 const SequelizeMock = require('sequelize-mock');
+const createAssociations = require("./associations");
+
 
 // use env var to use mock db here instead if running tests
 const sequelize = process.env.TEST ? new SequelizeMock()
@@ -15,12 +17,11 @@ const sequelize = process.env.TEST ? new SequelizeMock()
       // this stops pluralling from sequelize tables
       freezeTableName: true
     }
-  }); 
+  });
 
 // confirms the connection
 if (!process.env.TEST) {
-  sequelize
-    .authenticate()
+  sequelize.authenticate()
     .then(() => {
       console.log("Connection has been established successfully.");
     })
@@ -29,11 +30,24 @@ if (!process.env.TEST) {
     });
 }
 
-const User = UserModel(sequelize, Sequelize);
+// Import models
+const UserTest         = require('./models/usertest')(sequelize, DataTypes);
+const User             = require('./models/Users')(sequelize, DataTypes);
+const MapInfo          = require('./models/MapInfo')(sequelize, DataTypes);
+const Features         = require('./models/Features')(sequelize, DataTypes);
+const Comments         = require('./models/Comments')(sequelize, DataTypes);
+const Likes            = require('./models/Likes')(sequelize, DataTypes);
+const Dislikes         = require('./models/Dislikes')(sequelize, DataTypes);
+const Tags             = require('./models/Tags')(sequelize, DataTypes);
+const Legends          = require('./models/Legends')(sequelize, DataTypes);
+const GraphicTextBoxes = require('./models/GraphicTextBoxes')(sequelize, DataTypes);
 
+// Define associations (foreign keys)
+createAssociations(sequelize.models);
+
+// Synchronize all models
 if (!process.env.TEST) {
-  sequelize
-    .sync()
+  sequelize.sync(/*{ force: true }*/)
     .then(() => {
       console.log("SQL tables created successfully");
     })
@@ -42,4 +56,16 @@ if (!process.env.TEST) {
     });
 }
 
-module.exports = { sequelize, User};
+module.exports = {
+    sequelize,
+    UserTest,
+    User,
+    MapInfo,
+    Features,
+    Comments,
+    Likes,
+    Dislikes,
+    Tags,
+    Legends,
+    GraphicTextBoxes
+};

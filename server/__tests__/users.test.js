@@ -2,7 +2,8 @@ process.env.TEST = true;
 
 const supertest = require('supertest');
 const server = require('../server');
-const { User } = require('../sequelize/sequelize');
+const { UserTest } = require('../sequelize/sequelize');
+let User = UserTest;
 
 const app = server;
 
