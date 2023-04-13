@@ -13,18 +13,29 @@ import { createMap } from '../store/GlobalStoreHttpRequestApi';
 
 const ImportModal = (props) => {
     const [filesToUpload, setFilesToUpload] = useState([]);
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [tags, setTags] = useState([]);
 
     const { store } = useContext(GlobalStoreContext);
 
-    const handleSubmit = () => {
+    const handleSubmit = (event) => {
         store.setOpenImportDialog(false);
         console.log('selected files', filesToUpload);
+        console.log('tags', tags);
 
         let fileReader = new FileReader();
         fileReader.onload = async (event) => { 
             let data = JSON.parse(event.target.result);
             console.log('parsed json', data);
-            await createMap(null, 4, "test-title", "test-desc", ['test1', 'test2'], data);
+            await createMap(
+                null,
+                4,
+                name,
+                description,
+                tags,
+                data
+            );
         }
         fileReader.readAsText(filesToUpload[0]);
     }
@@ -36,6 +47,10 @@ const ImportModal = (props) => {
     const handleFilesChange = (files) => {
         // update chosen files
         setFilesToUpload([...files]);
+    }
+
+    const handleTagsChange = (event, value) => {
+        setTags(value);
     }
 
     return (
@@ -52,7 +67,7 @@ const ImportModal = (props) => {
                     title=""
                     header=">[Drag and drop]<"
                     maxUploadFiles={2}
-                    allowedExtensions={['json', 'shp', 'dbf']}
+                    allowedExtensions={['json']}
                     showPlaceholderImage={true}
                     ContainerProps={{
                         elevation: 0,
@@ -68,6 +83,7 @@ const ImportModal = (props) => {
                     type="text"
                     fullWidth
                     variant="standard"
+                    onChange={(event) => { setName(event.target.value) }}
                 />
                 <TextField
                     autoFocus
@@ -80,8 +96,12 @@ const ImportModal = (props) => {
                     sx={{
                         marginBottom: '5%'
                     }}
+                    onChange={(event) => setDescription(event.target.value)}
                 />
-                <TagsInput />
+                <TagsInput
+                    freeSolo={true}
+                    onChange={handleTagsChange}
+                />
 
             </DialogContent>
 

@@ -47,14 +47,24 @@ createAssociations(sequelize.models);
 
 // Synchronize all models
 if (!process.env.TEST) {
-  sequelize.sync(/*{ force: true }*/)
-    .then(() => {
-      console.log("SQL tables created successfully");
-    })
+    sequelize.sync({ force: true })
+        .then(() => {
+            console.log("SQL tables created successfully");
+
+            // TODO remove
+            // create test user for testing map imports
+            User.create({
+                email: "test@test.com",
+                username: "testuser",
+                password: "1234"
+            });
+        })
     .catch((error) => {
-      console.error("Unable to create SQL tables: ", error);
+        console.error("Unable to create SQL tables: ", error);
     });
 }
+
+
 
 module.exports = {
     sequelize,
