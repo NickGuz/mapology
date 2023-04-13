@@ -12,11 +12,15 @@ const api = axios.create({
 export const createMap = async (duplicatedId, authorId, title, description, tags, json) => {
     return await api.post('/api/map', {
         duplicatedId: duplicatedId,
-        authorId, authorId,
+        authorId: authorId,
         title: title,
         description: description,
         tags: tags,
         json: json
     });
+}
+
+export const getAllMaps = async () => {
+    return await api.get('/api/maps');
 }
 
