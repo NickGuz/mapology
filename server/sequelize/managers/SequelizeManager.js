@@ -38,3 +38,7 @@ exports.createMap = async (duplicatedId, authorId, title, description, tags, jso
 
     return mapInfo;
 }
+
+exports.getAllMaps = async () => {
+    return await MapInfo.findAll();
+}

@@ -26,3 +26,16 @@ exports.createMap = async (req, res) => {
         data: mapInfo
     });
 }
+
+exports.getAllMaps = async (req, res) => {
+    const maps = await SequelizeManager.getAllMaps();
+    if (maps) {
+        return res.status(200).json({
+            data: maps
+        });
+    }
+
+    return res.status(500).json({
+        errorMessage: 'No maps'
+    });
+}
