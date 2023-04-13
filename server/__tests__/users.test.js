@@ -2,7 +2,8 @@ process.env.TEST = true;
 
 const supertest = require('supertest');
 const server = require('../server');
-const { sequelize, User } = require('../sequelize');
+const { UserTest } = require('../sequelize/sequelize');
+let User = UserTest;
 
 const app = server;
 
@@ -18,7 +19,7 @@ test("POST /users", async () => {
     };
 
     await supertest(app)
-        .post("/users")
+        .post("/auth/users")
         .send(data)
         .expect(200)
         // can also test stuff like this but ignoring for now
@@ -82,7 +83,7 @@ test("GET /users", async () => {
     });
 
     await supertest(app)
-        .get("/users")
+        .get("/auth/users")
         .expect(200)
         .then(async (response) => {
             expect(response).toBeTruthy();
@@ -90,9 +91,6 @@ test("GET /users", async () => {
 });
 
 afterAll((done) => {
-    // TODO use env var to close this if not testing
-    // actually nevermind, always testing if running this file
-    // sequelize.close();
     app.close();
     server.close();
     done();

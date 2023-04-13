@@ -1,16 +1,21 @@
 import React from 'react';
 import { Autocomplete, TextField } from '@mui/material';
+import Chip from "@mui/material/Chip";
 
 const TagsInput = (props) => {
     return (
         <Autocomplete
-            sx={props.sx}
             multiple
-            id="tags-outlined"
-            options={data}
-            getOptionLabel={(option) => option.text}
+            id="tags-filled"
+            options={data.map((option) => option.text)}
+            onChange={props.onChange}
             defaultValue={[]}
-            filterSelectedOptions
+            freeSolo={props.freeSolo}
+            renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                ))
+            }
             renderInput={(params) => (
                 <TextField
                     {...params}
