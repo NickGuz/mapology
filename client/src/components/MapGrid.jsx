@@ -20,6 +20,7 @@ const MapGrid = (props) => {
                 {props.mapData.map((data) => (
                     <Grid item xs={3} key={data.title}>
                         <MapCard 
+                            data = {data}
                             title={data.title} 
                             description={data.description} 
                             // author={props.type === MapGridType.BROWSE ? data.author : null}

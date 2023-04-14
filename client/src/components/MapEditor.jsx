@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState/*, useContext*/ } from 'react';
+import { useState, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { MapContainer, GeoJSON, ZoomControl } from "react-leaflet";
@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import { styled, useTheme } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-// import GlobalStoreContext from '../store/store';
+import GlobalStoreContext from '../store/store';
 import {
     JsonTree,
     //ADD_DELTA_TYPE,
@@ -78,6 +78,7 @@ export default function MapEditor() {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [customAttr, setCustomAttr] = useState(false);
+    const { store } = useContext(GlobalStoreContext);
 
     const handleDrawerOpen = () => {
         //store.setCurrentFeature(regionProps)
@@ -148,6 +149,9 @@ export default function MapEditor() {
           handleDrawerOpen();
         }
     }
+    const handleDownload = (event) => {
+      console.log("kajsdf")
+    }
     // const customAttribute = (event) =>{
     //   setCustomAttr(true);
     //   setEdit(false);
@@ -181,7 +185,7 @@ export default function MapEditor() {
             <IconButton>
               <SaveIcon />
             </IconButton>
-            <IconButton>
+            <IconButton onClick={handleDownload}>
               <DownloadIcon />
             </IconButton>
             </Box>
@@ -217,7 +221,7 @@ export default function MapEditor() {
               </Drawer>
               <GeoJSON
                 style={mapStyle}
-                data={mapData.features}
+                data={store.currentMap.json.features}
                 onEachFeature={onFeature}
               />
               <ZoomControl position="topright" />

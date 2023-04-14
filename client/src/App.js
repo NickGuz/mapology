@@ -12,7 +12,6 @@ import { GlobalStoreContextProvider } from './store/store';
 import MapEditor from './components/MapEditor';
 import MapInfoScreen from './components/MapInfoScreen';
 
-
 const App = () => {   
     useEffect(() => {
         document.title = "Mapology";
