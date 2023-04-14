@@ -6,7 +6,6 @@ const dev = 'http://localhost:4000';
 const baseURL = window.location.origin.includes(":3000") ? dev : window.location.origin;
 
 const api = axios.create({
-    //baseURL: 'http://localhost:4000/',
     baseURL: baseURL
 });
 
@@ -29,9 +28,17 @@ export const getAllUsers = () => {
         });
 }
 
+export const getUserById = (id) => {
+    return api.get(`/user/${id}`)
+        .catch((err) => {
+            return err.response;
+        });
+}
+
 const apis = {
     registerUser,
-    getAllUsers
+    getAllUsers,
+    getUserById
 }
 
 export default apis

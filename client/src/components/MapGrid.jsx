@@ -1,6 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import MapCard from './MapCard';
+import api from '../auth/auth-request-api/AuthRequestApi';
 
 const MapGridType = {
     BROWSE: "BROWSE",
@@ -21,7 +22,8 @@ const MapGrid = (props) => {
                         <MapCard 
                             title={data.title} 
                             description={data.description} 
-                            author={props.type === MapGridType.BROWSE ? data.author : null}
+                            // author={props.type === MapGridType.BROWSE ? data.author : null}
+                            author={props.type === MapGridType.BROWSE ? api.getUserById(data.authorId) : null}
                             image={data.imgPath} 
                             tags={data.tags}
                         />

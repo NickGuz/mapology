@@ -16,14 +16,13 @@ router.post('/login', AuthController.login);
 router.post('/logout', AuthController.logout);
 
 // Handles new user registration requests
-// TODO
 router.post('/users', AuthController.register);
-// router.post('/register', AuthController.register);
-// router.put('/register', AuthController.register);
-// router.get('/register', AuthController.register);
 
 // Handles get users
 router.get('/users', AuthController.getAllUsers);
+
+// Handles get a user by id
+router.get('/user/:id', AuthController.getUserById);
 
 // Handles a password change
 // TODO

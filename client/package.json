@@ -53,6 +53,7 @@
     ]
   },
   "devDependencies": {
-    "babel-eslint": "^9.0.0"
+    "babel-eslint": "^9.0.0",
+    "prettier-eslint": "^15.0.1"
   }
 }
