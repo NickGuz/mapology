@@ -47,7 +47,7 @@ createAssociations(sequelize.models);
 
 // Synchronize all models
 if (!process.env.TEST) {
-    sequelize.sync({ force: true })
+    sequelize.sync(/*{ force: true }*/)
         .then(() => {
             console.log("SQL tables created successfully");
 

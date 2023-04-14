@@ -22,6 +22,11 @@ exports.getAllUsers = async (req, res) => {
     res.json(users);
 }
 
+exports.getUserById = async (req, res) => {
+    const user = await User.findById(req.params.id);
+    res.json(user);
+}
+
 exports.changePassword = () => {
   // TODO
 };

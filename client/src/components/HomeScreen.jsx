@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MapGrid, { MapGridType } from './MapGrid';
 import Carousel from 'react-material-ui-carousel';
 import Typography from '@mui/material/Typography';
-import mapData from '../map-data';
+// import mapData from '../map-data';
 import { Box, Button, Paper } from '@mui/material';
+import { getAllMaps } from '../store/GlobalStoreHttpRequestApi';
 
 const HomeScreen = (props) => {
+    const [maps, setMaps] = useState([]);
+
+    useEffect(() => {
+        const getData = async () => {
+            const allMaps = await getAllMaps();
+            console.log('maps', allMaps);
+            setMaps(allMaps.data.data);
+        }
+
+        getData()
+            .catch(console.error);
+    }, []);
+
     return (
         <div style={{ 
                 paddingTop: '30px',
@@ -23,12 +37,12 @@ const HomeScreen = (props) => {
                 }}
             >
                 {
-                    mapData.map((item, i) => (
+                    maps.map((item, i) => (
                         <Item key={i} item={item} />
                     ))
                 }
             </Carousel>
-            <MapGrid mapData={mapData} type={MapGridType.BROWSE} />
+            <MapGrid mapData={maps} type={MapGridType.BROWSE} />
         </div>
     )
 }

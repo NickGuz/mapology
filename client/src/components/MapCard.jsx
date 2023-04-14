@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import { Button, CardActions, Typography } from '@mui/material';
+import api from '../auth/auth-request-api/AuthRequestApi';
 
 const MapCard = (props) => {
+    const [author, setAuthor] = useState(null);
     const navigate = useNavigate();
+
     const handleTagClick = (event) => {
     }
 
@@ -33,14 +36,14 @@ const MapCard = (props) => {
                 <Typography variant="body2" color="text.secondary" align='left'>
                     {props.description || "Description"}
                 </Typography>
-                {props.author &&
+                {author &&
                 <Typography variant="body2" color="text.secondary" align='left'>
-                    by {props.author}
+                    by {author}
                 </Typography>}
 
                     
             </CardContent>
-            {props.tags.map((tag) => (
+            {props.tags && props.tags.map((tag) => (
                         <Chip 
                             key={tag}
                             sx={{marginTop: '4px', marginRight: '4px', marginLeft: '4px'}} 
