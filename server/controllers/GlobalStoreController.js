@@ -39,3 +39,46 @@ exports.getAllMaps = async (req, res) => {
         errorMessage: 'No maps'
     });
 }
+
+exports.getMapById = async (req, res) => {
+    const mapInfo = await SequelizeManager.getMapById(req.params.id);
+    const user = await SequelizeManager.getUserById(mapInfo.authorId);
+    if (!mapInfo) {
+        return res.status(404).json({
+            errorMessage: "Map not found"
+        });
+    }
+
+    const features = await SequelizeManager.getFeaturesByMapId(req.params.id);
+    if (!features) {
+        return res.status(404).json({
+            errorMessage: "Features not found"
+        });
+    }
+
+    const tags = await SequelizeManager.getTagsByMapId(req.params.id);
+
+    let json = {
+        'type': mapInfo.type,
+        'features': []
+    }
+
+    for (let feature of features) {
+        json.features.push({
+            'type': feature.type,
+            'properties': feature.properties,
+            'geometry': feature.geometry
+        });
+    }
+
+    let resJson = {
+        'mapInfo': mapInfo,
+        'author': user,
+        'json': json,
+        'tags': tags,
+    }
+
+    return res.status(200).json({
+        data: resJson
+    });
+}

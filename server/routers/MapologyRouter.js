@@ -7,4 +7,6 @@ router.post('/map', GlobalStoreController.createMap);
 
 router.get('/maps', GlobalStoreController.getAllMaps);
 
+router.get('/map/:id', GlobalStoreController.getMapById);
+
 module.exports = router;

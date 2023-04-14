@@ -24,3 +24,7 @@ export const getAllMaps = async () => {
     return await api.get('/api/maps');
 }
 
+export const getMapById = async (id) => {
+    return await api.get(`/api/map/${id}`);
+}
+

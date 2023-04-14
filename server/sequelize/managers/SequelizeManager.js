@@ -1,7 +1,8 @@
 const {
     MapInfo,
     Features,
-    Tags
+    Tags,
+    User
 } = require('../sequelize');
 
 exports.createMap = async (duplicatedId, authorId, title, description, tags, json) => {
@@ -41,4 +42,28 @@ exports.createMap = async (duplicatedId, authorId, title, description, tags, jso
 
 exports.getAllMaps = async () => {
     return await MapInfo.findAll();
+}
+
+exports.getMapById = async (id) => {
+    return await MapInfo.findByPk(id);
+}
+
+exports.getFeaturesByMapId = async (id) => {
+    return await Features.findAll({
+        where: {
+            mapId: id
+        }
+    });
+}
+
+exports.getTagsByMapId = async (id) => {
+    return await Tags.findAll({
+        where: {
+            mapId: id
+        }
+    });
+}
+
+exports.getUserById = async (id) => {
+    return await User.findByPk(id);
 }
