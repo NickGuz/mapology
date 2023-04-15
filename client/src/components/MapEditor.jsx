@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import { MapContainer, GeoJSON, ZoomControl } from "react-leaflet";
 import Control from 'react-leaflet-custom-control'
 import mapData from '../example-data/countries.json';
-import { Stack, Button, Tooltip } from '@mui/material';
+import { Stack, Button, Tooltip, Menu, MenuItem} from '@mui/material';
 import "leaflet/dist/leaflet.css";
 import ChangeNameModal from "./ChangeNameModal";
 import Drawer from '@mui/material/Drawer';
@@ -31,12 +31,12 @@ import RedoIcon from '@mui/icons-material/Redo';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
-
 import MergeIcon from '@mui/icons-material/Merge';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
 import AbcIcon from '@mui/icons-material/Abc';
+import ListItemText from '@mui/material/ListItemText';
 
 let selected = [];
 const drawerWidth = 350;
@@ -69,7 +69,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export default function MapEditor() {
-    // const { store } = useContext(GlobalStoreContext);
     const [editOpen, setEditOpen] = useState(false);
     const [regionName, setName] = useState("");
     const [currLayer, setLayer] = useState();
@@ -79,6 +78,7 @@ export default function MapEditor() {
     const [open, setOpen] = useState(false);
     const [customAttr, setCustomAttr] = useState(false);
     const { store } = useContext(GlobalStoreContext);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const handleDrawerOpen = () => {
         //store.setCurrentFeature(regionProps)
@@ -149,16 +149,13 @@ export default function MapEditor() {
           handleDrawerOpen();
         }
     }
-    const handleDownload = (event) => {
-      console.log("kajsdf")
+    const handleOpenDownload = (event) => {
+      setAnchorEl(event.target)
     }
-    // const customAttribute = (event) =>{
-    //   setCustomAttr(true);
-    //   setEdit(false);
-    //   if(regionProps != null){
-    //     handleDrawerOpen();
-    //   }
-    // }  
+    const handleCloseDownload = (event) => {
+      setAnchorEl(null)
+    }
+  
 
   let customdata = 
   (selected.length >0)? {Region : selected[selected.length -1].feature.properties.name} : {}
@@ -173,21 +170,36 @@ export default function MapEditor() {
         <Grid container spacing={1}>
           <Grid item xs={10}>
             <Box>
-            <IconButton>
-              <UndoIcon />
-            </IconButton>
-            <IconButton>
-              <RedoIcon />
-            </IconButton>
-            <IconButton>
-              <ContentCopyIcon />
-            </IconButton>
-            <IconButton>
-              <SaveIcon />
-            </IconButton>
-            <IconButton onClick={handleDownload}>
-              <DownloadIcon />
-            </IconButton>
+              <IconButton>
+                <UndoIcon />
+              </IconButton>
+              <IconButton>
+                <RedoIcon />
+              </IconButton>
+              <IconButton>
+                <ContentCopyIcon />
+              </IconButton>
+              <IconButton>
+                <SaveIcon />
+              </IconButton>
+              <IconButton onClick={handleOpenDownload}>
+                <DownloadIcon />
+              </IconButton>
+                <Menu
+                    sx={{ mt: '45px' }}
+                    
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleCloseDownload}
+                >
+                    <MenuItem>Download as GeoJson</MenuItem>
+                    <MenuItem>Download as Shap/DBF File</MenuItem>
+                    <MenuItem>Download as PDF</MenuItem>
+                </Menu>
             </Box>
             <Box>
               <MapContainer

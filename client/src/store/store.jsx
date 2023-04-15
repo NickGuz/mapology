@@ -61,7 +61,12 @@ function GlobalStoreContextProvider(props) {
             payload: open
         });
     } 
-
+    store.setCurrentMap = (map) => {
+        storeReducer({
+            type: GlobalStoreActionType.CURR_MAP,
+            payload: map
+        });
+    }
     store.getMapById = (id)  => {
         async function asyncGetMapById (id) {
             let response = await getMapById(id);
