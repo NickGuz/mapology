@@ -1,5 +1,4 @@
 const SequelizeManager = require("../sequelize/managers/SequelizeManager");
-const { UpdateType } = require("../enums/UpdateType");
 
 exports.createMap = async (req, res) => {
     if (!req.body) {
