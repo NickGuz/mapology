@@ -21,11 +21,10 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 const Navbar = (props) => {
     const [anchorElUser, setAnchorElUser] = useState(null);
-
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
-
+    
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -56,6 +55,7 @@ const Navbar = (props) => {
     }
 
     const handleBrowse = () => {
+        store.setCurrentMap(null);
         navigate("/map-listings/");
     }
 

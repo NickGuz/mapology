@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { getMapById } from "./GlobalStoreHttpRequestApi";
 // import { useNavigate } from "react-router-dom";
 // import AuthContext from "../auth/AuthContextProvider";
 
@@ -8,8 +9,7 @@ export const GlobalStoreContext = createContext({});
 export const GlobalStoreActionType = {
     CHANGE_PAGE_VIEW: "CHANGE_PAGE_VIEW",
     SET_OPEN_IMPORT_DIALOG: "SET_OPEN_IMPORT_DIALOG",
-    SET_EDIT_ATTRIBUTE: "SET_EDIT_ATTRIBUTE",
-    CURR_FEATURE: "CURR_FEATURE"
+    CURR_MAP: "CURR_MAP"
 }
 
 export const PageViewTypes = {
@@ -21,8 +21,7 @@ function GlobalStoreContextProvider(props) {
     const [store, setStore] = useState({
         pageView: PageViewTypes.HOME,
         importDialogOpen: false,
-        editingAttributes: false,
-        currentFeature: null,
+        currentMap: null,
     });
 
     // const navigate = useNavigate();
@@ -43,16 +42,10 @@ function GlobalStoreContextProvider(props) {
                     importDialogOpen: payload
                 });
             }
-            case GlobalStoreActionType.SET_EDIT_ATTRIBUTE: {
+            case GlobalStoreActionType.CURR_MAP: {
                 return setStore({
                     ...store,
-                    editingAttributes: payload
-                });
-            }
-            case GlobalStoreActionType.CURR_FEATURE: {
-                return setStore({
-                    ...store,
-                    currentFeature: payload
+                    currentMap: payload
 
                 });
             }
@@ -68,29 +61,24 @@ function GlobalStoreContextProvider(props) {
             payload: open
         });
     } 
-
-    store.setEditAttribute = (edit) => {
+    store.setCurrentMap = (map) => {
         storeReducer({
-            type: GlobalStoreActionType.SET_EDIT_ATTRIBUTE,
-            payload: edit
+            type: GlobalStoreActionType.CURR_MAP,
+            payload: map
         });
     }
-
-    store.setCurrentFeature = (feature) => {
-        storeReducer({
-            type: GlobalStoreActionType.CURR_FEATURE,
-            payload: feature
-        });
-        console.log(store.currentFeature);
-
-        
-    }
-
-    store.changeView = function (view){
-        storeReducer({
-            type: GlobalStoreActionType.CHANGE_VIEW,
-            payload: view
-        });
+    store.getMapById = (id)  => {
+        async function asyncGetMapById (id) {
+            let response = await getMapById(id);
+            if (response.status == 200) {
+                let map = response.data.data;
+                storeReducer({
+                    type: GlobalStoreActionType.CURR_MAP,
+                    payload: map
+                });
+            }
+        }
+        asyncGetMapById(id);
     }
 
     return (

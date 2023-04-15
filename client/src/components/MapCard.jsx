@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -6,16 +6,25 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import { Button, CardActions, Typography } from '@mui/material';
 import api from '../auth/auth-request-api/AuthRequestApi';
+import { getMapById } from '../store/GlobalStoreHttpRequestApi';
+import GlobalStoreContext from '../store/store';
 
 const MapCard = (props) => {
     const [author, setAuthor] = useState(null);
     const navigate = useNavigate();
+    const { store } = useContext(GlobalStoreContext);
+    
+    useEffect(() => {
+        if (store.currentMap) {
+            navigate("/map-editor/");
+        }
+    });
 
     const handleTagClick = (event) => {
     }
 
     const handleOpenEdit = (event) =>{
-        navigate("/map-editor/");
+        store.getMapById(props.data.id);
 
     }
     const handleOpenInfo = (event) => {
