@@ -11,6 +11,7 @@ import AccountRecoveryScreen from './components/AccountRecoveryScreen';
 import { GlobalStoreContextProvider } from './store/store';
 import MapEditor from './components/MapEditor';
 import MapInfoScreen from './components/MapInfoScreen';
+import PasswordResetScreen from './components/PasswordResetScreen';
 
 const App = () => {   
     useEffect(() => {
@@ -30,6 +31,7 @@ const App = () => {
                         <Route path='/account-recovery/' element={<AccountRecoveryScreen/>}/>
                         <Route path='/map-editor/' element = {<MapEditor/>}/>
                         <Route path='/map-info' element = {<MapInfoScreen/>}/>
+                        <Route path='/password-reset/' element={<PasswordResetScreen/>}/>
                     </Routes>
                 </GlobalStoreContextProvider>
             </AuthContextProvider>  
