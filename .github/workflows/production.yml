@@ -44,6 +44,7 @@ jobs:
       - name: Start backend server
         run: npm start &
         working-directory: server
+        env: TEST = true;
 
       - name: Cypress run
         uses: cypress-io/github-action@v5.6.1
