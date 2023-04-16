@@ -3,6 +3,12 @@ describe('template spec', () => {
     cy.visit('http://localhost:3000/');
   });
 
+  it('Map cards load', () => {
+    cy.visit('http://localhost:3000/');
+    cy.contains('Duplicate').should('exist');
+    cy.contains('Details').should('exist');
+  });
+
   it('Import modal opens', () => {
     cy.visit('http://localhost:3000/');
     cy.get('.MuiAppBar-root').should('exist');
@@ -11,11 +17,16 @@ describe('template spec', () => {
     cy.contains('h2', 'Import').should('exist');
     });
 
-  it('Map cards load', () => {
-    cy.visit('http://localhost:3000/');
-    cy.contains('Duplicate').should('exist');
-    cy.contains('Details').should('exist');
-  });
+    it('Import Frontend Test', () => {
+      cy.visit('http://localhost:3000/');
+      cy.get('.MuiAppBar-root').should('exist');
+      cy.contains('button', 'Import').should('exist');
+      cy.contains('button', 'Import').click();
+      cy.contains('h2', 'Import').should('exist');
+      cy.get('.MuiTypography-caption > .MuiButtonBase-root').should('exist')
+      cy.get('.MuiTypography-caption > .MuiButtonBase-root').selectFile('sample_files/AFG_adm0.dbf', { action: 'drag-drop' })
+      
+      });
 
   //Check all rendered elements have default values
   // it('Default Rendered Values', () => {
