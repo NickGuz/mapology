@@ -28,6 +28,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Use Node.js 17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 17.x
+
       - name: Install server npm modules
         run: npm install
         working-directory: server
