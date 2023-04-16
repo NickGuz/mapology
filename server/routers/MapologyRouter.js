@@ -21,4 +21,8 @@ router.post("/feature", GlobalStoreController.insertFeature);
 
 router.delete("/feature/:id", GlobalStoreController.deleteFeature);
 
+router.get("/downloadgeo/:id", GlobalStoreController.downloadMapAsGeoJSON);
+
+router.get("/downloadshp/:id", GlobalStoreController.downloadMapAsShapefile);
+
 module.exports = router;
