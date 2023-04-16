@@ -45,6 +45,10 @@ jobs:
         run: npm start &
         working-directory: server
 
+      - name: Kill nodes
+        run: killall node
+        working-directory: server
+
       - name: Cypress run
         uses: cypress-io/github-action@v5.6.1
         with:
@@ -53,10 +57,6 @@ jobs:
           start: npm start
           wait-on: 'http://localhost:3000'
           env: TEST = true;
-
-      - name: Kill nodes
-        run: killall node
-        working-directory: server
 
 
   backend-tests:
