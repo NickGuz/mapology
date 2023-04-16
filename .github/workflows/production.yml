@@ -27,6 +27,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install server npm modules
+        run: npm install
+        working-directory: server
+
+      - name: Install client npm modules
+        run: npm install
+        working-directory: client
+
+      - name: Start backend server
+        run: npm start
+        working-directory: server
+
       - name: Cypress run
         uses: cypress-io/github-action@v5.6.1
         with:
@@ -34,7 +47,8 @@ jobs:
           browser: chrome
           start: npm start
           wait-on: 'http://localhost:3000'
-    
+          env: process.env.TEST = true;
+
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
