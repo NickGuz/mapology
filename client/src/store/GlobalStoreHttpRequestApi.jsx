@@ -1,3 +1,4 @@
+import fileDownload from 'js-file-download';
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
@@ -71,3 +72,19 @@ export const insertFeature = async (mapId, data) => {
 export const deleteFeature = async (featureId) => {
     return await api.delete(`/api/feature/${featureId}`);
 };
+
+export const downloadMapAsGeoJSON = async (mapId, filename) => {
+    let res = await api.get(`/api/downloadgeo/${mapId}`, {
+        responseType: 'blob',
+    });
+
+    fileDownload(res.data, filename);
+}
+
+export const downloadMapAsShapefile = async (mapId, filename) => {
+    let res = await api.get(`/api/downloadshp/${mapId}`, {
+        responseType: 'blob',
+    });
+
+    fileDownload(res.data, filename);
+}

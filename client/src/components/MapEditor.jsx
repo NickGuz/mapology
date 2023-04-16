@@ -1,8 +1,10 @@
 import * as React from "react";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { MapContainer, GeoJSON, ZoomControl } from "react-leaflet";
+import { MapContainer, GeoJSON, ZoomControl, useMap } from "react-leaflet";
+import * as L from 'leaflet';
+import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
 import Control from "react-leaflet-custom-control";
 import mapData from "../example-data/countries.json";
 import { Stack, Button, Tooltip, Menu, MenuItem } from "@mui/material";
@@ -14,6 +16,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import GlobalStoreContext from "../store/store";
+import { downloadMapAsGeoJSON, downloadMapAsShapefile } from "../store/GlobalStoreHttpRequestApi";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -152,12 +155,24 @@ export default function MapEditor() {
       handleDrawerOpen();
     }
   };
+
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
   };
+
   const handleCloseDownload = (event) => {
     setAnchorEl(null);
   };
+
+  const handleGeoJSONDownload = () => {
+    downloadMapAsGeoJSON(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title}.geo.json`);
+    setAnchorEl(null);
+  }
+
+  const handleShapefileDownload = () => {
+    downloadMapAsShapefile(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title}_shp.zip`);
+    setAnchorEl(null);
+  }
 
   let customdata =
     selected.length > 0
@@ -202,13 +217,14 @@ export default function MapEditor() {
               open={Boolean(anchorEl)}
               onClose={handleCloseDownload}
             >
-              <MenuItem>Download as GeoJson</MenuItem>
-              <MenuItem>Download as Shap/DBF File</MenuItem>
-              <MenuItem>Download as PDF</MenuItem>
+              <MenuItem onClick={handleGeoJSONDownload}>Download as GeoJSON</MenuItem>
+              <MenuItem onClick={handleShapefileDownload}>Download as Shapefile</MenuItem>
+              <MenuItem>Download as Image</MenuItem>
             </Menu>
           </Box>
           <Box>
             <MapContainer
+              id='leaflet-canvas'
               style={{ height: "90vh" }}
               zoomControl={false}
               zoom={2}

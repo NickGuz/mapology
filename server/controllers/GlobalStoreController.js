@@ -1,4 +1,7 @@
 const SequelizeManager = require("../sequelize/managers/SequelizeManager");
+const fs = require('graceful-fs');
+const os = require('os');
+const { convert } = require('geojson2shp');
 
 exports.createMap = async (req, res) => {
   if (!req.body) {
@@ -40,23 +43,20 @@ exports.getAllMaps = async (req, res) => {
   });
 };
 
-exports.getMapById = async (req, res) => {
-  const mapInfo = await SequelizeManager.getMapById(req.params.id);
+// Local helper function since we'll need this multiple times
+const getMapByIdHelper = async (mapId) => {
+  const mapInfo = await SequelizeManager.getMapById(mapId);
   const user = await SequelizeManager.getUserById(mapInfo.authorId);
   if (!mapInfo) {
-    return res.status(404).json({
-      errorMessage: "Map not found",
-    });
+    return null;
   }
 
-  const features = await SequelizeManager.getFeaturesByMapId(req.params.id);
+  const features = await SequelizeManager.getFeaturesByMapId(mapId);
   if (!features) {
-    return res.status(404).json({
-      errorMessage: "Features not found",
-    });
+    return null;
   }
 
-  const tags = await SequelizeManager.getTagsByMapId(req.params.id);
+  const tags = await SequelizeManager.getTagsByMapId(mapId);
 
   let json = {
     type: mapInfo.type,
@@ -78,8 +78,19 @@ exports.getMapById = async (req, res) => {
     tags: tags,
   };
 
+  return resJson;
+}
+
+exports.getMapById = async (req, res) => {
+  const map = await getMapByIdHelper(req.params.id);
+  if (!map) {
+    return res.status(500).json({
+      errorMessage: "Failed to get map"
+    });
+  }
+
   return res.status(200).json({
-    data: resJson,
+    data: map,
   });
 };
 
@@ -133,3 +144,57 @@ exports.deleteFeature = async (req, res) => {
     data: feature,
   });
 };
+
+exports.downloadMapAsGeoJSON = async (req, res) => {
+  const map = await getMapByIdHelper(req.params.id);
+  if (!map) {
+    return res.status(500).json({
+      errorMessage: "Failed to find map"
+    });
+  }
+
+  return res.status(200).json(map.json);
+}
+
+exports.downloadMapAsShapefile = async (req, res) => {
+  const map = await getMapByIdHelper(req.params.id);
+  if (!map) {
+    return res.status(500).json({
+      errorMessage: "Failed to find map"
+    });
+  }
+
+  // 'layer' is the name of files inside the zip
+  // no idea what 'targetCrs' is tbh
+  const options = {
+    layer: map.mapInfo.title.toLowerCase().replace(' ', '_'),
+    targetCrs: 2154
+  }
+
+  // Write zipped shapefile to temp dir
+  let path = `${os.tmpdir()}/${map.mapInfo.title.replace(' ', '_')}_shp.zip`;
+  let stream = fs.createWriteStream(path);
+  await convert(map.json, stream, options);
+
+  // Read temp zipped shapefile and send back to client as file 
+  // which downloads through the browser
+  fs.readFile(path, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        errorMessage: "Failed to read shapefile"
+      });
+    }
+
+    // Delete the temp file
+    fs.unlink(path, (err) => {
+      if (err) {
+        console.error(err);
+      }
+      console.log(`${path} was deleted`);
+    });
+
+    return res.status(200).send(data);
+  })
+
+}
