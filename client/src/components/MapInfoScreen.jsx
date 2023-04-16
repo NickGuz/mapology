@@ -17,7 +17,10 @@ import {
   DialogTitle,
   Typography,
   IconButton,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
+import FormGroup from "@mui/material/FormGroup";
 
 const MapInfoScreen = (props) => {
   let italy = data[0];
@@ -50,6 +53,9 @@ const MapInfoScreen = (props) => {
         <Box sx={{ flex: "3 0 75%", ml: 5 }}>
           <Box sx= {{display: 'flex', mt: 2}}>
             <Typography variant='h5' sx={{ml: 2}}> {italy.title}</Typography>
+            <FormGroup sx={{ marginLeft: 2 }}>
+              <FormControlLabel control={<Switch defaultChecked />} label="Public" />
+            </FormGroup>
           </Box>
           
           <Typography variant='subtitle1' sx={{ml: 2}}> by {italy.author}</Typography>
