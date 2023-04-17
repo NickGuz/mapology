@@ -302,7 +302,7 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Rename Region">
-                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={()=>rename(event, regionName, currLayer)}>
+                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={()=>setEditOpen(true)}>
                       <AbcIcon />
                     </Button>
                   </Tooltip>
