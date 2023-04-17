@@ -82,6 +82,7 @@ export default function MapEditor() {
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selected, setSelected] = useState([]);
+  const [currFeature, setFeature] = useState();
 
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
@@ -123,7 +124,7 @@ export default function MapEditor() {
   
     layer.on({
       dblclick: (event) => {
-        rename(event, country, layer);
+        handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
         if (!selected.includes(event.target.feature)) {
@@ -140,11 +141,14 @@ export default function MapEditor() {
         }
       },
       click: (event) => {
-        setName(country);
-        setLayer(layer);
 
         if (!selected.includes(event.target.feature)) {
           setSelected((oldSelected) => [...oldSelected, event.target.feature]);
+          console.log(country)
+          setName(country);
+          setLayer(layer);
+          setFeature(feature);
+
         } else if (selected.includes(event.target.feature)) {
           setSelected(selected.filter((x) => x !== event.target.feature));
         }
@@ -165,10 +169,10 @@ export default function MapEditor() {
     }
   };
 
-  const rename = (event, country, layer) => {
-    setName(country);
+  const handleRenameRegion = (feature, layer) => {
+    setFeature(feature);
+    setLayer(layer)
     setEditOpen(true);
-    setLayer(layer);
   };
 
   const editAttribute = (event) => {
@@ -178,6 +182,18 @@ export default function MapEditor() {
       handleDrawerOpen();
     }
   };
+
+  const rename = (feature, name, layer) => {
+    if (feature.properties.NAME_2)
+      feature.properties.NAME_2 = name;
+    else if (feature.properties.NAME_1)
+      feature.properties.NAME_1 = name;
+    else if (feature.properties.NAME_0)
+      feature.properties.NAME_0 = name;
+    else if(feature.properties.name)
+      feature.properties.name = name;
+    onFeature(feature, layer)
+  }
 
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
@@ -317,7 +333,8 @@ export default function MapEditor() {
                 layer={currLayer}
                 name={regionName}
                 show={editOpen}
-                rename={(name) => setName(name)}
+                feature={currFeature}
+                rename={(currFeature ,name, layer) => rename(currFeature, name, layer)}
                 close={() => setEditOpen(false)}
               />
             </MapContainer>
