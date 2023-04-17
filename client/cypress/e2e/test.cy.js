@@ -1,5 +1,5 @@
 describe('template spec', () => {
-  const random = Math.trunc(Math.random() * 100)
+  const random = Math.trunc(Math.random() * 1000)
 
   it('Exists', () => {
     cy.visit('http://localhost:3000/');
@@ -19,7 +19,7 @@ describe('template spec', () => {
     cy.contains('h2', 'Import').should('exist');
     });
 
-  it('Import Maps using dbf/shp', () => {
+  it('Import Map using dbf/shp', () => {
     cy.visit('http://localhost:3000/');
     cy.get('.MuiAppBar-root').should('exist');
     cy.contains('button', 'Import').should('exist');
@@ -36,7 +36,7 @@ describe('template spec', () => {
     cy.contains('Map Description DBF/SHP ' + random).should('exist')
     });
 
-    it('Export Map created using dbf/shp', () => {
+    it('Export most recently created Map (dbf/shp)', () => {
       cy.visit('http://localhost:3000/');
       cy.get('button').filter(':contains("Open Editor")').last().click()
       cy.get('.MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)').click() // download button
@@ -46,7 +46,7 @@ describe('template spec', () => {
       cy.readFile('cypress/downloads/Cypress Map DBF_SHP ' + random + '_shp.zip')
     });
 
-    it('Import Maps using json', () => {
+    it('Import Map using json', () => {
       cy.visit('http://localhost:3000/');
       cy.get('.MuiAppBar-root').should('exist');
       cy.contains('button', 'Import').should('exist');
@@ -62,7 +62,7 @@ describe('template spec', () => {
       cy.contains('Map Description JSON ' + random).should('exist');
       });
 
-      it('Export Map created using json', () => {
+      it('Export most recently created Map (json)', () => {
         cy.visit('http://localhost:3000/');
         cy.get('button').filter(':contains("Open Editor")').last().click()
         cy.get('.MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)').click() // download button
