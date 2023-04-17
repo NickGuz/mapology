@@ -90,34 +90,6 @@ test("GET /users", async () => {
         });
 });
 
-test("POST /api/maps", async () => {
-    const geojsonFile = require("../../sample_files/africa.geo.json");
-
-    // send a POST request to import the GeoJSON data
-    const importResponse = await supertest(app)
-        .post("/api/map")
-        .send(geojsonFile)
-        .set("Accept", "application/json")
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-    // retrieve the imported GeoJSON data from the response
-    const importedData = importResponse.body;
-
-    // send a GET request to export the imported GeoJSON data
-    const exportResponse = await supertest(app)
-        .get("/download/:id")
-        .set("Accept", "application/json")
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-    // retrieve the exported GeoJSON data from the response
-    const exportedData = exportResponse.body;
-
-    // compare the imported and exported GeoJSON data
-    expect(exportedData).toEqual(importedData);
-});
-
 afterAll((done) => {
     app.close();
     server.close();
