@@ -72,7 +72,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function MapEditor() {
   const [editOpen, setEditOpen] = useState(false);
-  const [regionName, setName] = useState("");
   const [currLayer, setLayer] = useState();
   const [regionProps, setRegionProps] = useState(null);
   const [editingAttr, setEdit] = useState(false);
@@ -144,8 +143,6 @@ export default function MapEditor() {
 
         if (!selected.includes(event.target.feature)) {
           setSelected((oldSelected) => [...oldSelected, event.target.feature]);
-          console.log(country)
-          setName(country);
           setLayer(layer);
           setFeature(feature);
 
@@ -192,7 +189,8 @@ export default function MapEditor() {
       feature.properties.NAME_0 = name;
     else if(feature.properties.name)
       feature.properties.name = name;
-    onFeature(feature, layer)
+    layer.bindTooltip(name, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
+    setSelected(selected.filter((x) => x !== feature));
   }
 
   const handleOpenDownload = (event) => {
@@ -331,7 +329,6 @@ export default function MapEditor() {
               </Control>
               <ChangeNameModal
                 layer={currLayer}
-                name={regionName}
                 show={editOpen}
                 feature={currFeature}
                 rename={(currFeature ,name, layer) => rename(currFeature, name, layer)}

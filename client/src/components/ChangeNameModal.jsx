@@ -22,9 +22,6 @@ const ChangeNameModal = (props) => {
     const [name, setName] = useState(props.name);
 
     function handleChangeName(event) {
-        console.log(name);
-        console.log(props.layer)
-        console.log(props.feature)
 
         if (name !== ""){
             props.rename(props.feature, name, props.layer)
