@@ -27,6 +27,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Use Node.js 17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 17.x
+
+      - name: Install server npm modules
+        run: npm install
+        working-directory: server
+
+      - name: Install client npm modules
+        run: npm install
+        working-directory: client
+
+      - name: Start backend server
+        run: npm start &
+        working-directory: server
+
       - name: Cypress run
         uses: cypress-io/github-action@v5.6.1
         with:
@@ -34,7 +52,12 @@ jobs:
           browser: chrome
           start: npm start
           wait-on: 'http://localhost:3000'
-    
+
+      - name: Kill nodes
+        run: killall node
+        working-directory: server
+
+
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
