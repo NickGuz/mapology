@@ -165,10 +165,8 @@ exports.downloadMapAsShapefile = async (req, res) => {
   }
 
   // 'layer' is the name of files inside the zip
-  // no idea what 'targetCrs' is tbh
   const options = {
     layer: map.mapInfo.title.toLowerCase().replace(' ', '_'),
-    targetCrs: 2154
   }
 
   // Write zipped shapefile to temp dir
