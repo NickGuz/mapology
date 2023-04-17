@@ -123,7 +123,7 @@ export default function MapEditor() {
   
     layer.on({
       dblclick: (event) => {
-        rename(event, country, feature, layer);
+        rename(event, country, layer);
       },
       mouseover: (event) => {
         if (!selected.includes(event.target.feature)) {
@@ -140,6 +140,9 @@ export default function MapEditor() {
         }
       },
       click: (event) => {
+        setName(country);
+        setLayer(layer);
+
         if (!selected.includes(event.target.feature)) {
           setSelected((oldSelected) => [...oldSelected, event.target.feature]);
         } else if (selected.includes(event.target.feature)) {
@@ -162,7 +165,7 @@ export default function MapEditor() {
     }
   };
 
-  const rename = (event, country, feature, layer) => {
+  const rename = (event, country, layer) => {
     setName(country);
     setEditOpen(true);
     setLayer(layer);
@@ -299,7 +302,7 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Rename Region">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={()=>rename(event, regionName, currLayer)}>
                       <AbcIcon />
                     </Button>
                   </Tooltip>
