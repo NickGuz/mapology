@@ -32,24 +32,25 @@ describe('template spec', () => {
       cy.get('#description').type('Map Description DBF/SHP ' + random)
       cy.get('.MuiDialogActions-root > :nth-child(2)').click() //import button
       cy.reload()
-      cy.contains('Cypress Map DBF/SHP ' + random).should('exist');
-      cy.contains('Map Description DBF/SHP ' + random).should('exist');
+      cy.contains('Cypress Map DBF/SHP ' + random).should('exist')
+      cy.contains('Map Description DBF/SHP ' + random).should('exist')
+      cy.log(random)
       });
 
       // it('Import Maps using json', () => {
-        // cy.visit('http://localhost:3000/');
-        // cy.get('.MuiAppBar-root').should('exist');
-        // cy.contains('button', 'Import').should('exist');
-        // cy.contains('button', 'Import').click();
-        // cy.contains('h2', 'Import').should('exist');
-        // cy.get('.MuiTypography-caption > .MuiButtonBase-root').should('exist')
-        // cy.get('.MuiTypography-caption > .MuiButtonBase-root').selectFile('cypress/sample_files/africa.geo.json', { action: 'drag-drop' })
-        // cy.get('#map-name').type('Cypress Map JSON ' + random)
-        // cy.get('#description').type('Map Description JSON ' + random)
-        // cy.get('.MuiDialogActions-root > :nth-child(2)').click() //import button
-        // cy.reload()
-        // cy.contains('Cypress Map JSON ' + random).should('exist');
-        // cy.contains('Map Description JSON ' + random).should('exist');
+      //   cy.visit('http://localhost:3000/');
+      //   cy.get('.MuiAppBar-root').should('exist');
+      //   cy.contains('button', 'Import').should('exist');
+      //   cy.contains('button', 'Import').click();
+      //   cy.contains('h2', 'Import').should('exist');
+      //   cy.get('.MuiTypography-caption > .MuiButtonBase-root').should('exist')
+      //   cy.get('.MuiTypography-caption > .MuiButtonBase-root').selectFile('cypress/sample_files/africa.geo.json', { action: 'drag-drop' })
+      //   cy.get('#map-name').type('Cypress Map JSON ' + random)
+      //   cy.get('#description').type('Map Description JSON ' + random)
+      //   cy.get('.MuiDialogActions-root > :nth-child(2)').click() //import button
+      //   cy.reload()
+      //   cy.contains('Cypress Map JSON ' + random).should('exist');
+      //   cy.contains('Map Description JSON ' + random).should('exist');
       //   });
 
   //Check all rendered elements have default values
