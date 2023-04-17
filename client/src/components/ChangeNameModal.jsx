@@ -22,10 +22,10 @@ const ChangeNameModal = (props) => {
     const [name, setName] = useState(props.name);
 
     function handleChangeName(event) {
-        console.log(name);
-        
+
         if (name !== ""){
-            props.layer.bindTooltip(name, {className:"countryLabel", permanent: true, opacity: 0.7, direction: "center"}).openTooltip();
+            props.rename(props.feature, name, props.layer)
+            // props.layer.bindTooltip(name, {className:"countryLabel", permanent: true, opacity: 0.7, direction: "center"}).openTooltip();
             setName("");
 
         }

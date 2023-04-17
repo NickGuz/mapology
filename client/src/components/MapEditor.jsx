@@ -72,7 +72,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function MapEditor() {
   const [editOpen, setEditOpen] = useState(false);
-  const [regionName, setName] = useState("");
   const [currLayer, setLayer] = useState();
   const [regionProps, setRegionProps] = useState(null);
   const [editingAttr, setEdit] = useState(false);
@@ -82,6 +81,7 @@ export default function MapEditor() {
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selected, setSelected] = useState([]);
+  const [currFeature, setFeature] = useState();
 
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
@@ -99,11 +99,31 @@ export default function MapEditor() {
     weight: 1,
   };
 
+  const getFeatureName = feature => {
+    let featureName;
+
+    if (feature.properties.NAME_2)
+      featureName = feature.properties.NAME_2;
+    else if (feature.properties.NAME_1)
+      featureName = feature.properties.NAME_1;
+    else if (feature.properties.NAME_0)
+      featureName = feature.properties.NAME_0;
+    else if(feature.properties.name)
+      featureName = feature.properties.name;
+
+    return featureName;
+}
+
   const onFeature = (feature, layer) => {
-    let country = feature.properties.name;
+    let country = getFeatureName(feature);
+    if (!country)
+        throw new Error("Could not find region name");
+
+    layer.bindTooltip(country, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
+  
     layer.on({
       dblclick: (event) => {
-        rename(event, country, feature, layer);
+        handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
         if (!selected.includes(event.target.feature)) {
@@ -120,8 +140,12 @@ export default function MapEditor() {
         }
       },
       click: (event) => {
+
         if (!selected.includes(event.target.feature)) {
           setSelected((oldSelected) => [...oldSelected, event.target.feature]);
+          setLayer(layer);
+          setFeature(feature);
+
         } else if (selected.includes(event.target.feature)) {
           setSelected(selected.filter((x) => x !== event.target.feature));
         }
@@ -142,10 +166,10 @@ export default function MapEditor() {
     }
   };
 
-  const rename = (event, country, feature, layer) => {
-    setName(country);
+  const handleRenameRegion = (feature, layer) => {
+    setFeature(feature);
+    setLayer(layer)
     setEditOpen(true);
-    setLayer(layer);
   };
 
   const editAttribute = (event) => {
@@ -155,6 +179,19 @@ export default function MapEditor() {
       handleDrawerOpen();
     }
   };
+
+  const rename = (feature, name, layer) => {
+    if (feature.properties.NAME_2)
+      feature.properties.NAME_2 = name;
+    else if (feature.properties.NAME_1)
+      feature.properties.NAME_1 = name;
+    else if (feature.properties.NAME_0)
+      feature.properties.NAME_0 = name;
+    else if(feature.properties.name)
+      feature.properties.name = name;
+    layer.bindTooltip(name, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
+    setSelected(selected.filter((x) => x !== feature));
+  }
 
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
@@ -279,7 +316,7 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Rename Region">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={()=>setEditOpen(true)}>
                       <AbcIcon />
                     </Button>
                   </Tooltip>
@@ -292,9 +329,9 @@ export default function MapEditor() {
               </Control>
               <ChangeNameModal
                 layer={currLayer}
-                name={regionName}
                 show={editOpen}
-                rename={(name) => setName(name)}
+                feature={currFeature}
+                rename={(currFeature ,name, layer) => rename(currFeature, name, layer)}
                 close={() => setEditOpen(false)}
               />
             </MapContainer>
