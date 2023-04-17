@@ -165,12 +165,12 @@ export default function MapEditor() {
   };
 
   const handleGeoJSONDownload = () => {
-    downloadMapAsGeoJSON(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title}.geo.json`);
+    downloadMapAsGeoJSON(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title.replace('/', '_')}.geo.json`);
     setAnchorEl(null);
   }
 
   const handleShapefileDownload = () => {
-    downloadMapAsShapefile(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title}_shp.zip`);
+    downloadMapAsShapefile(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title.replace('/', '_')}_shp.zip`);
     setAnchorEl(null);
   }
 

@@ -172,7 +172,7 @@ exports.downloadMapAsShapefile = async (req, res) => {
   }
 
   // Write zipped shapefile to temp dir
-  let path = `${os.tmpdir()}/${map.mapInfo.title.replace(' ', '_')}_shp.zip`;
+  let path = `${os.tmpdir()}/${map.mapInfo.title.replace(' ', '_').replace('/', '_').replace('\\', '_')}_shp.zip`;
   let stream = fs.createWriteStream(path);
   await convert(map.json, stream, options);
 
