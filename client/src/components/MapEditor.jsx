@@ -103,22 +103,23 @@ export default function MapEditor() {
     let featureName;
 
     if (feature.properties.NAME_2)
-        featureName = feature.properties.NAME_2;
+      featureName = feature.properties.NAME_2;
     else if (feature.properties.NAME_1)
-        featureName = feature.properties.NAME_1;
+      featureName = feature.properties.NAME_1;
     else if (feature.properties.NAME_0)
-        featureName = feature.properties.NAME_0;
+      featureName = feature.properties.NAME_0;
+    else if(feature.properties.name)
+      featureName = feature.properties.name;
 
     return featureName;
 }
 
   const onFeature = (feature, layer) => {
-    let country = feature.properties.name;
-    const featureName = getFeatureName(feature);
-    if (!featureName)
+    let country = getFeatureName(feature);
+    if (!country)
         throw new Error("Could not find region name");
 
-    layer.bindTooltip(featureName, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
+    layer.bindTooltip(country, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
   
     layer.on({
       dblclick: (event) => {
