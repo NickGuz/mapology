@@ -3,8 +3,8 @@ import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { MapContainer, GeoJSON, ZoomControl, useMap } from "react-leaflet";
-import * as L from 'leaflet';
-import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
+import * as L from "leaflet";
+import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 import Control from "react-leaflet-custom-control";
 import mapData from "../example-data/countries.json";
 import { Stack, Button, Tooltip, Menu, MenuItem } from "@mui/material";
@@ -16,7 +16,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import GlobalStoreContext from "../store/store";
-import { downloadMapAsGeoJSON, downloadMapAsShapefile } from "../store/GlobalStoreHttpRequestApi";
+import * as RequestApi from "../store/GlobalStoreHttpRequestApi";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -99,28 +99,37 @@ export default function MapEditor() {
     weight: 1,
   };
 
-  const getFeatureName = feature => {
+  const getFeatureName = (feature) => {
     let featureName;
 
-    if (feature.properties.NAME_2)
-      featureName = feature.properties.NAME_2;
-    else if (feature.properties.NAME_1)
-      featureName = feature.properties.NAME_1;
-    else if (feature.properties.NAME_0)
-      featureName = feature.properties.NAME_0;
-    else if(feature.properties.name)
-      featureName = feature.properties.name;
+    if (feature.properties.NAME_2) featureName = feature.properties.NAME_2;
+    else if (feature.properties.NAME_1) featureName = feature.properties.NAME_1;
+    else if (feature.properties.NAME_0) featureName = feature.properties.NAME_0;
+    else if (feature.properties.name) featureName = feature.properties.name;
 
     return featureName;
-}
+  };
+
+  const setFeatureName = (feature, name) => {
+    if (feature.properties.NAME_2) feature.properties.NAME_2 = name;
+    else if (feature.properties.NAME_1) feature.properties.NAME_1 = name;
+    else if (feature.properties.NAME_0) feature.properties.NAME_0 = name;
+    else if (feature.properties.name) feature.properties.name = name;
+  };
 
   const onFeature = (feature, layer) => {
     let country = getFeatureName(feature);
-    if (!country)
-        throw new Error("Could not find region name");
+    if (!country) throw new Error("Could not find region name");
 
-    layer.bindTooltip(country, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
-  
+    layer
+      .bindTooltip(country, {
+        className: "countryLabel",
+        permanent: true,
+        opacity: 0.7,
+        direction: "center",
+      })
+      .openTooltip();
+
     layer.on({
       dblclick: (event) => {
         handleRenameRegion(feature, layer);
@@ -140,12 +149,10 @@ export default function MapEditor() {
         }
       },
       click: (event) => {
-
         if (!selected.includes(event.target.feature)) {
           setSelected((oldSelected) => [...oldSelected, event.target.feature]);
           setLayer(layer);
           setFeature(feature);
-
         } else if (selected.includes(event.target.feature)) {
           setSelected(selected.filter((x) => x !== event.target.feature));
         }
@@ -168,7 +175,7 @@ export default function MapEditor() {
 
   const handleRenameRegion = (feature, layer) => {
     setFeature(feature);
-    setLayer(layer)
+    setLayer(layer);
     setEditOpen(true);
   };
 
@@ -181,17 +188,33 @@ export default function MapEditor() {
   };
 
   const rename = (feature, name, layer) => {
-    if (feature.properties.NAME_2)
-      feature.properties.NAME_2 = name;
-    else if (feature.properties.NAME_1)
-      feature.properties.NAME_1 = name;
-    else if (feature.properties.NAME_0)
-      feature.properties.NAME_0 = name;
-    else if(feature.properties.name)
-      feature.properties.name = name;
-    layer.bindTooltip(name, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
+    const oldName = getFeatureName(feature);
+    // setFeatureName(feature, name);
+    renameAll(feature, oldName, name);
+
+    console.log("feature id: " + feature.id);
+    RequestApi.updateFeatureProperties(feature.id, feature.properties);
+
+    layer
+      .bindTooltip(name, {
+        className: "countryLabel",
+        permanent: true,
+        opacity: 0.7,
+        direction: "center",
+      })
+      .openTooltip();
     setSelected(selected.filter((x) => x !== feature));
-  }
+  };
+
+  const renameAll = (feature, oldName, newName) => {
+    // find all keys with the old name
+    let keys = Object.keys(feature.properties);
+    for (let key of keys) {
+      if (feature.properties[key] === oldName) {
+        feature.properties[key] = newName;
+      }
+    }
+  };
 
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
@@ -202,14 +225,20 @@ export default function MapEditor() {
   };
 
   const handleGeoJSONDownload = () => {
-    downloadMapAsGeoJSON(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title.replace('/', '_')}.geo.json`);
+    RequestApi.downloadMapAsGeoJSON(
+      store.currentMap.mapInfo.id,
+      `${store.currentMap.mapInfo.title.replace("/", "_")}.geo.json`
+    );
     setAnchorEl(null);
-  }
+  };
 
   const handleShapefileDownload = () => {
-    downloadMapAsShapefile(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title.replace('/', '_')}_shp.zip`);
+    RequestApi.downloadMapAsShapefile(
+      store.currentMap.mapInfo.id,
+      `${store.currentMap.mapInfo.title.replace("/", "_")}_shp.zip`
+    );
     setAnchorEl(null);
-  }
+  };
 
   let customdata =
     selected.length > 0
@@ -254,14 +283,18 @@ export default function MapEditor() {
               open={Boolean(anchorEl)}
               onClose={handleCloseDownload}
             >
-              <MenuItem onClick={handleGeoJSONDownload}>Download as GeoJSON</MenuItem>
-              <MenuItem onClick={handleShapefileDownload}>Download as Shapefile</MenuItem>
+              <MenuItem onClick={handleGeoJSONDownload}>
+                Download as GeoJSON
+              </MenuItem>
+              <MenuItem onClick={handleShapefileDownload}>
+                Download as Shapefile
+              </MenuItem>
               <MenuItem>Download as Image</MenuItem>
             </Menu>
           </Box>
           <Box>
             <MapContainer
-              id='leaflet-canvas'
+              id="leaflet-canvas"
               style={{ height: "90vh" }}
               zoomControl={false}
               zoom={2}
@@ -316,7 +349,10 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Rename Region">
-                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={()=>setEditOpen(true)}>
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={() => setEditOpen(true)}
+                    >
                       <AbcIcon />
                     </Button>
                   </Tooltip>
@@ -331,7 +367,9 @@ export default function MapEditor() {
                 layer={currLayer}
                 show={editOpen}
                 feature={currFeature}
-                rename={(currFeature ,name, layer) => rename(currFeature, name, layer)}
+                rename={(currFeature, name, layer) =>
+                  rename(currFeature, name, layer)
+                }
                 close={() => setEditOpen(false)}
               />
             </MapContainer>
