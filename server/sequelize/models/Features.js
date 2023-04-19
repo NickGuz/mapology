@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
       // type: DataTypes.JSON,
       type: DataTypes.TEXT("medium"),
       get: function () {
+        if (!this.getDataValue("geometry")) {
+          return;
+        }
         return JSON.parse(this.getDataValue("geometry"));
       },
       set: function (value) {
