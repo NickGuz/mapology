@@ -11,6 +11,7 @@
 /coverage
 /client/cypress/videos
 /client/cypress/screenshots
+/client/cypress/downloads
 
 # production
 /build
