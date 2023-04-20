@@ -18,10 +18,6 @@ const MapCard = (props) => {
   const { store } = useContext(GlobalStoreContext);
 
   useEffect(() => {
-    // if (store.currentMap) {
-    //   navigate("/map-editor/");
-    // }
-
     const getAuthorData = async () => {
       let res = await api.getUserById(props.data.authorId);
       setAuthor(res.data);
@@ -39,7 +35,7 @@ const MapCard = (props) => {
   const handleTagClick = (event) => {};
 
   const handleOpenEdit = (event) => {
-    store.getMapById(props.data.id);
+    navigate(`/map-editor/${props.data.id}`);
   };
 
   const handleOpenInfo = (event) => {

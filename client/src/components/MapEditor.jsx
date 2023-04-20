@@ -40,6 +40,7 @@ import EditAttributesIcon from "@mui/icons-material/EditAttributes";
 import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
+import { useParams } from "react-router-dom";
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -82,6 +83,12 @@ export default function MapEditor() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selected, setSelected] = useState([]);
   const [currFeature, setFeature] = useState();
+
+  const routeParams = useParams();
+
+  useEffect(() => {
+    store.getMapById(routeParams.id);
+  }, []);
 
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
@@ -241,9 +248,7 @@ export default function MapEditor() {
   };
 
   let customdata =
-    selected.length > 0
-      ? { Region: selected[selected.length - 1].properties.name }
-      : {};
+    selected.length > 0 ? { Region: selected[selected.length - 1].properties.name } : {};
 
   let DrawerContent = editingAttr ? (
     <JsonTree data={regionProps} />
@@ -283,12 +288,8 @@ export default function MapEditor() {
               open={Boolean(anchorEl)}
               onClose={handleCloseDownload}
             >
-              <MenuItem onClick={handleGeoJSONDownload}>
-                Download as GeoJSON
-              </MenuItem>
-              <MenuItem onClick={handleShapefileDownload}>
-                Download as Shapefile
-              </MenuItem>
+              <MenuItem onClick={handleGeoJSONDownload}>Download as GeoJSON</MenuItem>
+              <MenuItem onClick={handleShapefileDownload}>Download as Shapefile</MenuItem>
               <MenuItem>Download as Image</MenuItem>
             </Menu>
           </Box>
@@ -312,21 +313,19 @@ export default function MapEditor() {
               >
                 <DrawerHeader>
                   <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === "ltr" ? (
-                      <ChevronLeftIcon />
-                    ) : (
-                      <ChevronRightIcon />
-                    )}
+                    {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                   </IconButton>
                 </DrawerHeader>
                 {DrawerContent}
               </Drawer>
-              <GeoJSON
-                key={selected.length}
-                style={mapStyle}
-                data={store.currentMap.json.features}
-                onEachFeature={onFeature}
-              />
+              {store.currentMap && (
+                <GeoJSON
+                  key={selected.length}
+                  style={mapStyle}
+                  data={store.currentMap.json.features}
+                  onEachFeature={onFeature}
+                />
+              )}
               <ZoomControl position="topright" />
               <Control position="topright">
                 <Stack direction="column">
@@ -367,9 +366,7 @@ export default function MapEditor() {
                 layer={currLayer}
                 show={editOpen}
                 feature={currFeature}
-                rename={(currFeature, name, layer) =>
-                  rename(currFeature, name, layer)
-                }
+                rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
                 close={() => setEditOpen(false)}
               />
             </MapContainer>

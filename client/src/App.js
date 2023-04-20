@@ -29,7 +29,7 @@ const App = () => {
             <Route path="/map-listings/" element={<MapListingScreen />} />
             <Route path="/profile/:id" element={<ProfileScreen />} />
             <Route path="/account-recovery/" element={<AccountRecoveryScreen />} />
-            <Route path="/map-editor/" element={<MapEditor />} />
+            <Route path="/map-editor/:id" element={<MapEditor />} />
             <Route path="/map-info" element={<MapInfoScreen />} />
             <Route path="/password-reset/" element={<PasswordResetScreen />} />
           </Routes>
