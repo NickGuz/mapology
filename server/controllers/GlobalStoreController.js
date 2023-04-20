@@ -30,6 +30,18 @@ exports.createMap = async (req, res) => {
   });
 };
 
+exports.deleteMap = async (req, res) => {
+  if (!req.params.id) {
+    return res.status(400).json({
+      errorMessage: "Improperly formatted request",
+    });
+  }
+
+  await SequelizeManager.deleteMap(req.params.id);
+
+  return res.status(200);
+};
+
 exports.getAllMaps = async (req, res) => {
   const maps = await SequelizeManager.getAllMaps();
   if (maps) {
@@ -92,6 +104,19 @@ exports.getMapById = async (req, res) => {
 
   return res.status(200).json({
     data: map,
+  });
+};
+
+exports.getTagsByMapId = async (req, res) => {
+  const tags = await SequelizeManager.getTagsByMapId(req.params.id);
+  if (!tags) {
+    return res.status(500).json({
+      errorMessage: "Failed to get tags",
+    });
+  }
+
+  return res.status(200).json({
+    data: tags,
   });
 };
 
