@@ -21,8 +21,7 @@ import {
   Switch,
 } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
-import { getMapById, getTagsByMapId } from "../store/GlobalStoreHttpRequestApi";
-import api from "../auth/auth-request-api/AuthRequestApi";
+import { getMapById, deleteMap } from "../store/GlobalStoreHttpRequestApi";
 
 const MapInfoScreen = (props) => {
   const [mapData, setMapData] = useState(null);
@@ -53,7 +52,10 @@ const MapInfoScreen = (props) => {
     setDeleteOpen(false);
   };
 
+  // TODO need to set this to only allow author to delete once we get accounts setup
   const handleDeleteMap = () => {
+    console.log("deleting map:" + mapData.mapInfo.id);
+    deleteMap(mapData.mapInfo.id);
     setDeleteOpen(false);
     navigate("/");
   };
@@ -63,7 +65,7 @@ const MapInfoScreen = (props) => {
   };
 
   const handleOpenEditor = () => {
-    navigate("/map-editor/");
+    navigate(`/map-editor/${mapData.mapInfo.id}`);
   };
 
   return (
