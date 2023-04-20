@@ -1,13 +1,6 @@
 const { MapInfo, Features, Tags, User } = require("../sequelize");
 
-exports.createMap = async (
-  duplicatedId,
-  authorId,
-  title,
-  description,
-  tags,
-  json
-) => {
+exports.createMap = async (duplicatedId, authorId, title, description, tags, json) => {
   // Might need to parse json from string first - JSON.parse(json)
   // let mapJson = JSON.parse(json);
 
@@ -51,7 +44,7 @@ exports.deleteMap = async (id) => {
 };
 
 exports.getAllMaps = async () => {
-  return await MapInfo.findAll();
+  return await MapInfo.findAll({ order: [["createdAt", "DESC"]] });
 };
 
 exports.getMapById = async (id) => {
