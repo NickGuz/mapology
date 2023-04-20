@@ -36,10 +36,7 @@ const Likes = require("./models/Likes")(sequelize, DataTypes);
 const Dislikes = require("./models/Dislikes")(sequelize, DataTypes);
 const Tags = require("./models/Tags")(sequelize, DataTypes);
 const Legends = require("./models/Legends")(sequelize, DataTypes);
-const GraphicTextBoxes = require("./models/GraphicTextBoxes")(
-  sequelize,
-  DataTypes
-);
+const GraphicTextBoxes = require("./models/GraphicTextBoxes")(sequelize, DataTypes);
 
 // Define associations (foreign keys)
 createAssociations(sequelize.models);
@@ -47,16 +44,19 @@ createAssociations(sequelize.models);
 // Synchronize all models
 if (!process.env.TEST) {
   sequelize
-    .sync(/*{ force: true }*/)
+    // .sync({ force: true })
+    .sync()
     .then(() => {
       console.log("SQL tables created successfully");
 
       // TODO remove
       // create test user for testing map imports
-      User.create({
-        email: "test@test.com",
-        username: "testuser",
-        password: "1234",
+      User.findOrCreate({
+        where: {
+          email: "test@test.com",
+          username: "testuser",
+          password: "1234",
+        },
       });
     })
     .catch((error) => {
