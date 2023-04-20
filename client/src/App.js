@@ -30,7 +30,7 @@ const App = () => {
             <Route path="/profile/:id" element={<ProfileScreen />} />
             <Route path="/account-recovery/" element={<AccountRecoveryScreen />} />
             <Route path="/map-editor/:id" element={<MapEditor />} />
-            <Route path="/map-info" element={<MapInfoScreen />} />
+            <Route path="/map-info/:id" element={<MapInfoScreen />} />
             <Route path="/password-reset/" element={<PasswordResetScreen />} />
           </Routes>
         </GlobalStoreContextProvider>

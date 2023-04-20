@@ -39,7 +39,7 @@ const MapCard = (props) => {
   };
 
   const handleOpenInfo = (event) => {
-    navigate("/map-info/");
+    navigate(`/map-info/${props.data.id}`);
   };
 
   const handleClickUsername = () => {
