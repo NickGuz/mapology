@@ -1,55 +1,64 @@
 process.env.TEST = true;
 
-const supertest = require('supertest');
-const server = require('../server');
-const { UserTest } = require('../sequelize/sequelize');
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+const supertest = require("supertest");
+const server = require("../server");
+const { UserTest } = require("../sequelize/sequelize");
 let User = UserTest;
 
 const app = server;
 
-/** 
+/**
  * Test register a new user
  */
 test("POST /users", async () => {
-    const data = {
-        id: 1,
-        email: "test@test.com",
-        username: "testuser",
-        password: "123"
-    };
+  const data = {
+    id: 1,
+    email: "test@test.com",
+    username: "testuser",
+    password: "123",
+    confirmPassword: "123",
+  };
 
-    await supertest(app)
-        .post("/auth/users")
-        .send(data)
-        .expect(200)
-        // can also test stuff like this but ignoring for now
-        // .expect('Content-Type', /json/)
-        // .expect('Content-Length', '15')
-        .then(async (response) => {
-            // Check the response (Jest stuff in this block)
-            expect(response.body.id).toBeTruthy();
-            expect(response.body.email).toBe(data.email);
-            expect(response.body.username).toBe(data.username);
-            expect(response.body.password).toBe(data.password);
+  await supertest(app)
+    .post("/auth/users")
+    .send(data)
+    .expect(200)
+    // can also test stuff like this but ignoring for now
+    // .expect('Content-Type', /json/)
+    // .expect('Content-Length', '15')
+    .then(async (response) => {
+      // Check the response (Jest stuff in this block)
+      expect(response.body.id).toBeTruthy();
+      expect(response.body.email).toBe(data.email);
+      expect(response.body.username).toBe(data.username);
+      expect(response.body.password).toBeTruthy();
+      bcrypt.compare(data.password, response.body.password, function (err, result) {
+        expect(result).toBeTruthy();
+      });
 
-            // Check the data in the database
+      // Check the data in the database
 
-            // TODO for some reason, sequelize-mock only gives us back the data which we query for,
-            // so here passing in the entire body so we get back every field.
-            // Another way around this is to make separate Mock models, but that's kinda dumb
-            const user = await User.findOne({ where: response.body });
-            expect(user).toBeTruthy();
-            expect(user.email).toBe(data.email);
-            expect(user.username).toBe(data.username);
-            expect(user.password).toBe(data.password);
-        });
+      // TODO for some reason, sequelize-mock only gives us back the data which we query for,
+      // so here passing in the entire body so we get back every field.
+      // Another way around this is to make separate Mock models, but that's kinda dumb
+      const user = await User.findOne({ where: response.body });
+      expect(user).toBeTruthy();
+      expect(user.email).toBe(data.email);
+      expect(user.username).toBe(data.username);
+      expect(user.password).toBeTruthy();
+      bcrypt.compare(data.password, user.password, function (err, result) {
+        expect(result).toBeTruthy();
+      });
+    });
 });
 
 /**
  * Test get a user
  */
 // test("GET /users", async () => {
-//     const user = await User.create({ 
+//     const user = await User.create({
 //         email: "joe@test.com",
 //         username: "joetest",
 //         password: "1234"
@@ -66,32 +75,32 @@ test("POST /users", async () => {
 //         });
 // });
 
-/** 
+/**
  * Test get all users
  */
 test("GET /users", async () => {
-    const user1 = await User.create({
-        email: "joe@test.com",
-        username: "joetest",
-        password: "1234"
-    });
+  const user1 = await User.create({
+    email: "joe@test.com",
+    username: "joetest",
+    password: "1234",
+  });
 
-    const user2 = await User.create({
-        email: "bob@test.com",
-        username: "bobtest",
-        password: "12345"
-    });
+  const user2 = await User.create({
+    email: "bob@test.com",
+    username: "bobtest",
+    password: "12345",
+  });
 
-    await supertest(app)
-        .get("/auth/users")
-        .expect(200)
-        .then(async (response) => {
-            expect(response).toBeTruthy();
-        });
+  await supertest(app)
+    .get("/auth/users")
+    .expect(200)
+    .then(async (response) => {
+      expect(response).toBeTruthy();
+    });
 });
 
 afterAll((done) => {
-    app.close();
-    server.close();
-    done();
+  app.close();
+  server.close();
+  done();
 });
