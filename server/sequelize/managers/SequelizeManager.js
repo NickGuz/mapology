@@ -42,6 +42,14 @@ exports.createMap = async (
   return mapInfo;
 };
 
+exports.deleteMap = async (id) => {
+  await MapInfo.destroy({
+    where: {
+      id: id,
+    },
+  });
+};
+
 exports.getAllMaps = async () => {
   return await MapInfo.findAll();
 };

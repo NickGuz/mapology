@@ -5,9 +5,13 @@ const GlobalStoreController = require("../controllers/GlobalStoreController");
 // Handles create a new map in the database request
 router.post("/map", GlobalStoreController.createMap);
 
+router.delete("/map/:id", GlobalStoreController.deleteMap);
+
 router.get("/maps", GlobalStoreController.getAllMaps);
 
 router.get("/map/:id", GlobalStoreController.getMapById);
+
+router.get("/tags/:id", GlobalStoreController.getTagsByMapId);
 
 router.put("/map/title/:id", GlobalStoreController.updateMapTitle);
 
