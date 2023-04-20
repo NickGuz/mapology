@@ -53,6 +53,7 @@ const ImportModal = (props) => {
       let data = JSON.parse(event.target.result);
       console.log("parsed json", data);
       await createMap(null, 4, name, description, tags, data);
+      store.displayAllMaps();
     };
 
     fileReader.readAsText(file);
@@ -75,6 +76,7 @@ const ImportModal = (props) => {
         console.log("geojson", geojson);
 
         await createMap(null, 4, name, description, tags, geojson);
+        store.displayAllMaps();
       };
     };
   };
@@ -97,9 +99,7 @@ const ImportModal = (props) => {
     <Dialog open={store.importDialogOpen} onClose={handleClose}>
       <DialogTitle>Import</DialogTitle>
       <DialogContent>
-        <Alert severity="info">
-          Only .shp/.dbf or .geo.json file extensions are accepted
-        </Alert>
+        <Alert severity="info">Only .shp/.dbf or .geo.json file extensions are accepted</Alert>
         <FileUpload
           multiFile={true}
           onFilesChange={handleFilesChange}

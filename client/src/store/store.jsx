@@ -61,6 +61,7 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           displayedMaps: payload,
+          importDialogOpen: false,
         });
       }
       default: {
