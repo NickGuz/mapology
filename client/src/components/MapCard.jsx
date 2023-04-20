@@ -18,18 +18,22 @@ const MapCard = (props) => {
   const { store } = useContext(GlobalStoreContext);
 
   useEffect(() => {
-    if (store.currentMap) {
-      navigate("/map-editor/");
-    }
+    // if (store.currentMap) {
+    //   navigate("/map-editor/");
+    // }
 
     const getAuthorData = async () => {
       let res = await api.getUserById(props.data.authorId);
       setAuthor(res.data);
     };
 
-    getAuthorData();
+    const getTagsData = async () => {
+      let res = await getTagsByMapId(props.data.id);
+      setTags(res.data.data);
+    };
 
-    // setTags(getTagsByMapId(props.data.id));
+    getAuthorData();
+    getTagsData();
   }, [store.currentMap]);
 
   const handleTagClick = (event) => {};
