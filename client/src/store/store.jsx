@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { getMapById } from "./GlobalStoreHttpRequestApi";
+import { getMapById, getAllMaps } from "./GlobalStoreHttpRequestApi";
 // import { useNavigate } from "react-router-dom";
 // import AuthContext from "../auth/AuthContextProvider";
 
@@ -10,6 +10,7 @@ export const GlobalStoreActionType = {
   SET_OPEN_IMPORT_DIALOG: "SET_OPEN_IMPORT_DIALOG",
   SET_OPEN_SETTINGS_MODAL: "SET_OPEN_SETTINGS_MODAL",
   CURR_MAP: "CURR_MAP",
+  SET_DISPLAYED_MAPS: "SET_DISPLAYED_MAPS",
 };
 
 export const PageViewTypes = {
@@ -23,6 +24,7 @@ function GlobalStoreContextProvider(props) {
     importDialogOpen: false,
     settingsModalOpen: false,
     currentMap: null,
+    displayedMaps: [],
   });
 
   // const navigate = useNavigate();
@@ -53,6 +55,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           currentMap: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_DISPLAYED_MAPS: {
+        return setStore({
+          ...store,
+          displayedMaps: payload,
         });
       }
       default: {
@@ -94,6 +102,21 @@ function GlobalStoreContextProvider(props) {
       }
     }
     asyncGetMapById(id);
+  };
+
+  store.displayAllMaps = async () => {
+    const allMaps = await getAllMaps();
+    storeReducer({
+      type: GlobalStoreActionType.SET_DISPLAYED_MAPS,
+      payload: allMaps.data.data,
+    });
+  };
+
+  store.setDisplayedMaps = (maps) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_DISPLAYED_MAPS,
+      payload: maps,
+    });
   };
 
   return (

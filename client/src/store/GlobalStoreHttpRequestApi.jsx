@@ -4,22 +4,13 @@ axios.defaults.withCredentials = true;
 
 console.log("match", window.location.origin.includes(":3000"));
 const dev = "http://localhost:4000";
-const baseURL = window.location.origin.includes(":3000")
-  ? dev
-  : window.location.origin;
+const baseURL = window.location.origin.includes(":3000") ? dev : window.location.origin;
 
 const api = axios.create({
   baseURL: baseURL,
 });
 
-export const createMap = async (
-  duplicatedId,
-  authorId,
-  title,
-  description,
-  tags,
-  json
-) => {
+export const createMap = async (duplicatedId, authorId, title, description, tags, json) => {
   return await api.post("/api/map", {
     duplicatedId: duplicatedId,
     authorId: authorId,
@@ -31,7 +22,7 @@ export const createMap = async (
 };
 
 export const deleteMap = async (mapId) => {
-  return await api.delete(`/api/map/${id}`);
+  return await api.delete(`/api/map/${mapId}`);
 };
 
 export const getAllMaps = async () => {
