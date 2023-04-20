@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const { User } = require("../sequelize/sequelize");
 
 exports.loggedIn = () => {
@@ -31,21 +33,29 @@ exports.register = async (req, res) => {
     });
   }
 
-  try {
-    const user = await User.create({
-      email: req.body.email,
-      username: req.body.username,
-      password: req.body.password,
-    });
-
-    return res.status(200).json(user);
-  } catch (e) {
-    if (e.name === "SequelizeUniqueConstraintError") {
-      return res.status(403).json({
-        errorMessage: "Username already exists",
+  bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
+    if (err) {
+      return res.status(500).json({
+        errorMessage: "Failed to hash password",
       });
     }
-  }
+
+    try {
+      const user = await User.create({
+        email: req.body.email,
+        username: req.body.username,
+        password: hash,
+      });
+
+      return res.status(200).json(user);
+    } catch (e) {
+      if (e.name === "SequelizeUniqueConstraintError") {
+        return res.status(403).json({
+          errorMessage: "Username already exists",
+        });
+      }
+    }
+  });
 };
 
 exports.getAllUsers = async (req, res) => {
