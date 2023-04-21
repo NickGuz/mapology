@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { MapContainer, GeoJSON, ZoomControl, useMap } from "react-leaflet";
+import { MapContainer, GeoJSON, ZoomControl, useMap, Pane, CircleMarker } from "react-leaflet";
 import * as L from "leaflet";
 import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 import Control from "react-leaflet-custom-control";
@@ -81,13 +81,14 @@ export default function MapEditor() {
   const [customAttr, setCustomAttr] = useState(false);
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selected, setSelected] = useState([]);
+  // const [selected, setSelected] = useState([]);
   const [currFeature, setFeature] = useState();
 
   const routeParams = useParams();
 
   useEffect(() => {
     store.getMapById(routeParams.id);
+    console.log("rendering");
   }, []);
 
   const handleDrawerOpen = () => {
@@ -124,6 +125,14 @@ export default function MapEditor() {
     else if (feature.properties.name) feature.properties.name = name;
   };
 
+  const selectRegion = (event) => {
+    if (store.selectedFeatures.includes(event.target.feature)) {
+      store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== event.target.feature));
+    } else {
+      store.setSelectedFeatures([...store.selectedFeatures, event.target.feature]);
+    }
+  };
+
   const onFeature = (feature, layer) => {
     let country = getFeatureName(feature);
     if (!country) throw new Error("Could not find region name");
@@ -142,40 +151,32 @@ export default function MapEditor() {
         handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
-        if (!selected.includes(event.target.feature)) {
+        if (!store.selectedFeatures.includes(event.target.feature)) {
           event.target.setStyle({
             fillColor: "purple",
           });
         }
       },
       mouseout: (event) => {
-        if (!selected.includes(event.target.feature)) {
+        if (!store.selectedFeatures.includes(event.target.feature)) {
           event.target.setStyle({
             fillColor: "blue",
           });
         }
       },
       click: (event) => {
-        if (!selected.includes(event.target.feature)) {
-          setSelected((oldSelected) => [...oldSelected, event.target.feature]);
-          setLayer(layer);
-          setFeature(feature);
-        } else if (selected.includes(event.target.feature)) {
-          setSelected(selected.filter((x) => x !== event.target.feature));
-        }
+        selectRegion(event);
 
-        if (selected.length === 0) {
+        if (store.selectedFeatures.length === 0) {
           setRegionProps({});
           handleDrawerClose();
         } else {
-          setRegionProps(selected[selected.length - 1].properties);
+          setRegionProps(store.selectedFeatures[store.selectedFeatures.length - 1].properties);
         }
-
-        console.log(selected);
       },
     });
 
-    if (selected.includes(feature)) {
+    if (store.selectedFeatures.includes(feature)) {
       layer.setStyle({ fillColor: "green" });
     }
   };
@@ -210,7 +211,7 @@ export default function MapEditor() {
         direction: "center",
       })
       .openTooltip();
-    setSelected(selected.filter((x) => x !== feature));
+    // setSelected(selected.filter((x) => x !== feature));
   };
 
   const renameAll = (feature, oldName, newName) => {
@@ -247,8 +248,46 @@ export default function MapEditor() {
     setAnchorEl(null);
   };
 
+  const removeVertex = (vertex) => {
+    console.log("remove vertex");
+    if (!window.confirm("Are you sure you want to delete this vertex?")) {
+      return;
+    }
+
+    const lat = vertex.lat;
+    const lng = vertex.lng;
+    console.log(vertex);
+
+    // Get the vertices to remove
+    let toRemove = [];
+    store.currentMap.json.features.forEach((f) => {
+      f.geometry.coordinates[0].forEach((xy) => {
+        if (xy[0] === lng && xy[1] === lat) {
+          toRemove.push(xy);
+        }
+      });
+    });
+    console.log("matching coords", toRemove);
+
+    if (toRemove.length >= 3) {
+      window.alert("Cannot delete a vertex shared by more than 2 regions");
+      return;
+    }
+
+    // Remove the vertices
+    store.currentMap.json.features.forEach((f) => {
+      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
+        (xy) => !(xy[0] === lng && xy[1] === lat)
+      );
+    });
+    // TODO map data not re-rendering
+    // store.setCurrentMap(store.currentMap);
+  };
+
   let customdata =
-    selected.length > 0 ? { Region: selected[selected.length - 1].properties.name } : {};
+    store.selectedFeatures.length > 0
+      ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
+      : {};
 
   let DrawerContent = editingAttr ? (
     <JsonTree data={regionProps} />
@@ -318,14 +357,37 @@ export default function MapEditor() {
                 </DrawerHeader>
                 {DrawerContent}
               </Drawer>
-              {store.currentMap && (
-                <GeoJSON
-                  key={selected.length}
-                  style={mapStyle}
-                  data={store.currentMap.json.features}
-                  onEachFeature={onFeature}
-                />
-              )}
+              <Pane name="markers" style={{ zIndex: 500 }}>
+                {store.selectedFeatures.length === 1 &&
+                  store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
+                    <CircleMarker
+                      key={i}
+                      center={[point[1], point[0]]}
+                      pathOptions={{
+                        color: "blue",
+                        fillColor: "blue",
+                        bubblingMouseEvents: false,
+                        fillOpacity: 1.0,
+                      }}
+                      radius={5}
+                      eventHandlers={{
+                        click: (e) => {
+                          removeVertex(e.latlng);
+                        },
+                      }}
+                    ></CircleMarker>
+                  ))}
+              </Pane>
+              <Pane name="mapdata" style={{ zIndex: 499 }}>
+                {store.currentMap && (
+                  <GeoJSON
+                    key={store.selectedFeatures.length}
+                    style={mapStyle}
+                    data={store.currentMap.json.features}
+                    onEachFeature={onFeature}
+                  />
+                )}
+              </Pane>
               <ZoomControl position="topright" />
               <Control position="topright">
                 <Stack direction="column">
