@@ -11,6 +11,7 @@ export const GlobalStoreActionType = {
   SET_OPEN_SETTINGS_MODAL: "SET_OPEN_SETTINGS_MODAL",
   CURR_MAP: "CURR_MAP",
   SET_DISPLAYED_MAPS: "SET_DISPLAYED_MAPS",
+  SET_SELECTED_FEATURES: "SET_SELECTED_FEATURES",
 };
 
 export const PageViewTypes = {
@@ -25,6 +26,7 @@ function GlobalStoreContextProvider(props) {
     settingsModalOpen: false,
     currentMap: null,
     displayedMaps: [],
+    selectedFeatures: [],
   });
 
   // const navigate = useNavigate();
@@ -62,6 +64,12 @@ function GlobalStoreContextProvider(props) {
           ...store,
           displayedMaps: payload,
           importDialogOpen: false,
+        });
+      }
+      case GlobalStoreActionType.SET_SELECTED_FEATURES: {
+        return setStore({
+          ...store,
+          selectedFeatures: payload,
         });
       }
       default: {
@@ -117,6 +125,14 @@ function GlobalStoreContextProvider(props) {
     storeReducer({
       type: GlobalStoreActionType.SET_DISPLAYED_MAPS,
       payload: maps,
+    });
+  };
+
+  store.setSelectedFeatures = (features) => {
+    console.log("setting");
+    storeReducer({
+      type: GlobalStoreActionType.SET_SELECTED_FEATURES,
+      payload: features,
     });
   };
 
