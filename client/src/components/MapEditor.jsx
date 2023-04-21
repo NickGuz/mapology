@@ -2,9 +2,9 @@ import * as React from "react";
 import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { MapContainer, GeoJSON, ZoomControl, useMap } from "react-leaflet";
-import * as L from 'leaflet';
-import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
+import { MapContainer, GeoJSON, ZoomControl, useMap, Pane, CircleMarker } from "react-leaflet";
+import * as L from "leaflet";
+import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 import Control from "react-leaflet-custom-control";
 import mapData from "../example-data/countries.json";
 import { Stack, Button, Tooltip, Menu, MenuItem } from "@mui/material";
@@ -16,7 +16,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import GlobalStoreContext from "../store/store";
-import { downloadMapAsGeoJSON, downloadMapAsShapefile } from "../store/GlobalStoreHttpRequestApi";
+import * as RequestApi from "../store/GlobalStoreHttpRequestApi";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -40,6 +40,7 @@ import EditAttributesIcon from "@mui/icons-material/EditAttributes";
 import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
+import { useParams } from "react-router-dom";
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -80,8 +81,15 @@ export default function MapEditor() {
   const [customAttr, setCustomAttr] = useState(false);
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selected, setSelected] = useState([]);
+  // const [selected, setSelected] = useState([]);
   const [currFeature, setFeature] = useState();
+
+  const routeParams = useParams();
+
+  useEffect(() => {
+    store.getMapById(routeParams.id);
+    console.log("rendering");
+  }, []);
 
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
@@ -99,76 +107,83 @@ export default function MapEditor() {
     weight: 1,
   };
 
-  const getFeatureName = feature => {
+  const getFeatureName = (feature) => {
     let featureName;
 
-    if (feature.properties.NAME_2)
-      featureName = feature.properties.NAME_2;
-    else if (feature.properties.NAME_1)
-      featureName = feature.properties.NAME_1;
-    else if (feature.properties.NAME_0)
-      featureName = feature.properties.NAME_0;
-    else if(feature.properties.name)
-      featureName = feature.properties.name;
+    if (feature.properties.NAME_2) featureName = feature.properties.NAME_2;
+    else if (feature.properties.NAME_1) featureName = feature.properties.NAME_1;
+    else if (feature.properties.NAME_0) featureName = feature.properties.NAME_0;
+    else if (feature.properties.name) featureName = feature.properties.name;
 
     return featureName;
-}
+  };
+
+  const setFeatureName = (feature, name) => {
+    if (feature.properties.NAME_2) feature.properties.NAME_2 = name;
+    else if (feature.properties.NAME_1) feature.properties.NAME_1 = name;
+    else if (feature.properties.NAME_0) feature.properties.NAME_0 = name;
+    else if (feature.properties.name) feature.properties.name = name;
+  };
+
+  const selectRegion = (event) => {
+    if (store.selectedFeatures.includes(event.target.feature)) {
+      store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== event.target.feature));
+    } else {
+      store.setSelectedFeatures([...store.selectedFeatures, event.target.feature]);
+    }
+  };
 
   const onFeature = (feature, layer) => {
     let country = getFeatureName(feature);
-    if (!country)
-        throw new Error("Could not find region name");
+    if (!country) throw new Error("Could not find region name");
 
-    layer.bindTooltip(country, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
-  
+    layer
+      .bindTooltip(country, {
+        className: "countryLabel",
+        permanent: true,
+        opacity: 0.7,
+        direction: "center",
+      })
+      .openTooltip();
+
     layer.on({
       dblclick: (event) => {
         handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
-        if (!selected.includes(event.target.feature)) {
+        if (!store.selectedFeatures.includes(event.target.feature)) {
           event.target.setStyle({
             fillColor: "purple",
           });
         }
       },
       mouseout: (event) => {
-        if (!selected.includes(event.target.feature)) {
+        if (!store.selectedFeatures.includes(event.target.feature)) {
           event.target.setStyle({
             fillColor: "blue",
           });
         }
       },
       click: (event) => {
+        selectRegion(event);
 
-        if (!selected.includes(event.target.feature)) {
-          setSelected((oldSelected) => [...oldSelected, event.target.feature]);
-          setLayer(layer);
-          setFeature(feature);
-
-        } else if (selected.includes(event.target.feature)) {
-          setSelected(selected.filter((x) => x !== event.target.feature));
-        }
-
-        if (selected.length === 0) {
+        if (store.selectedFeatures.length === 0) {
           setRegionProps({});
           handleDrawerClose();
         } else {
-          setRegionProps(selected[selected.length - 1].properties);
+          setRegionProps(store.selectedFeatures[store.selectedFeatures.length - 1].properties);
         }
-
-        console.log(selected);
       },
     });
 
-    if (selected.includes(feature)) {
+    if (store.selectedFeatures.includes(feature)) {
       layer.setStyle({ fillColor: "green" });
     }
   };
 
   const handleRenameRegion = (feature, layer) => {
     setFeature(feature);
-    setLayer(layer)
+    setLayer(layer);
     setEditOpen(true);
   };
 
@@ -181,17 +196,33 @@ export default function MapEditor() {
   };
 
   const rename = (feature, name, layer) => {
-    if (feature.properties.NAME_2)
-      feature.properties.NAME_2 = name;
-    else if (feature.properties.NAME_1)
-      feature.properties.NAME_1 = name;
-    else if (feature.properties.NAME_0)
-      feature.properties.NAME_0 = name;
-    else if(feature.properties.name)
-      feature.properties.name = name;
-    layer.bindTooltip(name, { className: "countryLabel", permanent: true, opacity: 0.7, direction: "center" }).openTooltip();    
-    setSelected(selected.filter((x) => x !== feature));
-  }
+    const oldName = getFeatureName(feature);
+    // setFeatureName(feature, name);
+    renameAll(feature, oldName, name);
+
+    console.log("feature id: " + feature.id);
+    RequestApi.updateFeatureProperties(feature.id, feature.properties);
+
+    layer
+      .bindTooltip(name, {
+        className: "countryLabel",
+        permanent: true,
+        opacity: 0.7,
+        direction: "center",
+      })
+      .openTooltip();
+    // setSelected(selected.filter((x) => x !== feature));
+  };
+
+  const renameAll = (feature, oldName, newName) => {
+    // find all keys with the old name
+    let keys = Object.keys(feature.properties);
+    for (let key of keys) {
+      if (feature.properties[key] === oldName) {
+        feature.properties[key] = newName;
+      }
+    }
+  };
 
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
@@ -202,18 +233,60 @@ export default function MapEditor() {
   };
 
   const handleGeoJSONDownload = () => {
-    downloadMapAsGeoJSON(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title.replace('/', '_')}.geo.json`);
+    RequestApi.downloadMapAsGeoJSON(
+      store.currentMap.mapInfo.id,
+      `${store.currentMap.mapInfo.title.replace("/", "_")}.geo.json`
+    );
     setAnchorEl(null);
-  }
+  };
 
   const handleShapefileDownload = () => {
-    downloadMapAsShapefile(store.currentMap.mapInfo.id, `${store.currentMap.mapInfo.title.replace('/', '_')}_shp.zip`);
+    RequestApi.downloadMapAsShapefile(
+      store.currentMap.mapInfo.id,
+      `${store.currentMap.mapInfo.title.replace("/", "_")}_shp.zip`
+    );
     setAnchorEl(null);
-  }
+  };
+
+  const removeVertex = (vertex) => {
+    console.log("remove vertex");
+    if (!window.confirm("Are you sure you want to delete this vertex?")) {
+      return;
+    }
+
+    const lat = vertex.lat;
+    const lng = vertex.lng;
+    console.log(vertex);
+
+    // Get the vertices to remove
+    let toRemove = [];
+    store.currentMap.json.features.forEach((f) => {
+      f.geometry.coordinates[0].forEach((xy) => {
+        if (xy[0] === lng && xy[1] === lat) {
+          toRemove.push(xy);
+        }
+      });
+    });
+    console.log("matching coords", toRemove);
+
+    if (toRemove.length >= 3) {
+      window.alert("Cannot delete a vertex shared by more than 2 regions");
+      return;
+    }
+
+    // Remove the vertices
+    store.currentMap.json.features.forEach((f) => {
+      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
+        (xy) => !(xy[0] === lng && xy[1] === lat)
+      );
+    });
+    // TODO map data not re-rendering
+    // store.setCurrentMap(store.currentMap);
+  };
 
   let customdata =
-    selected.length > 0
-      ? { Region: selected[selected.length - 1].properties.name }
+    store.selectedFeatures.length > 0
+      ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
       : {};
 
   let DrawerContent = editingAttr ? (
@@ -261,7 +334,7 @@ export default function MapEditor() {
           </Box>
           <Box>
             <MapContainer
-              id='leaflet-canvas'
+              id="leaflet-canvas"
               style={{ height: "90vh" }}
               zoomControl={false}
               zoom={2}
@@ -279,21 +352,42 @@ export default function MapEditor() {
               >
                 <DrawerHeader>
                   <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === "ltr" ? (
-                      <ChevronLeftIcon />
-                    ) : (
-                      <ChevronRightIcon />
-                    )}
+                    {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                   </IconButton>
                 </DrawerHeader>
                 {DrawerContent}
               </Drawer>
-              <GeoJSON
-                key={selected.length}
-                style={mapStyle}
-                data={store.currentMap.json.features}
-                onEachFeature={onFeature}
-              />
+              <Pane name="markers" style={{ zIndex: 500 }}>
+                {store.selectedFeatures.length === 1 &&
+                  store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
+                    <CircleMarker
+                      key={i}
+                      center={[point[1], point[0]]}
+                      pathOptions={{
+                        color: "blue",
+                        fillColor: "blue",
+                        bubblingMouseEvents: false,
+                        fillOpacity: 1.0,
+                      }}
+                      radius={5}
+                      eventHandlers={{
+                        click: (e) => {
+                          removeVertex(e.latlng);
+                        },
+                      }}
+                    ></CircleMarker>
+                  ))}
+              </Pane>
+              <Pane name="mapdata" style={{ zIndex: 499 }}>
+                {store.currentMap && (
+                  <GeoJSON
+                    key={store.selectedFeatures.length}
+                    style={mapStyle}
+                    data={store.currentMap.json.features}
+                    onEachFeature={onFeature}
+                  />
+                )}
+              </Pane>
               <ZoomControl position="topright" />
               <Control position="topright">
                 <Stack direction="column">
@@ -316,7 +410,10 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Rename Region">
-                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={()=>setEditOpen(true)}>
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={() => setEditOpen(true)}
+                    >
                       <AbcIcon />
                     </Button>
                   </Tooltip>
@@ -331,7 +428,7 @@ export default function MapEditor() {
                 layer={currLayer}
                 show={editOpen}
                 feature={currFeature}
-                rename={(currFeature ,name, layer) => rename(currFeature, name, layer)}
+                rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
                 close={() => setEditOpen(false)}
               />
             </MapContainer>
