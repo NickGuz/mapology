@@ -121,50 +121,36 @@ exports.getTagsByMapId = async (req, res) => {
 };
 
 exports.updateMapTitle = async (req, res) => {
-  const map = await SequelizeManager.updateMapTitle(
-    req.params.id,
-    req.body.title
-  );
+  const map = await SequelizeManager.updateMapTitle(req.params.id, req.body.title);
   return res.status(200).json({
     data: map,
   });
 };
 
 exports.updateMapDescription = async (req, res) => {
-  const map = await SequelizeManager.updateMapDescription(
-    req.params.id,
-    req.body.description
-  );
+  const map = await SequelizeManager.updateMapDescription(req.params.id, req.body.description);
   return res.status(200).json({
     data: map,
   });
 };
 
 exports.updateFeatureProperties = async (req, res) => {
-  const feature = await SequelizeManager.updateFeatureProperties(
-    req.params.id,
-    req.body.data
-  );
+  const feature = await SequelizeManager.updateFeatureProperties(req.params.id, req.body.data);
   return res.status(200).json({
     data: feature,
   });
 };
 
 exports.updateFeatureGeometry = async (req, res) => {
-  const feature = await SequelizeManager.updateFeatureGeometry(
-    req.params.id,
-    req.body.data
-  );
+  console.log("UPDATING");
+  const feature = await SequelizeManager.updateFeatureGeometry(req.params.id, req.body.data);
   return res.status(200).json({
     data: feature,
   });
 };
 
 exports.insertFeature = async (req, res) => {
-  const feature = await SequelizeManager.insertFeature(
-    req.body.mapId,
-    req.body.data
-  );
+  const feature = await SequelizeManager.insertFeature(req.body.mapId, req.body.data);
   res.status(201).json({
     data: feature,
   });
