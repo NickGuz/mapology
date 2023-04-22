@@ -27,6 +27,7 @@ function GlobalStoreContextProvider(props) {
     currentMap: null,
     displayedMaps: [],
     selectedFeatures: [],
+    mapUpdates: 0,
   });
 
   // const navigate = useNavigate();
@@ -57,6 +58,7 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           currentMap: payload,
+          mapUpdates: store.mapUpdates + 1, // this is stupid but using this as GeoJSON key to force an update
         });
       }
       case GlobalStoreActionType.SET_DISPLAYED_MAPS: {
