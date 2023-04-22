@@ -248,42 +248,6 @@ export default function MapEditor() {
     setAnchorEl(null);
   };
 
-  const removeVertex = (vertex) => {
-    console.log("remove vertex");
-    if (!window.confirm("Are you sure you want to delete this vertex?")) {
-      return;
-    }
-
-    const lat = vertex.lat;
-    const lng = vertex.lng;
-    console.log(vertex);
-
-    // Get the vertices to remove
-    let toRemove = [];
-    store.currentMap.json.features.forEach((f) => {
-      f.geometry.coordinates[0].forEach((xy) => {
-        if (xy[0] === lng && xy[1] === lat) {
-          toRemove.push(xy);
-        }
-      });
-    });
-    console.log("matching coords", toRemove);
-
-    if (toRemove.length >= 3) {
-      window.alert("Cannot delete a vertex shared by more than 2 regions");
-      return;
-    }
-
-    // Remove the vertices
-    store.currentMap.json.features.forEach((f) => {
-      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-        (xy) => !(xy[0] === lng && xy[1] === lat)
-      );
-    });
-    // TODO map data not re-rendering
-    // store.setCurrentMap(store.currentMap);
-  };
-
   let customdata =
     store.selectedFeatures.length > 0
       ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
@@ -357,31 +321,26 @@ export default function MapEditor() {
                 </DrawerHeader>
                 {DrawerContent}
               </Drawer>
-              <Pane name="markers" style={{ zIndex: 500 }}>
+              <Pane
+                key={store.selectedFeatures.length + store.mapUpdates}
+                name="markers"
+                style={{ zIndex: 500 }}
+              >
+                {/* TODO Currently broken on multipolygons */}
                 {store.selectedFeatures.length === 1 &&
                   store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
-                    <CircleMarker
+                    <Vertex
                       key={i}
+                      featureId={store.selectedFeatures[0].id}
                       center={[point[1], point[0]]}
-                      pathOptions={{
-                        color: "blue",
-                        fillColor: "blue",
-                        bubblingMouseEvents: false,
-                        fillOpacity: 1.0,
-                      }}
-                      radius={5}
-                      eventHandlers={{
-                        click: (e) => {
-                          removeVertex(e.latlng);
-                        },
-                      }}
-                    ></CircleMarker>
+                    ></Vertex>
                   ))}
               </Pane>
               <Pane name="mapdata" style={{ zIndex: 499 }}>
                 {store.currentMap && (
                   <GeoJSON
-                    key={store.selectedFeatures.length}
+                    // key={store.mapUpdates}
+                    key={store.selectedFeatures.length + store.mapUpdates}
                     style={mapStyle}
                     data={store.currentMap.json.features}
                     onEachFeature={onFeature}
@@ -451,3 +410,97 @@ export default function MapEditor() {
     </Box>
   );
 }
+
+const Vertex = (props) => {
+  const [point, setPoint] = useState(null);
+
+  const map = useMap();
+  const { store } = useContext(GlobalStoreContext);
+
+  useEffect(() => {
+    setPoint(props.center);
+  }, []);
+
+  const removeVertex = (vertex) => {
+    if (!window.confirm("Are you sure you want to delete this vertex?")) {
+      return;
+    }
+
+    const lat = vertex.lat;
+    const lng = vertex.lng;
+
+    // Get the vertices to remove
+    let toRemove = [];
+    store.currentMap.json.features.forEach((f) => {
+      f.geometry.coordinates[0].forEach((xy) => {
+        if (xy[0] === lng && xy[1] === lat) {
+          toRemove.push(xy);
+        }
+      });
+    });
+
+    if (toRemove.length >= 3) {
+      window.alert("Cannot delete a vertex shared by more than 2 regions");
+      return;
+    }
+
+    // Remove the vertices
+    store.currentMap.json.features.forEach((f) => {
+      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
+        (xy) => !(xy[0] === lng && xy[1] === lat)
+      );
+    });
+
+    store.setCurrentMap(store.currentMap);
+  };
+
+  const trackCursor = (event) => {
+    setPoint(event.latlng);
+  };
+
+  const updateFeature = () => {
+    if (!point.lat || !point.lng) {
+      return;
+    }
+    let feature = store.currentMap.json.features.find((f) => f.id === props.featureId);
+    let pnt = feature.geometry.coordinates[0].find(
+      (p) => p[0] === props.center[1] && p[1] === props.center[0]
+    );
+    pnt[0] = point.lng;
+    pnt[1] = point.lat;
+
+    store.setCurrentMap(store.currentMap);
+  };
+
+  return (
+    <>
+      {point && (
+        <CircleMarker
+          center={point}
+          pathOptions={{
+            color: "blue",
+            fillColor: "blue",
+            bubblingMouseEvents: false,
+            fillOpacity: 1.0,
+          }}
+          radius={5}
+          draggable={true}
+          eventHandlers={{
+            dblclick: (e) => {
+              removeVertex(e.latlng);
+            },
+            mousedown: (e) => {
+              map.on("mousemove", trackCursor);
+              map.dragging.disable();
+            },
+            mouseup: (e) => {
+              map.off("mousemove");
+              map.dragging.enable();
+              updateFeature();
+            },
+          }}
+        ></CircleMarker>
+      )}
+    </>
+  );
+};
