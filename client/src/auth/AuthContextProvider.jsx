@@ -99,7 +99,7 @@ auth.getAllUsers = async function() {
 auth.loginUser = async function(userInfo, password){
 	console.log("getting")
 	const response = await api.loginUser(userInfo,password);
-	console.log("logging in user" + response.status)
+	console.log(response)
 	
 };
 
