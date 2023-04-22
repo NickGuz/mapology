@@ -17,6 +17,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import GlobalStoreContext from "../store/store";
 import * as RequestApi from "../store/GlobalStoreHttpRequestApi";
+import ScreenShooter from "./ScreenShooter";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -347,6 +348,7 @@ export default function MapEditor() {
                   />
                 )}
               </Pane>
+              <ScreenShooter />
               <ZoomControl position="topright" />
               <Control position="topright">
                 <Stack direction="column">
