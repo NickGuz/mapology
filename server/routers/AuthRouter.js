@@ -16,7 +16,7 @@ router.post('/login', AuthController.login);
 router.post('/logout', AuthController.logout);
 
 // Handles new user registration requests
-router.post('/users', AuthController.register);
+router.post('/register', AuthController.register);
 
 // Handles get users
 router.get('/users', AuthController.getAllUsers);

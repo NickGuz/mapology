@@ -8,9 +8,17 @@ const LoginModal = (props) => {
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const handleSubmit = () => {
-        auth.closeLoginDialog();
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        auth.loginUser(
+            formData.get('userInfo'),
+            formData.get('password')
+        );
+        console.log(auth.getAllUsers());
     }
+
+    
 
     const handleForgotPassword = () => {
         auth.closeLoginDialog();
@@ -21,38 +29,45 @@ const LoginModal = (props) => {
         <Dialog open={auth.loginDialogOpen} onClose={auth.closeLoginDialog}>
             <DialogTitle>Login</DialogTitle>
             <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="email-or-username"
-                    label="Email or Username"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="password"
-                    label="Password"
-                    type="password"
-                    fullWidth
-                    variant="standard"
-                />
-
-                <FormControlLabel control={<Checkbox />} label="Remember me" />
-
+            
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="userInfo"
+                            label="Email Address or Username"
+                            name="userInfo"
+                            autoComplete="Email Address or Username"
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            sx={{ mt: 3, mb: 2 }}
+                        />
+                        <FormControlLabel
+                            control={<Checkbox value="remember" color="primary" />}
+                            label="Remember me"
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Sign In
+                        </Button>
+                
+            </Box>
                 <Button
-                    onClick={handleSubmit}
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    Login
-                </Button>
-                <Button
-                    onClick={handleSubmit}
+                    
                     type="submit"
                     fullWidth
                     variant="contained"

@@ -31,16 +31,16 @@ const TextEditor = () => {
         }}
       >
         <p
-          id="text-header"
-          style={{
-            paddingTop: "0px",
-            color: "dimgray",
-            fontSize: "120%",
-            borderTop: "1px solid",
-            borderBottom: "1px solid",
-            borderColor: "darkgray",
-            backgroundColor: "silver",
-          }}
+			id="text-header"
+			style={{
+				paddingTop: "0px",
+				color: "dimgray",
+				fontSize: "120%",
+				borderTop: "1px solid",
+				borderBottom: "1px solid",
+				borderColor: "darkgray",
+				backgroundColor: "silver",
+			}}
         >
           Text
         </p>
