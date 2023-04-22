@@ -105,6 +105,8 @@ exports.updateFeatureProperties = async (featureId, data) => {
 };
 
 exports.updateFeatureGeometry = async (featureId, data) => {
+  console.log("featureId", featureId);
+  console.log("data", data);
   return await Features.update(
     { geometry: data },
     {

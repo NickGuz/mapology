@@ -436,7 +436,8 @@ const Vertex = (props) => {
     store.currentMap.json.features.forEach((f) => {
       f.geometry.coordinates[0].forEach((xy) => {
         if (xy[0] === lng && xy[1] === lat) {
-          toRemove.push(xy);
+          // toRemove.push({ feature: f, coords: xy });
+          toRemove.push(f);
         }
       });
     });
@@ -447,13 +448,21 @@ const Vertex = (props) => {
     }
 
     // Remove the vertices
-    store.currentMap.json.features.forEach((f) => {
+    // store.currentMap.json.features.forEach((f) => {
+    //   f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
+    //     (xy) => !(xy[0] === lng && xy[1] === lat)
+    //   );
+    // });
+    toRemove.forEach((f) => {
       f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-        (xy) => !(xy[0] === lng && xy[1] === lat)
+        (coords) => !(coords[0] === lng && coords[1] === lat)
       );
     });
 
     store.setCurrentMap(store.currentMap);
+    toRemove.forEach((f) => {
+      RequestApi.updateFeatureGeometry(f.id, f.geometry);
+    });
   };
 
   const trackCursor = (event) => {
@@ -472,6 +481,7 @@ const Vertex = (props) => {
     pnt[1] = point.lat;
 
     store.setCurrentMap(store.currentMap);
+    RequestApi.updateFeatureGeometry(feature.id, feature.geometry);
   };
 
   return (
