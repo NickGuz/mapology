@@ -42,6 +42,7 @@ import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
 import { useParams } from "react-router-dom";
+const turf = require('@turf/turf')
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -186,7 +187,39 @@ export default function MapEditor() {
     setFeature(feature);
     setLayer(layer);
     setEditOpen(true);
-  };
+  }
+    
+  const merge = () => {
+      // try to do features instead of the properties inside of feature
+
+      const firstGeom = store.selectedFeatures[0];
+      console.log(firstGeom);
+      // const firstProps = store.selectedFeatures[0].properties;
+      // console.log(firstProps)
+
+      let name = window.prompt("Input a name for the merged region");
+      if (!name) return;
+
+      const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
+          return turf.union(merged, region);
+      }, firstGeom);
+
+      mergedFeature.properties.NAME_0 = name
+
+      console.log(store.currentMap.json.features);
+      store.currentMap.json.features = store.currentMap.json.features.filter(
+          (region) => !store.selectedFeatures.includes(region)
+      );
+      store.currentMap.json.features.push(mergedFeature);
+      console.log(store.currentMap.json.features);
+
+      store.setCurrentMap(store.currentMap);
+      
+      // setSelected([]);
+ };
+
+
+
 
   const editAttribute = (event) => {
     setEdit(true);
@@ -358,7 +391,9 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Merge">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                    <Button sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={() => merge()}
+                    >
                       <MergeIcon />
                     </Button>
                   </Tooltip>
