@@ -12,7 +12,7 @@ const app = server;
 /**
  * Test register a new user
  */
-test("POST /users", async () => {
+test("POST /register", async () => {
   const data = {
     id: 1,
     email: "test@test.com",
@@ -22,7 +22,7 @@ test("POST /users", async () => {
   };
 
   await supertest(app)
-    .post("/auth/users")
+    .post("/auth/register")
     .send(data)
     .expect(200)
     // can also test stuff like this but ignoring for now
