@@ -11,6 +11,7 @@ import FileUpload from "react-mui-fileuploader";
 import { Alert } from "@mui/material";
 import { createMap } from "../store/GlobalStoreHttpRequestApi";
 import shp from "shpjs";
+import AuthContext from "../auth/AuthContextProvider";
 
 const ImportModal = (props) => {
   const [filesToUpload, setFilesToUpload] = useState([]);
@@ -19,6 +20,7 @@ const ImportModal = (props) => {
   const [tags, setTags] = useState([]);
 
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
 
   const handleSubmit = () => {
     store.setOpenImportDialog(false);
@@ -51,8 +53,8 @@ const ImportModal = (props) => {
 
     fileReader.onload = async (event) => {
       let data = JSON.parse(event.target.result);
-      console.log("parsed json", data);
-      await createMap(null, 4, name, description, tags, data);
+      let userId = auth.user.id || 4;
+      await createMap(null, userId, name, description, tags, data);
       store.displayAllMaps();
     };
 
@@ -73,9 +75,8 @@ const ImportModal = (props) => {
           shp.parseDbf(dbfReader.result),
         ]);
 
-        console.log("geojson", geojson);
-
-        await createMap(null, 4, name, description, tags, geojson);
+        let userId = auth.user.id || 4;
+        await createMap(null, userId, name, description, tags, geojson);
         store.displayAllMaps();
       };
     };
