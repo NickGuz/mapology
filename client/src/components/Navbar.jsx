@@ -26,7 +26,11 @@ const Navbar = (props) => {
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
 
+  const handleHome = (event) => {
+    navigate("/");
+  }
   const handleOpenUserMenu = (event) => {
+    console.log(auth.user)
     setAnchorElUser(event.currentTarget);
   };
 
@@ -43,11 +47,11 @@ const Navbar = (props) => {
   const handleLogin = () => {
     // close the user menu
     setAnchorElUser(null);
-    auth.openLoginDialog();
+    navigate("/login/")
   };
 
   const handleLogout = () => {
-    // close the user menu
+    auth.logoutUser();
     setAnchorElUser(null);
   };
 
@@ -140,13 +144,13 @@ const Navbar = (props) => {
     return (
       <div>
         <MenuItem key={"Profile"} onClick={handleProfile}>
-          <Typography textAlign="center">Log In</Typography>
+          <Typography textAlign="center">Profile</Typography>
         </MenuItem>
         <MenuItem key={"Settings"} onClick={handleSettings}>
-          <Typography textAlign="center">Register</Typography>
+          <Typography textAlign="center">Settings</Typography>
         </MenuItem>
         <MenuItem key={"Log Out"} onClick={handleLogout}>
-          <Typography textAlign="center">Register</Typography>
+          <Typography textAlign="center">Log out</Typography>
         </MenuItem>
       </div>
     );
@@ -161,7 +165,7 @@ const Navbar = (props) => {
               variant="h6"
               noWrap
               component="a"
-              href="/"
+              onClick={handleHome}
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
@@ -169,6 +173,7 @@ const Navbar = (props) => {
                 letterSpacing: ".1rem",
                 color: "inherit",
                 textDecoration: "none",
+                cursor: 'pointer'
               }}
             >
               Mapology
@@ -220,7 +225,7 @@ const Navbar = (props) => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {props.isLoggedIn ? getLoggedInButtons() : getGuestButtons()}
+                {auth.user ? getLoggedInButtons() : getGuestButtons()}
               </Menu>
             </Box>
           </Toolbar>

@@ -13,10 +13,10 @@ router.post('/login', AuthController.login);
 
 // Handles logout user requests
 // TODO
-router.post('/logout', AuthController.logout);
+router.get('/logout', AuthController.logout);
 
 // Handles new user registration requests
-router.post('/users', AuthController.register);
+router.post('/register', AuthController.register);
 
 // Handles get users
 router.get('/users', AuthController.getAllUsers);

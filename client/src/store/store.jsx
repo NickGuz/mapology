@@ -1,7 +1,7 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState, useContext} from "react";
 import { getMapById, getAllMaps } from "./GlobalStoreHttpRequestApi";
 // import { useNavigate } from "react-router-dom";
-// import AuthContext from "../auth/AuthContextProvider";
+import AuthContext from "../auth/AuthContextProvider";
 
 export const GlobalStoreContext = createContext({});
 
@@ -20,6 +20,10 @@ export const PageViewTypes = {
 };
 
 function GlobalStoreContextProvider(props) {
+  const { auth } = useContext(AuthContext);
+  useEffect(() => {
+    console.log("global store testing things")
+  }, [auth.user]);
   const [store, setStore] = useState({
     pageView: PageViewTypes.HOME,
     importDialogOpen: false,
@@ -31,7 +35,7 @@ function GlobalStoreContextProvider(props) {
   });
 
   // const navigate = useNavigate();
-  // const { auth } = useContext(AuthContext);
+  
 
   const storeReducer = (action) => {
     const { type, payload } = action;
