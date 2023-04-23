@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Comment from "./Comment";
-import data from "../map-data.js";
+import Comment from "../util/Comment";
+import data from "../../map-data.js";
 import Chip from "@mui/material/Chip";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -21,7 +21,7 @@ import {
   Switch,
 } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
-import { getMapById, deleteMap } from "../store/GlobalStoreHttpRequestApi";
+import { getMapById, deleteMap } from "../../store/GlobalStoreHttpRequestApi";
 
 const MapInfoScreen = (props) => {
   const [mapData, setMapData] = useState(null);
@@ -54,6 +54,9 @@ const MapInfoScreen = (props) => {
 
   // TODO need to set this to only allow author to delete once we get accounts setup
   const handleDeleteMap = () => {
+    if (!mapData) {
+      return;
+    }
     console.log("deleting map:" + mapData.mapInfo.id);
     deleteMap(mapData.mapInfo.id);
     setDeleteOpen(false);
@@ -127,7 +130,7 @@ const MapInfoScreen = (props) => {
                 />
               ))}
             <IconButton onClick={handleDeleteMapDialog} sx={{ ml: "auto", mr: 2 }}>
-              <DeleteIcon />{" "}
+              <DeleteIcon id="delete-map-btn" />{" "}
             </IconButton>
           </Box>
           <Box display="flex" justifyContent="left" marginTop="20px">
@@ -146,7 +149,7 @@ const MapInfoScreen = (props) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteClose}>Cancel</Button>
-          <Button onClick={handleDeleteMap} autoFocus>
+          <Button id="confirm-delete-btn" onClick={handleDeleteMap} autoFocus>
             Delete
           </Button>
         </DialogActions>

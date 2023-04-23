@@ -1,7 +1,6 @@
-
 import * as React from "react";
 import { useContext } from "react";
-import AuthContext from "../auth/AuthContextProvider";
+import AuthContext from "../../auth/AuthContextProvider";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import FormGroup from "@mui/material/FormGroup";
@@ -21,17 +20,14 @@ export default function LoginScreen() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    auth.loginUser(
-        formData.get('userInfo'),
-        formData.get('password')
-    );
+    auth.loginUser(formData.get("userInfo"), formData.get("password"));
     console.log(auth.getAllUsers());
-}
+  };
 
-const handleForgotPassword = () => {
+  const handleForgotPassword = () => {
     auth.closeLoginDialog();
-    navigate('/account-recovery/');
-}
+    navigate("/account-recovery/");
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -53,9 +49,7 @@ const handleForgotPassword = () => {
                   minWidth: "100%",
                   marginBottom: 2,
                 }}
-              >
-                
-              </Box>
+              ></Box>
               <Typography component="h1" variant="h5">
                 Login
               </Typography>
@@ -64,52 +58,41 @@ const handleForgotPassword = () => {
               </Typography>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
                 <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="userInfo"
-                    label="Email Address or Username"
-                    name="userInfo"
-                    autoComplete="Email Address or Username"
-                    autoFocus
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="userInfo"
+                  label="Email Address or Username"
+                  name="userInfo"
+                  autoComplete="Email Address or Username"
+                  autoFocus
                 />
                 <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    sx={{ mt: 3, mb: 2 }}
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  sx={{ mt: 3, mb: 2 }}
                 />
                 <FormControlLabel
-                    control={<Checkbox value="remember" color="primary" />}
-                    label="Remember me"
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
                 />
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    Sign In
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                  Sign In
                 </Button>
-            </Box>
-            <Button
-                    
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 0, mb: 2 }}
-                >
-                    Create Account
-                </Button>
+              </Box>
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 0, mb: 2 }}>
+                Create Account
+              </Button>
 
-                <Box textAlign='right'>
-                    <Button onClick={handleForgotPassword}>Forgot Password?</Button>
-                </Box>
+              <Box textAlign="right">
+                <Button onClick={handleForgotPassword}>Forgot Password?</Button>
+              </Box>
             </Box>
           </Container>
         </Grid>

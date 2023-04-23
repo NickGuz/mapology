@@ -1,11 +1,20 @@
 import { useContext } from "react";
-import {Avatar, Box, Button, Dialog, DialogTitle, List, ListItem, ListItemAvatar} from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemAvatar,
+} from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
-import GlobalStoreContext from "../store/store";
-import SketchColorPicker from './SketchColorPicker';
+import GlobalStoreContext from "../../store/store";
+import SketchColorPicker from "../util/SketchColorPicker";
 
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 
 const SettingsModal = () => {
   const { store } = useContext(GlobalStoreContext);
@@ -14,24 +23,16 @@ const SettingsModal = () => {
     store.setOpenSettingsModal(false);
   };
 
-  const handleColorPickerChange = () => {
-
-  }
+  const handleColorPickerChange = () => {};
 
   return (
-    <Dialog
-      onClose={handleClose}
-      open={store.settingsModalOpen}
-      fullWidth
-      maxWidth="sm"
-    >
+    <Dialog onClose={handleClose} open={store.settingsModalOpen} fullWidth maxWidth="sm">
       <DialogTitle>Settings</DialogTitle>
       <List
         sx={{
           pr: 0,
         }}
       >
-
         <ListItem divider>
           <SentimentSatisfiedAltIcon />
           <ListItemText>Profile</ListItemText>
@@ -43,14 +44,14 @@ const SettingsModal = () => {
 
         <ListItem>
           <ListItemAvatar>
-            <Avatar/>
+            <Avatar />
           </ListItemAvatar>
-          <Button sx={{ ml: '30%' }}>Edit Bio</Button>
+          <Button sx={{ ml: "30%" }}>Edit Bio</Button>
         </ListItem>
 
         <ListItem>
           <ListItemText>Color Theme</ListItemText>
-          <SketchColorPicker/>
+          <SketchColorPicker />
         </ListItem>
 
         <ListItem divider>
@@ -65,7 +66,6 @@ const SettingsModal = () => {
         <ListItem>
           <Button>Change Password</Button>
         </ListItem>
-
       </List>
     </Dialog>
   );

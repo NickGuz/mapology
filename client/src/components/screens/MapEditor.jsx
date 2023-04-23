@@ -6,18 +6,18 @@ import { MapContainer, GeoJSON, ZoomControl, useMap, Pane, CircleMarker } from "
 import * as L from "leaflet";
 import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 import Control from "react-leaflet-custom-control";
-import mapData from "../example-data/countries.json";
+import mapData from "../../example-data/countries.json";
 import { Stack, Button, Tooltip, Menu, MenuItem } from "@mui/material";
 import "leaflet/dist/leaflet.css";
-import ChangeNameModal from "./ChangeNameModal";
+import ChangeNameModal from "../modals/ChangeNameModal";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import GlobalStoreContext from "../store/store";
-import * as RequestApi from "../store/GlobalStoreHttpRequestApi";
-import ScreenShooter from "./ScreenShooter";
+import GlobalStoreContext from "../../store/store";
+import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
+import ScreenShooter from "../util/ScreenShooter";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -27,9 +27,9 @@ import {
   //INPUT_USAGE_TYPES,
 } from "react-editable-json-tree";
 
-import TextEditor from "./TextEditor";
-import RegionEditor from "./RegionEditor";
-import LegendEditor from "./LegendEditor";
+import TextEditor from "../util/TextEditor";
+import RegionEditor from "../util/RegionEditor";
+import LegendEditor from "../util/LegendEditor";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -42,7 +42,7 @@ import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
 import { useParams } from "react-router-dom";
-const turf = require('@turf/turf')
+const turf = require("@turf/turf");
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -187,39 +187,36 @@ export default function MapEditor() {
     setFeature(feature);
     setLayer(layer);
     setEditOpen(true);
-  }
-    
+  };
+
   const merge = () => {
-      // try to do features instead of the properties inside of feature
+    // try to do features instead of the properties inside of feature
 
-      const firstGeom = store.selectedFeatures[0];
-      console.log(firstGeom);
-      // const firstProps = store.selectedFeatures[0].properties;
-      // console.log(firstProps)
+    const firstGeom = store.selectedFeatures[0];
+    console.log(firstGeom);
+    // const firstProps = store.selectedFeatures[0].properties;
+    // console.log(firstProps)
 
-      let name = window.prompt("Input a name for the merged region");
-      if (!name) return;
+    let name = window.prompt("Input a name for the merged region");
+    if (!name) return;
 
-      const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
-          return turf.union(merged, region);
-      }, firstGeom);
+    const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
+      return turf.union(merged, region);
+    }, firstGeom);
 
-      mergedFeature.properties.NAME_0 = name
+    mergedFeature.properties.NAME_0 = name;
 
-      console.log(store.currentMap.json.features);
-      store.currentMap.json.features = store.currentMap.json.features.filter(
-          (region) => !store.selectedFeatures.includes(region)
-      );
-      store.currentMap.json.features.push(mergedFeature);
-      console.log(store.currentMap.json.features);
+    console.log(store.currentMap.json.features);
+    store.currentMap.json.features = store.currentMap.json.features.filter(
+      (region) => !store.selectedFeatures.includes(region)
+    );
+    store.currentMap.json.features.push(mergedFeature);
+    console.log(store.currentMap.json.features);
 
-      store.setCurrentMap(store.currentMap);
-      
-      // setSelected([]);
- };
+    store.setCurrentMap(store.currentMap);
 
-
-
+    // setSelected([]);
+  };
 
   const editAttribute = (event) => {
     setEdit(true);
@@ -391,7 +388,8 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Merge">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
                       onClick={() => merge()}
                     >
                       <MergeIcon />
