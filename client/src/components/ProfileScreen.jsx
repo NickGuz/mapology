@@ -34,11 +34,12 @@ const ProfileScreen = (props) => {
       setUser(res.data);
       if (res.data) {
         const allMaps = await getAllMapsByUserId(res.data.id);
+        console.log(allMaps)
+
         store.setDisplayedMaps(allMaps.data.data);
       }
     };
     getUserData().catch(console.error);
-  
   }, []);
 
   return (
