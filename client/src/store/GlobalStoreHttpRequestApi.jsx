@@ -28,10 +28,10 @@ export const deleteMap = async (mapId) => {
 export const getAllMaps = async () => {
   return await api.get("/api/maps");
 };
-//TODO
-export const getMapsByUser = async () => {
-
-}
+//TEST
+export const getAllMapsByUserId = async (userId) => {
+  return await api.get(`/api/maps?userId=${userId}`);
+};
 
 export const getMapById = async (id) => {
   return await api.get(`/api/map/${id}`);
