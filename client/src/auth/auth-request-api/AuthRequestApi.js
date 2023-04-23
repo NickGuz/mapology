@@ -12,7 +12,6 @@ baseURL: baseURL,
 });
 
 export const loginUser = (userInfo, password) => {
-	console.log("requesting")
 	return api.post('/auth/login', {
 		userInfo: userInfo,
 		password: password
@@ -21,6 +20,8 @@ export const loginUser = (userInfo, password) => {
 		return error.response
 	});
 };
+
+export const logoutUser = () => api.get(`/auth/logout/`)
 
 
 // post request to register user
@@ -54,6 +55,7 @@ registerUser,
 getAllUsers,
 getUserById,
 loginUser,
+logoutUser
 };
 
 export default apis;

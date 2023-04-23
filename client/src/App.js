@@ -12,6 +12,7 @@ import { GlobalStoreContextProvider } from "./store/store";
 import MapEditor from "./components/MapEditor";
 import MapInfoScreen from "./components/MapInfoScreen";
 import PasswordResetScreen from "./components/PasswordResetScreen";
+import LoginScreen from "./components/LoginScreen";
 
 const App = () => {
   useEffect(() => {
@@ -32,6 +33,7 @@ const App = () => {
             <Route path="/map-editor/:id" element={<MapEditor />} />
             <Route path="/map-info/:id" element={<MapInfoScreen />} />
             <Route path="/password-reset/" element={<PasswordResetScreen />} />
+            <Route path = "/login/" element = {<LoginScreen/>} />
           </Routes>
         </GlobalStoreContextProvider>
       </AuthContextProvider>

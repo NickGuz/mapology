@@ -1,7 +1,7 @@
+const auth = require('../auth')
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { User } = require("../sequelize/sequelize");
-
 exports.loggedIn = () => {
 	
 
@@ -30,8 +30,8 @@ exports.login = async (req, res) => {
                 })
         }
 		
-		const passwordCorrect = await bcrypt.compare(password, user.password);
-        if (!passwordCorrect) {
+		// const passwordCorrect = await bcrypt.compare(password, user.password);
+        if (password != user.password) {
             console.log("Incorrect password");
             return res
                 .status(401)
@@ -39,7 +39,15 @@ exports.login = async (req, res) => {
                     errorMessage: "Wrong password provided."
                 })
         }
-		res.status(200).json(user)
+
+		const token = auth.signToken(user._id);
+		console.log(token);
+
+		res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: true
+        }).status(200).json(user)
 	}
 	catch (err) {
         console.error(err);
@@ -47,8 +55,13 @@ exports.login = async (req, res) => {
     }
 };
 
-exports.logout = () => {
-// TODO
+exports.logout = (req, res) => {
+	res.cookie("token", "", {
+        httpOnly: true,
+        expires: new Date(0),
+        secure: true,
+        sameSite: "none"
+    }).send();
 };
 
 exports.register = async (req, res) => {
@@ -70,7 +83,7 @@ exports.register = async (req, res) => {
 		});
 	}
 	const salt = await bcrypt.genSalt(saltRounds);
-	const hash = await bcrypt.hash(req.body.password, salt);
+	const hash = req.body.password
 	const user = await User.create({
 		email: req.body.email,
 		username: req.body.username,

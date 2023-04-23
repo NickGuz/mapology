@@ -5,19 +5,24 @@ import Typography from "@mui/material/Typography";
 import { Box, Button, Paper } from "@mui/material";
 import { getAllMaps } from "../store/GlobalStoreHttpRequestApi";
 import GlobalStoreContext from "../store/store";
+import AuthContext from '../auth/AuthContextProvider';
 
 const HomeScreen = (props) => {
   const { store } = useContext(GlobalStoreContext);
-
+  const { auth } = useContext(AuthContext);
   useEffect(() => {
     const getData = async () => {
       const allMaps = await getAllMaps();
       console.log("maps", allMaps);
+      console.log("user" , auth.user)
       store.setDisplayedMaps(allMaps.data.data);
     };
 
     getData().catch(console.error);
   }, []);
+
+
+
 
   return (
     <div

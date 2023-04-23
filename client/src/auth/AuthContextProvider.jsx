@@ -9,6 +9,9 @@ REGISTER_USER: "REGISTER_USER",
 GET_ALL_USERS: "GET_ALL_USERS",
 OPEN_LOGIN_DIALOG: "OPEN_LOGIN_DIALOG",
 CLOSE_LOGIN_DIALOG: "CLOSE_LOGIN_DIALOG",
+LOGIN_USER: "LOGIN_USER",
+LOGOUT_USER: "LOGOUT_USER"
+
 };
 
 function AuthContextProvider(props) {
@@ -52,6 +55,21 @@ const authReducer = (action) => {
 		invalidEmail: payload.invalidEmail,
 		});
 	}
+	case AuthActionType.LOGIN_USER: {
+		return setAuth({
+			...auth, 
+			user: payload.user,
+			loggedIn: true,
+		});
+	}
+	case AuthActionType.LOGOUT_USER: {
+		return setAuth({
+			...auth,
+			user: null,
+			loggedIn: false
+		})
+	}
+
 	case AuthActionType.OPEN_LOGIN_DIALOG: {
 		return setAuth({
 		...auth,
@@ -97,15 +115,33 @@ auth.getAllUsers = async function() {
 	// }
 };
 auth.loginUser = async function(userInfo, password){
-	console.log("getting")
 	const response = await api.loginUser(userInfo,password);
 	console.log(response)
-	
+	if (response.status === 200) {
+		authReducer({
+			type: AuthActionType.LOGIN_USER,
+			payload: {
+				user: response.data,
+			}
+		});
+		navigate("/");
+	}
+	console.log("logging" , auth.loggedIn, auth.user)
 };
+
+auth.logoutUser = async function() {
+	const response = await api.logoutUser();
+	if (response.status === 200) {
+		authReducer( {
+			type: AuthActionType.LOGOUT_USER,
+		})
+		navigate("/");
+	}
+}
 
 auth.registerUser = async function(username, email, password, confirmPassword) {
 	const response = await api.registerUser(username, email, password, confirmPassword);
-	console.log("response", response);
+	console.log("registered user ", response);
 
 	if (response.status === 200) {
 	authReducer({

@@ -44,11 +44,11 @@ const Navbar = (props) => {
   const handleLogin = () => {
     // close the user menu
     setAnchorElUser(null);
-    auth.openLoginDialog();
+    navigate("/login/")
   };
 
   const handleLogout = () => {
-    // close the user menu
+    auth.logoutUser();
     setAnchorElUser(null);
   };
 
