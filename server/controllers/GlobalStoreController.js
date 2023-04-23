@@ -56,7 +56,7 @@ exports.getAllMaps = async (req, res) => {
 };
 
 exports.getAllMapsByUserId = async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.params.id;
   const maps = await SequelizeManager.getAllMapsByUserId(userId);
   if (maps) {
     return res.status(200).json({
