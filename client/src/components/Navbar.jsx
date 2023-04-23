@@ -26,6 +26,9 @@ const Navbar = (props) => {
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
 
+  const handleHome = (event) => {
+    navigate("/");
+  }
   const handleOpenUserMenu = (event) => {
     console.log(auth.user)
     setAnchorElUser(event.currentTarget);
@@ -162,7 +165,7 @@ const Navbar = (props) => {
               variant="h6"
               noWrap
               component="a"
-              href="/"
+              onClick={handleHome}
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
@@ -170,6 +173,7 @@ const Navbar = (props) => {
                 letterSpacing: ".1rem",
                 color: "inherit",
                 textDecoration: "none",
+                cursor: 'pointer'
               }}
             >
               Mapology

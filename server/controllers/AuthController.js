@@ -30,8 +30,8 @@ exports.login = async (req, res) => {
                 })
         }
 		
-		// const passwordCorrect = await bcrypt.compare(password, user.password);
-        if (password != user.password) {
+		const passwordCorrect = await bcrypt.compare(password, user.password);
+        if (!passwordCorrect) {
             console.log("Incorrect password");
             return res
                 .status(401)
@@ -82,16 +82,29 @@ exports.register = async (req, res) => {
 		errorMessage: "Passwords don't match",
 		});
 	}
-	const salt = await bcrypt.genSalt(saltRounds);
-	const hash = req.body.password
-	const user = await User.create({
-		email: req.body.email,
-		username: req.body.username,
-		password: hash,
+	bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
+		if (err) {
+		  return res.status(500).json({
+			errorMessage: "Failed to hash password",
+		  });
+		}
+	
+		try {
+		  const user = await User.create({
+			email: req.body.email,
+			username: req.body.username,
+			password: hash,
+		  });
+	
+		  return res.status(200).json(user);
+		} catch (e) {
+		  if (e.name === "SequelizeUniqueConstraintError") {
+			return res.status(403).json({
+			  errorMessage: "Username already exists",
+			});
+		  }
+		}
 	});
-	
-	return res.status(200).json(user);
-	
 };
 
 exports.getAllUsers = async (req, res) => {
