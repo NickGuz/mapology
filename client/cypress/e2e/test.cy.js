@@ -46,9 +46,11 @@ describe("template spec", () => {
       .filter(':contains("Open Editor")')
       .first()
       .click();
-    cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    cy.get("#download-dropdown-btn").click();
     cy.get('.MuiList-root > [tabindex="0"]').click(); //download as geojson
-    cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    cy.get("#download-dropdown-btn").click();
     cy.get(".MuiList-root > :nth-child(2)").click(); //download as shapefile
     cy.readFile("cypress/downloads/Cypress Map Shapefile " + random + ".geo.json");
     cy.readFile("cypress/downloads/Cypress Map Shapefile " + random + "_shp.zip");
@@ -91,9 +93,11 @@ describe("template spec", () => {
       .filter(':contains("Open Editor")')
       .first()
       .click();
-    cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    cy.get("#download-dropdown-btn").click();
     cy.get('.MuiList-root > [tabindex="0"]').click(); //download as geojson
-    cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+    cy.get("#download-dropdown-btn").click();
     cy.get(".MuiList-root > :nth-child(2)").click(); //download as shapefile
     cy.readFile("cypress/downloads/Cypress Map JSON " + random + ".geo.json");
     cy.readFile("cypress/downloads/Cypress Map JSON " + random + "_shp.zip");

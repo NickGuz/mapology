@@ -61,7 +61,7 @@ const TopToolbar = (props) => {
           <SaveIcon />
         </IconButton>
       )}
-      <IconButton onClick={handleOpenDownload}>
+      <IconButton id="download-dropdown-btn" onClick={handleOpenDownload}>
         <DownloadIcon />
       </IconButton>
       <Menu
