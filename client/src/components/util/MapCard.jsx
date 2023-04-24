@@ -17,6 +17,7 @@ import AuthContext from "../../auth/AuthContextProvider";
 const MapCard = (props) => {
   const [author, setAuthor] = useState(null);
   const [tags, setTags] = useState([]);
+  const [dup, setDup] = useState(null);
   const navigate = useNavigate();
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -51,7 +52,11 @@ const MapCard = (props) => {
   };
 
   const handleDuplicate = () => {
-    duplicateMap(auth.user.id, props.data.id);
+    const helper = async () => {
+      let res = await duplicateMap(auth.user.id, props.data.id);
+      navigate(`/map-editor/${res.data.data.id}`);
+    }
+    helper();
   }
 
   return (
@@ -88,7 +93,7 @@ const MapCard = (props) => {
           />
         ))}
       <CardActions>
-        <Button onClick={handleDuplicate} size="small">Duplicate</Button>
+        <Button onClick={handleDuplicate} disabled= {!auth.loggedIn} size="small">Duplicate</Button>
         <Button onClick={handleOpenInfo} size="small" className="card-details-btn">
           Details
         </Button>
