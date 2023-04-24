@@ -1,7 +1,7 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
 import MapCard from "./MapCard";
-import api from "../auth/auth-request-api/AuthRequestApi";
+import api from "../../auth/auth-request-api/AuthRequestApi";
 
 const MapGridType = {
   BROWSE: "BROWSE",
