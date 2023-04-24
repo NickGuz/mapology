@@ -13,12 +13,12 @@ import MenuItem from "@mui/material/MenuItem";
 import SearchIcon from "@mui/icons-material/Search";
 import { Button, InputBase } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../auth/AuthContextProvider";
-import GlobalStoreContext from "../store/store";
-import LoginModal from "./LoginModal";
-import ImportModal from "./ImportModal";
+import AuthContext from "../../auth/AuthContextProvider";
+import GlobalStoreContext from "../../store/store";
+import LoginModal from "../modals/LoginModal";
+import ImportModal from "../modals/ImportModal";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import SettingsModal from "./SettingsModal";
+import SettingsModal from "../modals/SettingsModal";
 
 const Navbar = (props) => {
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -28,9 +28,9 @@ const Navbar = (props) => {
 
   const handleHome = (event) => {
     navigate("/");
-  }
+  };
   const handleOpenUserMenu = (event) => {
-    console.log(auth.user)
+    console.log(auth.user);
     setAnchorElUser(event.currentTarget);
   };
 
@@ -47,7 +47,7 @@ const Navbar = (props) => {
   const handleLogin = () => {
     // close the user menu
     setAnchorElUser(null);
-    navigate("/login/")
+    navigate("/login/");
   };
 
   const handleLogout = () => {
@@ -173,7 +173,7 @@ const Navbar = (props) => {
                 letterSpacing: ".1rem",
                 color: "inherit",
                 textDecoration: "none",
-                cursor: 'pointer'
+                cursor: "pointer",
               }}
             >
               Mapology
@@ -184,10 +184,7 @@ const Navbar = (props) => {
                 <SearchIconWrapper>
                   <SearchIcon />
                 </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search..."
-                  inputProps={{ "aria-label": "search" }}
-                />
+                <StyledInputBase placeholder="Search..." inputProps={{ "aria-label": "search" }} />
               </Search>
 
               <Button

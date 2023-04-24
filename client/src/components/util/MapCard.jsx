@@ -5,11 +5,11 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
-import Italy from "../assets/italy.gif";
+import Italy from "../../assets/italy.gif";
 import { Button, CardActions, Typography } from "@mui/material";
-import api from "../auth/auth-request-api/AuthRequestApi";
-import { getMapById, getTagsByMapId } from "../store/GlobalStoreHttpRequestApi";
-import GlobalStoreContext from "../store/store";
+import api from "../../auth/auth-request-api/AuthRequestApi";
+import { getMapById, getTagsByMapId } from "../../store/GlobalStoreHttpRequestApi";
+import GlobalStoreContext from "../../store/store";
 
 const MapCard = (props) => {
   const [author, setAuthor] = useState(null);
@@ -81,7 +81,7 @@ const MapCard = (props) => {
         ))}
       <CardActions>
         <Button size="small">Duplicate</Button>
-        <Button onClick={handleOpenInfo} size="small">
+        <Button onClick={handleOpenInfo} size="small" className="card-details-btn">
           Details
         </Button>
         <Button onClick={handleOpenEdit} size="small">

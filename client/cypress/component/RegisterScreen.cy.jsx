@@ -1,5 +1,5 @@
 import React from "react";
-import RegisterScreen from "../../src/components/RegisterScreen";
+import RegisterScreen from "../../src/components/screens/RegisterScreen";
 import AuthContext, { AuthContextProvider } from "../../src/auth/AuthContextProvider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 

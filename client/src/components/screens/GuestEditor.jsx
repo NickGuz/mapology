@@ -1,0 +1,3 @@
+const GuestEditor = (props) => {
+  return <></>;
+};

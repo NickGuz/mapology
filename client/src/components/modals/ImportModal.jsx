@@ -1,16 +1,17 @@
 import React, { useContext, useState } from "react";
-import GlobalStoreContext from "../store/store";
+import GlobalStoreContext from "../../store/store";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import TagsInput from "./TagsInput";
+import TagsInput from "../util/TagsInput";
 import FileUpload from "react-mui-fileuploader";
 import { Alert } from "@mui/material";
-import { createMap } from "../store/GlobalStoreHttpRequestApi";
+import { createMap } from "../../store/GlobalStoreHttpRequestApi";
 import shp from "shpjs";
+import AuthContext from "../../auth/AuthContextProvider";
 
 const ImportModal = (props) => {
   const [filesToUpload, setFilesToUpload] = useState([]);
@@ -19,6 +20,7 @@ const ImportModal = (props) => {
   const [tags, setTags] = useState([]);
 
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
 
   const handleSubmit = () => {
     store.setOpenImportDialog(false);
@@ -51,8 +53,11 @@ const ImportModal = (props) => {
 
     fileReader.onload = async (event) => {
       let data = JSON.parse(event.target.result);
-      console.log("parsed json", data);
-      await createMap(null, 4, name, description, tags, data);
+      let userId = 4;
+      if (auth.user) {
+        userId = auth.user.id;
+      }
+      await createMap(null, userId, name, description, tags, data);
       store.displayAllMaps();
     };
 
@@ -73,9 +78,11 @@ const ImportModal = (props) => {
           shp.parseDbf(dbfReader.result),
         ]);
 
-        console.log("geojson", geojson);
-
-        await createMap(null, 4, name, description, tags, geojson);
+        let userId = 4;
+        if (auth.user) {
+          userId = auth.user.id;
+        }
+        await createMap(null, userId, name, description, tags, geojson);
         store.displayAllMaps();
       };
     };

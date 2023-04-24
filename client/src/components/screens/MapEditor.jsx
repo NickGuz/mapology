@@ -6,18 +6,20 @@ import { MapContainer, GeoJSON, ZoomControl, useMap, Pane, CircleMarker } from "
 import * as L from "leaflet";
 import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 import Control from "react-leaflet-custom-control";
-import mapData from "../example-data/countries.json";
+import mapData from "../../example-data/countries.json";
 import { Stack, Button, Tooltip, Menu, MenuItem } from "@mui/material";
 import "leaflet/dist/leaflet.css";
-import ChangeNameModal from "./ChangeNameModal";
+import ChangeNameModal from "../modals/ChangeNameModal";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import { styled, useTheme } from "@mui/material/styles";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import GlobalStoreContext from "../store/store";
-import * as RequestApi from "../store/GlobalStoreHttpRequestApi";
-import ScreenShooter from "./ScreenShooter";
+import GlobalStoreContext from "../../store/store";
+import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
+import ScreenShooter from "../util/ScreenShooter";
+import TopToolbar from "../util/TopToolbar";
+import AuthContext from "../../auth/AuthContextProvider";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -27,9 +29,9 @@ import {
   //INPUT_USAGE_TYPES,
 } from "react-editable-json-tree";
 
-import TextEditor from "./TextEditor";
-import RegionEditor from "./RegionEditor";
-import LegendEditor from "./LegendEditor";
+import TextEditor from "../util/TextEditor";
+import RegionEditor from "../util/RegionEditor";
+import LegendEditor from "../util/LegendEditor";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -42,7 +44,7 @@ import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
 import { useParams } from "react-router-dom";
-const turf = require('@turf/turf')
+const turf = require("@turf/turf");
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -82,8 +84,7 @@ export default function MapEditor() {
   const [open, setOpen] = useState(false);
   const [customAttr, setCustomAttr] = useState(false);
   const { store } = useContext(GlobalStoreContext);
-  const [anchorEl, setAnchorEl] = useState(null);
-  // const [selected, setSelected] = useState([]);
+  const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
 
   const routeParams = useParams();
@@ -150,6 +151,9 @@ export default function MapEditor() {
 
     layer.on({
       dblclick: (event) => {
+        if (!auth.loggedIn) {
+          return;
+        }
         handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
@@ -167,6 +171,9 @@ export default function MapEditor() {
         }
       },
       click: (event) => {
+        if (!auth.loggedIn) {
+          return;
+        }
         selectRegion(event);
 
         if (store.selectedFeatures.length === 0) {
@@ -187,39 +194,34 @@ export default function MapEditor() {
     setFeature(feature);
     setLayer(layer);
     setEditOpen(true);
-  }
-    
+  };
+
   const merge = () => {
-      // try to do features instead of the properties inside of feature
+    // try to do features instead of the properties inside of feature
 
-      const firstGeom = store.selectedFeatures[0];
-      console.log(firstGeom);
-      // const firstProps = store.selectedFeatures[0].properties;
-      // console.log(firstProps)
+    const firstGeom = store.selectedFeatures[0];
+    console.log(firstGeom);
+    // const firstProps = store.selectedFeatures[0].properties;
+    // console.log(firstProps)
 
-      let name = window.prompt("Input a name for the merged region");
-      if (!name) return;
+    let name = window.prompt("Input a name for the merged region");
+    if (!name) return;
 
-      const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
-          return turf.union(merged, region);
-      }, firstGeom);
+    const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
+      return turf.union(merged, region);
+    }, firstGeom);
 
-      mergedFeature.properties.NAME_0 = name
+    mergedFeature.properties.NAME_0 = name;
 
-      console.log(store.currentMap.json.features);
-      store.currentMap.json.features = store.currentMap.json.features.filter(
-          (region) => !store.selectedFeatures.includes(region)
-      );
-      store.currentMap.json.features.push(mergedFeature);
-      console.log(store.currentMap.json.features);
+    console.log(store.currentMap.json.features);
+    store.currentMap.json.features = store.currentMap.json.features.filter(
+      (region) => !store.selectedFeatures.includes(region)
+    );
+    store.currentMap.json.features.push(mergedFeature);
+    console.log(store.currentMap.json.features);
 
-      store.setCurrentMap(store.currentMap);
-      
-      // setSelected([]);
- };
-
-
-
+    store.setCurrentMap(store.currentMap);
+  };
 
   const editAttribute = (event) => {
     setEdit(true);
@@ -229,23 +231,15 @@ export default function MapEditor() {
     }
   };
 
-  const rename = (feature, name, layer) => {
+  const rename = (feature, name /*, layer*/) => {
     const oldName = getFeatureName(feature);
-    // setFeatureName(feature, name);
+    // setfeatureureName(feature, name);
     renameAll(feature, oldName, name);
 
     console.log("feature id: " + feature.id);
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
-    layer
-      .bindTooltip(name, {
-        className: "countryLabel",
-        permanent: true,
-        opacity: 0.7,
-        direction: "center",
-      })
-      .openTooltip();
-    // setSelected(selected.filter((x) => x !== feature));
+    store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
   };
 
   const renameAll = (feature, oldName, newName) => {
@@ -258,28 +252,23 @@ export default function MapEditor() {
     }
   };
 
-  const handleOpenDownload = (event) => {
-    setAnchorEl(event.target);
-  };
+  const handleDelete = () => {
+    if (store.selectedFeatures.length < 1) {
+      return;
+    }
 
-  const handleCloseDownload = (event) => {
-    setAnchorEl(null);
-  };
+    let featureIds = [];
+    store.selectedFeatures.forEach((f) => featureIds.push(f.id));
 
-  const handleGeoJSONDownload = () => {
-    RequestApi.downloadMapAsGeoJSON(
-      store.currentMap.mapInfo.id,
-      `${store.currentMap.mapInfo.title.replace("/", "_")}.geo.json`
+    for (let fid of featureIds) {
+      RequestApi.deleteFeature(fid);
+    }
+
+    store.currentMap.json.features = store.currentMap.json.features.filter(
+      (f) => !featureIds.includes(f.id)
     );
-    setAnchorEl(null);
-  };
-
-  const handleShapefileDownload = () => {
-    RequestApi.downloadMapAsShapefile(
-      store.currentMap.mapInfo.id,
-      `${store.currentMap.mapInfo.title.replace("/", "_")}_shp.zip`
-    );
-    setAnchorEl(null);
+    store.setCurrentMap(store.currentMap);
+    store.setSelectedFeatures([]);
   };
 
   let customdata =
@@ -299,37 +288,7 @@ export default function MapEditor() {
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
         <Grid item xs={10}>
-          <Box>
-            <IconButton>
-              <UndoIcon />
-            </IconButton>
-            <IconButton>
-              <RedoIcon />
-            </IconButton>
-            <IconButton>
-              <ContentCopyIcon />
-            </IconButton>
-            <IconButton>
-              <SaveIcon />
-            </IconButton>
-            <IconButton onClick={handleOpenDownload}>
-              <DownloadIcon />
-            </IconButton>
-            <Menu
-              sx={{ mt: "45px" }}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseDownload}
-            >
-              <MenuItem onClick={handleGeoJSONDownload}>Download as GeoJSON</MenuItem>
-              <MenuItem onClick={handleShapefileDownload}>Download as Shapefile</MenuItem>
-              <MenuItem>Download as Image</MenuItem>
-            </Menu>
-          </Box>
+          <TopToolbar />
           <Box>
             <MapContainer
               id="leaflet-canvas"
@@ -383,15 +342,21 @@ export default function MapEditor() {
               </Pane>
               <ScreenShooter />
               <ZoomControl position="topright" />
+              {/* {auth.loggedIn && auth.user.id === store.currentMap.mapInfo.authorId && ( */}
+              {/* <div> */}
               <Control position="topright">
                 <Stack direction="column">
                   <Tooltip title="Delete">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={handleDelete}
+                    >
                       <DeleteIcon />
                     </Button>
                   </Tooltip>
                   <Tooltip title="Merge">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
                       onClick={() => merge()}
                     >
                       <MergeIcon />
@@ -408,7 +373,13 @@ export default function MapEditor() {
                   <Tooltip title="Rename Region">
                     <Button
                       sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={() => setEditOpen(true)}
+                      onClick={() => {
+                        if (store.selectedFeatures.length !== 1) {
+                          window.alert("Cannot rename more than 1 region at a time");
+                          return;
+                        }
+                        setEditOpen(true);
+                      }}
                     >
                       <AbcIcon />
                     </Button>
@@ -420,6 +391,8 @@ export default function MapEditor() {
                   </Tooltip>
                 </Stack>
               </Control>
+              {/* </div> */}
+              {/* )} */}
               <ChangeNameModal
                 layer={currLayer}
                 show={editOpen}
@@ -438,9 +411,13 @@ export default function MapEditor() {
               borderColor: "darkgray",
             }}
           >
-            <TextEditor />
-            <RegionEditor />
-            <LegendEditor />
+            {auth.loggedIn && (
+              <div>
+                <TextEditor />
+                <RegionEditor />
+                <LegendEditor />
+              </div>
+            )}
           </Box>
         </Grid>
       </Grid>
