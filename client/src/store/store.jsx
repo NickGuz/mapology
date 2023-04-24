@@ -12,6 +12,7 @@ export const GlobalStoreActionType = {
   CURR_MAP: "CURR_MAP",
   SET_DISPLAYED_MAPS: "SET_DISPLAYED_MAPS",
   SET_SELECTED_FEATURES: "SET_SELECTED_FEATURES",
+
 };
 
 export const PageViewTypes = {

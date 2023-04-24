@@ -5,6 +5,8 @@ const GlobalStoreController = require("../controllers/GlobalStoreController");
 // Handles create a new map in the database request
 router.post("/map", GlobalStoreController.createMap);
 
+router.post("/duplicate", GlobalStoreController.duplicateMap);
+
 router.delete("/map/:id", GlobalStoreController.deleteMap);
 
 router.get("/maps", GlobalStoreController.getAllMaps);

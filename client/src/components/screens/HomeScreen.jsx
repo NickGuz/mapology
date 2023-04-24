@@ -13,8 +13,6 @@ const HomeScreen = (props) => {
   useEffect(() => {
     const getData = async () => {
       const allMaps = await getAllMaps();
-      console.log("maps", allMaps);
-      console.log("user", auth.user);
       store.setDisplayedMaps(allMaps.data.data);
     };
 
