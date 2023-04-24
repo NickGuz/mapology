@@ -323,52 +323,54 @@ export default function MapEditor() {
               </Pane>
               <ScreenShooter />
               <ZoomControl position="topright" />
-              {auth.loggedIn && (
-                <Control position="topright">
-                  <Stack direction="column">
-                    <Tooltip title="Delete">
-                      <Button sx={{ color: "black", backgroundColor: "white" }}>
-                        <DeleteIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Merge">
-                      <Button
-                        sx={{ color: "black", backgroundColor: "white" }}
-                        onClick={() => merge()}
-                      >
-                        <MergeIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Edit Attributes">
-                      <Button
-                        onClick={editAttribute}
-                        sx={{ color: "black", backgroundColor: "white" }}
-                      >
-                        <EditAttributesIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Rename Region">
-                      <Button
-                        sx={{ color: "black", backgroundColor: "white" }}
-                        onClick={() => {
-                          if (store.selectedFeatures.length !== 1) {
-                            window.alert("Cannot rename more than 1 region at a time");
-                            return;
-                          }
-                          setEditOpen(true);
-                        }}
-                      >
-                        <AbcIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Edit Vertices">
-                      <Button sx={{ color: "black", backgroundColor: "white" }}>
-                        <EditLocationAlt />
-                      </Button>
-                    </Tooltip>
-                  </Stack>
-                </Control>
-              )}
+              {/* {auth.loggedIn && auth.user.id === store.currentMap.mapInfo.authorId && ( */}
+              {/* <div> */}
+              <Control position="topright">
+                <Stack direction="column">
+                  <Tooltip title="Delete">
+                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                      <DeleteIcon />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Merge">
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={() => merge()}
+                    >
+                      <MergeIcon />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Edit Attributes">
+                    <Button
+                      onClick={editAttribute}
+                      sx={{ color: "black", backgroundColor: "white" }}
+                    >
+                      <EditAttributesIcon />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Rename Region">
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={() => {
+                        if (store.selectedFeatures.length !== 1) {
+                          window.alert("Cannot rename more than 1 region at a time");
+                          return;
+                        }
+                        setEditOpen(true);
+                      }}
+                    >
+                      <AbcIcon />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="Edit Vertices">
+                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                      <EditLocationAlt />
+                    </Button>
+                  </Tooltip>
+                </Stack>
+              </Control>
+              {/* </div> */}
+              {/* )} */}
               <ChangeNameModal
                 layer={currLayer}
                 show={editOpen}
@@ -388,11 +390,11 @@ export default function MapEditor() {
             }}
           >
             {auth.loggedIn && (
-              <>
+              <div>
                 <TextEditor />
                 <RegionEditor />
                 <LegendEditor />
-              </>
+              </div>
             )}
           </Box>
         </Grid>
