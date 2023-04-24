@@ -31,7 +31,8 @@ describe("template spec", () => {
     ).selectFile("cypress/sample_files/AFG_adm0.dbf", { action: "drag-drop" });
     cy.get(
       ".MuiTypography-caption > .MuiButtonBase-root"
-    ).selectFile("cypress/sample_files/AFG_adm0.shp", { action: "drag-drop" });
+    ).as('file-select');
+    cy.get('@file-select').selectFile("cypress/sample_files/AFG_adm0.shp", { action: "drag-drop" });
     cy.get("#map-name").type("Cypress Map Shapefile " + random);
     cy.get("#description").type("Map Description Shapefile " + random);
     cy.get(".MuiDialogActions-root > :nth-child(2)").click(); //import button
@@ -78,7 +79,8 @@ describe("template spec", () => {
     cy.get(".MuiTypography-caption > .MuiButtonBase-root").should("exist");
     cy.get(
       ".MuiTypography-caption > .MuiButtonBase-root"
-    ).selectFile("cypress/sample_files/africa.geo.json", { action: "drag-drop" });
+    ).as('file-select');
+    cy.get('@file-select').selectFile("cypress/sample_files/africa.geo.json", { action: "drag-drop" });
     cy.get("#map-name").type("Cypress Map JSON " + random);
     cy.get("#description").type("Map Description JSON " + random);
     cy.get(".MuiDialogActions-root > :nth-child(2)").click(); //import button
