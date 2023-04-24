@@ -252,6 +252,25 @@ export default function MapEditor() {
     }
   };
 
+  const handleDelete = () => {
+    if (store.selectedFeatures.length < 1) {
+      return;
+    }
+
+    let featureIds = [];
+    store.selectedFeatures.forEach((f) => featureIds.push(f.id));
+
+    for (let fid of featureIds) {
+      RequestApi.deleteFeature(fid);
+    }
+
+    store.currentMap.json.features = store.currentMap.json.features.filter(
+      (f) => !featureIds.includes(f.id)
+    );
+    store.setCurrentMap(store.currentMap);
+    store.setSelectedFeatures([]);
+  };
+
   let customdata =
     store.selectedFeatures.length > 0
       ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
@@ -328,7 +347,10 @@ export default function MapEditor() {
               <Control position="topright">
                 <Stack direction="column">
                   <Tooltip title="Delete">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
+                    <Button
+                      sx={{ color: "black", backgroundColor: "white" }}
+                      onClick={handleDelete}
+                    >
                       <DeleteIcon />
                     </Button>
                   </Tooltip>
