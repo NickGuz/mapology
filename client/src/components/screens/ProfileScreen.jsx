@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import MapGrid, { MapGridType } from "../util/MapGrid";
 import Banner from "../util/Banner";
 import Paper from "@mui/material/Paper";
@@ -8,6 +8,8 @@ import { styled } from "@mui/material/styles";
 import { Avatar, Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
 import api from "../../auth/auth-request-api/AuthRequestApi";
+import { getAllMapsByUserId } from "../../store/GlobalStoreHttpRequestApi";
+import GlobalStoreContext from "../../store/store";
 
 const InfoBanner = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -24,14 +26,20 @@ const InfoBanner = styled(Paper)(({ theme }) => ({
 const ProfileScreen = (props) => {
   const [user, setUser] = useState(null);
   const routeParams = useParams();
+  const { store } = useContext(GlobalStoreContext);
 
   useEffect(() => {
     const getUserData = async () => {
       const res = await api.getUserById(routeParams.id);
       setUser(res.data);
-    };
+      if (res.data) {
+        const allMaps = await getAllMapsByUserId(res.data.id);
+        console.log(allMaps);
 
-    getUserData();
+        store.setDisplayedMaps(allMaps.data.data);
+      }
+    };
+    getUserData().catch(console.error);
   }, []);
 
   return (
@@ -55,7 +63,7 @@ const ProfileScreen = (props) => {
           </Grid>
         </Grid>
       </InfoBanner>
-      <MapGrid mapData={mapData} type={MapGridType.PROFILE} />
+      <MapGrid mapData={store.displayedMaps} type={MapGridType.PROFILE} />
     </>
   );
 };

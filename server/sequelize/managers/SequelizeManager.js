@@ -47,6 +47,13 @@ exports.getAllMaps = async () => {
   return await MapInfo.findAll({ order: [["createdAt", "DESC"]] });
 };
 
+exports.getAllMapsByUserId = async (userId) => {
+  return await MapInfo.findAll({
+    where: { authorId: userId },
+    order: [["createdAt", "DESC"]],
+  });
+};
+
 exports.getMapById = async (id) => {
   return await MapInfo.findByPk(id);
 };
