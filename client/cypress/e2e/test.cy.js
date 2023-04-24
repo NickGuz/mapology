@@ -28,10 +28,8 @@ describe("template spec", () => {
     cy.get(".MuiTypography-caption > .MuiButtonBase-root").should("exist");
     cy.get(
       ".MuiTypography-caption > .MuiButtonBase-root"
-    ).selectFile("cypress/sample_files/AFG_adm0.dbf", { action: "drag-drop" });
-    cy.get(
-      ".MuiTypography-caption > .MuiButtonBase-root"
     ).as('file-select');
+    cy.get('@file-select').selectFile("cypress/sample_files/AFG_adm0.dbf", { action: "drag-drop" });
     cy.get('@file-select').selectFile("cypress/sample_files/AFG_adm0.shp", { action: "drag-drop" });
     cy.get("#map-name").type("Cypress Map Shapefile " + random);
     cy.get("#description").type("Map Description Shapefile " + random);
