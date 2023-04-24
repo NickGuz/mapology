@@ -284,6 +284,33 @@ export default function MapEditor() {
     <Box>other</Box>
   );
 
+  const renderVertices = () => {
+    if (store.selectedFeatures[0].geometry.coordinates.length === 1) {
+      return store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
+        <Vertex
+          key={i}
+          featureId={store.selectedFeatures[0].id}
+          center={[point[1], point[0]]}
+        ></Vertex>
+      ));
+    } else {
+      console.log(store.selectedFeatures[0].geometry.coordinates);
+      // if it's a multipolygon
+      let coords = [];
+      for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
+        polygon[0].forEach((coord) => coords.push(coord));
+      }
+
+      return coords.map((point, i) => (
+        <Vertex
+          key={i}
+          featureId={store.selectedFeatures[0].id}
+          center={[point[1], point[0]]}
+        ></Vertex>
+      ));
+    }
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
@@ -319,15 +346,7 @@ export default function MapEditor() {
                 name="markers"
                 style={{ zIndex: 500 }}
               >
-                {/* TODO Currently broken on multipolygons */}
-                {store.selectedFeatures.length === 1 &&
-                  store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
-                    <Vertex
-                      key={i}
-                      featureId={store.selectedFeatures[0].id}
-                      center={[point[1], point[0]]}
-                    ></Vertex>
-                  ))}
+                {store.selectedFeatures.length === 1 && renderVertices()}
               </Pane>
               <Pane name="mapdata" style={{ zIndex: 499 }}>
                 {store.currentMap && (
