@@ -18,6 +18,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import GlobalStoreContext from "../../store/store";
 import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
 import ScreenShooter from "../util/ScreenShooter";
+import TopToolbar from "../util/TopToolbar";
+import AuthContext from "../../auth/AuthContextProvider";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -82,8 +84,7 @@ export default function MapEditor() {
   const [open, setOpen] = useState(false);
   const [customAttr, setCustomAttr] = useState(false);
   const { store } = useContext(GlobalStoreContext);
-  const [anchorEl, setAnchorEl] = useState(null);
-  // const [selected, setSelected] = useState([]);
+  const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
 
   const routeParams = useParams();
@@ -150,6 +151,9 @@ export default function MapEditor() {
 
     layer.on({
       dblclick: (event) => {
+        if (!auth.loggedIn) {
+          return;
+        }
         handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
@@ -167,6 +171,9 @@ export default function MapEditor() {
         }
       },
       click: (event) => {
+        if (!auth.loggedIn) {
+          return;
+        }
         selectRegion(event);
 
         if (store.selectedFeatures.length === 0) {
@@ -214,8 +221,6 @@ export default function MapEditor() {
     console.log(store.currentMap.json.features);
 
     store.setCurrentMap(store.currentMap);
-
-    // setSelected([]);
   };
 
   const editAttribute = (event) => {
@@ -226,23 +231,15 @@ export default function MapEditor() {
     }
   };
 
-  const rename = (feature, name, layer) => {
+  const rename = (feature, name /*, layer*/) => {
     const oldName = getFeatureName(feature);
-    // setFeatureName(feature, name);
+    // setfeatureureName(feature, name);
     renameAll(feature, oldName, name);
 
     console.log("feature id: " + feature.id);
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
-    layer
-      .bindTooltip(name, {
-        className: "countryLabel",
-        permanent: true,
-        opacity: 0.7,
-        direction: "center",
-      })
-      .openTooltip();
-    // setSelected(selected.filter((x) => x !== feature));
+    store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
   };
 
   const renameAll = (feature, oldName, newName) => {
@@ -253,30 +250,6 @@ export default function MapEditor() {
         feature.properties[key] = newName;
       }
     }
-  };
-
-  const handleOpenDownload = (event) => {
-    setAnchorEl(event.target);
-  };
-
-  const handleCloseDownload = (event) => {
-    setAnchorEl(null);
-  };
-
-  const handleGeoJSONDownload = () => {
-    RequestApi.downloadMapAsGeoJSON(
-      store.currentMap.mapInfo.id,
-      `${store.currentMap.mapInfo.title.replace("/", "_")}.geo.json`
-    );
-    setAnchorEl(null);
-  };
-
-  const handleShapefileDownload = () => {
-    RequestApi.downloadMapAsShapefile(
-      store.currentMap.mapInfo.id,
-      `${store.currentMap.mapInfo.title.replace("/", "_")}_shp.zip`
-    );
-    setAnchorEl(null);
   };
 
   let customdata =
@@ -296,37 +269,7 @@ export default function MapEditor() {
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
         <Grid item xs={10}>
-          <Box>
-            <IconButton>
-              <UndoIcon />
-            </IconButton>
-            <IconButton>
-              <RedoIcon />
-            </IconButton>
-            <IconButton>
-              <ContentCopyIcon />
-            </IconButton>
-            <IconButton>
-              <SaveIcon />
-            </IconButton>
-            <IconButton onClick={handleOpenDownload}>
-              <DownloadIcon />
-            </IconButton>
-            <Menu
-              sx={{ mt: "45px" }}
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleCloseDownload}
-            >
-              <MenuItem onClick={handleGeoJSONDownload}>Download as GeoJSON</MenuItem>
-              <MenuItem onClick={handleShapefileDownload}>Download as Shapefile</MenuItem>
-              <MenuItem>Download as Image</MenuItem>
-            </Menu>
-          </Box>
+          <TopToolbar />
           <Box>
             <MapContainer
               id="leaflet-canvas"
@@ -380,44 +323,52 @@ export default function MapEditor() {
               </Pane>
               <ScreenShooter />
               <ZoomControl position="topright" />
-              <Control position="topright">
-                <Stack direction="column">
-                  <Tooltip title="Delete">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
-                      <DeleteIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Merge">
-                    <Button
-                      sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={() => merge()}
-                    >
-                      <MergeIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Edit Attributes">
-                    <Button
-                      onClick={editAttribute}
-                      sx={{ color: "black", backgroundColor: "white" }}
-                    >
-                      <EditAttributesIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Rename Region">
-                    <Button
-                      sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={() => setEditOpen(true)}
-                    >
-                      <AbcIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Edit Vertices">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
-                      <EditLocationAlt />
-                    </Button>
-                  </Tooltip>
-                </Stack>
-              </Control>
+              {auth.loggedIn && (
+                <Control position="topright">
+                  <Stack direction="column">
+                    <Tooltip title="Delete">
+                      <Button sx={{ color: "black", backgroundColor: "white" }}>
+                        <DeleteIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Merge">
+                      <Button
+                        sx={{ color: "black", backgroundColor: "white" }}
+                        onClick={() => merge()}
+                      >
+                        <MergeIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Edit Attributes">
+                      <Button
+                        onClick={editAttribute}
+                        sx={{ color: "black", backgroundColor: "white" }}
+                      >
+                        <EditAttributesIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Rename Region">
+                      <Button
+                        sx={{ color: "black", backgroundColor: "white" }}
+                        onClick={() => {
+                          if (store.selectedFeatures.length !== 1) {
+                            window.alert("Cannot rename more than 1 region at a time");
+                            return;
+                          }
+                          setEditOpen(true);
+                        }}
+                      >
+                        <AbcIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Edit Vertices">
+                      <Button sx={{ color: "black", backgroundColor: "white" }}>
+                        <EditLocationAlt />
+                      </Button>
+                    </Tooltip>
+                  </Stack>
+                </Control>
+              )}
               <ChangeNameModal
                 layer={currLayer}
                 show={editOpen}
@@ -436,9 +387,13 @@ export default function MapEditor() {
               borderColor: "darkgray",
             }}
           >
-            <TextEditor />
-            <RegionEditor />
-            <LegendEditor />
+            {auth.loggedIn && (
+              <>
+                <TextEditor />
+                <RegionEditor />
+                <LegendEditor />
+              </>
+            )}
           </Box>
         </Grid>
       </Grid>
