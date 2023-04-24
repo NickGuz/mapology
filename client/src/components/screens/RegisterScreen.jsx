@@ -1,7 +1,6 @@
-
 import * as React from "react";
 import { useContext } from "react";
-import AuthContext from "../auth/AuthContextProvider";
+import AuthContext from "../../auth/AuthContextProvider";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import FormGroup from "@mui/material/FormGroup";

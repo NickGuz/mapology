@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import MapGrid, { MapGridType } from "./MapGrid";
+import MapGrid, { MapGridType } from "../util/MapGrid";
 import Carousel from "react-material-ui-carousel";
 import Typography from "@mui/material/Typography";
 import { Box, Button, Paper } from "@mui/material";
-import { getAllMaps } from "../store/GlobalStoreHttpRequestApi";
-import GlobalStoreContext from "../store/store";
-import AuthContext from '../auth/AuthContextProvider';
+import { getAllMaps } from "../../store/GlobalStoreHttpRequestApi";
+import GlobalStoreContext from "../../store/store";
+import AuthContext from "../../auth/AuthContextProvider";
 
 const HomeScreen = (props) => {
   const { store } = useContext(GlobalStoreContext);
@@ -14,15 +14,12 @@ const HomeScreen = (props) => {
     const getData = async () => {
       const allMaps = await getAllMaps();
       console.log("maps", allMaps);
-      console.log("user" , auth.user)
+      console.log("user", auth.user);
       store.setDisplayedMaps(allMaps.data.data);
     };
 
     getData().catch(console.error);
   }, []);
-
-
-
 
   return (
     <div

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import MapGrid, { MapGridType } from "./MapGrid";
-import Banner from "./Banner";
+import MapGrid, { MapGridType } from "../util/MapGrid";
+import Banner from "../util/Banner";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import mapData from "../map-data";
+import mapData from "../../map-data";
 import { styled } from "@mui/material/styles";
 import { Avatar, Grid } from "@mui/material";
 import { useParams } from "react-router-dom";
-import api from "../auth/auth-request-api/AuthRequestApi";
+import api from "../../auth/auth-request-api/AuthRequestApi";
 
 const InfoBanner = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -36,7 +36,7 @@ const ProfileScreen = (props) => {
 
   return (
     <>
-      <Banner src={require("../assets/tree.jpg")} />
+      <Banner src={require("../../assets/tree.jpg")} />
       <InfoBanner key="user-info" elevation={4}>
         <Grid container spacing={2}>
           <Grid item xs={1}>
@@ -46,7 +46,7 @@ const ProfileScreen = (props) => {
                 width: 70,
               }}
               alt="User Profile Image"
-              src={require("../assets/sample_avatar.png")}
+              src={require("../../assets/sample_avatar.png")}
             />
           </Grid>
           <Grid item>
