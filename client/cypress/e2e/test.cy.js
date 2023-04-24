@@ -21,16 +21,15 @@ describe("template spec", () => {
 
   it("Import Map using dbf/shp", () => {
     cy.visit("http://localhost:3000/");
+    cy.wait(1000); // wait as an attempt to prevent re-rendering removing the import modal when we click
     cy.get(".MuiAppBar-root").should("exist");
     cy.contains("button", "Import").should("exist");
     cy.contains("button", "Import").click();
     cy.contains("h2", "Import").should("exist");
     cy.get(".MuiTypography-caption > .MuiButtonBase-root").should("exist");
-    cy.get(
-      ".MuiTypography-caption > .MuiButtonBase-root"
-    ).as('file-select');
-    cy.get('@file-select').selectFile("cypress/sample_files/AFG_adm0.dbf", { action: "drag-drop" });
-    cy.get('@file-select').selectFile("cypress/sample_files/AFG_adm0.shp", { action: "drag-drop" });
+    cy.get(".MuiTypography-caption > .MuiButtonBase-root").as("file-select");
+    cy.get("@file-select").selectFile("cypress/sample_files/AFG_adm0.dbf", { action: "drag-drop" });
+    cy.get("@file-select").selectFile("cypress/sample_files/AFG_adm0.shp", { action: "drag-drop" });
     cy.get("#map-name").type("Cypress Map Shapefile " + random);
     cy.get("#description").type("Map Description Shapefile " + random);
     cy.get(".MuiDialogActions-root > :nth-child(2)").click(); //import button
@@ -70,15 +69,16 @@ describe("template spec", () => {
 
   it("Import Map using json", () => {
     cy.visit("http://localhost:3000/");
+    cy.wait(1000); // wait as an attempt to prevent re-rendering removing the import modal when we click
     cy.get(".MuiAppBar-root").should("exist");
     cy.contains("button", "Import").should("exist");
     cy.contains("button", "Import").click();
     cy.contains("h2", "Import").should("exist");
     cy.get(".MuiTypography-caption > .MuiButtonBase-root").should("exist");
-    cy.get(
-      ".MuiTypography-caption > .MuiButtonBase-root"
-    ).as('file-select');
-    cy.get('@file-select').selectFile("cypress/sample_files/africa.geo.json", { action: "drag-drop" });
+    cy.get(".MuiTypography-caption > .MuiButtonBase-root").as("file-select");
+    cy.get("@file-select").selectFile("cypress/sample_files/africa.geo.json", {
+      action: "drag-drop",
+    });
     cy.get("#map-name").type("Cypress Map JSON " + random);
     cy.get("#description").type("Map Description JSON " + random);
     cy.get(".MuiDialogActions-root > :nth-child(2)").click(); //import button
