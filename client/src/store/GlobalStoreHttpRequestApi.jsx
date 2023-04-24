@@ -2,6 +2,8 @@ import fileDownload from "js-file-download";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
+
+
 console.log("match", window.location.origin.includes(":3000"));
 const dev = "http://localhost:4000";
 const baseURL = window.location.origin.includes(":3000")
@@ -41,6 +43,10 @@ export const getAllMaps = async () => {
 export const getAllMapsByUserId = async (userId) => {
   return await api.get(`/api/maps/user/${userId}`);
 };
+
+export const duplicateMap = async (userId, mapId) => {
+  return await api.post(`/api/duplicate/`, {userId, mapId});
+}
 
 export const getMapById = async (id) => {
   return await api.get(`/api/map/${id}`);

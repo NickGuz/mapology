@@ -8,14 +8,19 @@ import Link from "@mui/material/Link";
 import Italy from "../../assets/italy.gif";
 import { Button, CardActions, Typography } from "@mui/material";
 import api from "../../auth/auth-request-api/AuthRequestApi";
-import { getMapById, getTagsByMapId } from "../../store/GlobalStoreHttpRequestApi";
+import { duplicateMap, getTagsByMapId } from "../../store/GlobalStoreHttpRequestApi";
 import GlobalStoreContext from "../../store/store";
+import AuthContext from "../../auth/AuthContextProvider";
+
+
 
 const MapCard = (props) => {
   const [author, setAuthor] = useState(null);
   const [tags, setTags] = useState([]);
+  const [dup, setDup] = useState(null);
   const navigate = useNavigate();
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
 
   useEffect(() => {
     const getAuthorData = async () => {
@@ -45,6 +50,14 @@ const MapCard = (props) => {
   const handleClickUsername = () => {
     navigate(`/profile/${author.id}`);
   };
+
+  const handleDuplicate = () => {
+    const helper = async () => {
+      let res = await duplicateMap(auth.user.id, props.data.id);
+      navigate(`/map-editor/${res.data.data.id}`);
+    }
+    helper();
+  }
 
   return (
     <Card variant="outlined" sx={{ maxWidth: 400 }}>
@@ -80,7 +93,7 @@ const MapCard = (props) => {
           />
         ))}
       <CardActions>
-        <Button size="small">Duplicate</Button>
+        <Button onClick={handleDuplicate} disabled= {!auth.loggedIn} size="small">Duplicate</Button>
         <Button onClick={handleOpenInfo} size="small" className="card-details-btn">
           Details
         </Button>

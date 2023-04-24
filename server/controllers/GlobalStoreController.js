@@ -42,6 +42,37 @@ exports.deleteMap = async (req, res) => {
   return res.status(200);
 };
 
+exports.duplicateMap = async (req, res) => {
+  const authorId = req.body.userId;
+  const dupMapId = req.body.mapId;
+  let map = await getMapByIdHelper(dupMapId);
+  if (!map) {
+    return res.status(500).json({
+      errorMessage: "Failed to get map",
+    });
+  }
+
+  const mapInfo = await SequelizeManager.createMap(
+    dupMapId,
+    authorId,
+    "Copy of " + map.mapInfo.title,
+    map.mapInfo.description,
+    map.tags,
+    map.json
+  );
+
+  if (!mapInfo) {
+    return res.status(500).json({
+      errorMessage: "Failed to create map",
+    });
+  }
+
+  return res.status(200).json({
+    data: mapInfo,
+  });
+
+}
+
 exports.getAllMaps = async (req, res) => {
   const maps = await SequelizeManager.getAllMaps();
   if (maps) {
