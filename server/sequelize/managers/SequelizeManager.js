@@ -101,6 +101,7 @@ exports.updateMapDescription = async (mapId, desc) => {
 };
 
 exports.updateFeatureProperties = async (featureId, data) => {
+  console.log("setting new props ", data);
   return await Features.update(
     { properties: data },
     {
