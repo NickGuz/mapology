@@ -2,7 +2,15 @@ import * as React from "react";
 import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { MapContainer, GeoJSON, ZoomControl, useMap, Pane, CircleMarker } from "react-leaflet";
+import {
+  MapContainer,
+  GeoJSON,
+  ZoomControl,
+  useMap,
+  Pane,
+  CircleMarker,
+  TileLayer,
+} from "react-leaflet";
 import * as L from "leaflet";
 import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 import Control from "react-leaflet-custom-control";
@@ -20,6 +28,8 @@ import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
 import ScreenShooter from "../util/ScreenShooter";
 import TopToolbar from "../util/TopToolbar";
 import AuthContext from "../../auth/AuthContextProvider";
+import "leaflet-editable";
+import ReactLeafletEditable from "react-leaflet-editable";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -29,6 +39,7 @@ import {
   //INPUT_USAGE_TYPES,
 } from "react-editable-json-tree";
 
+import GeoJSONMap from "../util/GeoJSONMap";
 import TextEditor from "../util/TextEditor";
 import RegionEditor from "../util/RegionEditor";
 import LegendEditor from "../util/LegendEditor";
@@ -76,6 +87,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function MapEditor() {
+  const editRef = React.useRef();
+  const [map, setMap] = useState();
   const [editOpen, setEditOpen] = useState(false);
   const [currLayer, setLayer] = useState();
   const [regionProps, setRegionProps] = useState(null);
@@ -108,86 +121,6 @@ export default function MapEditor() {
     fillOpacity: 0.5,
     color: "black",
     weight: 1,
-  };
-
-  const getFeatureName = (feature) => {
-    let featureName;
-
-    if (feature.properties.NAME_2) featureName = feature.properties.NAME_2;
-    else if (feature.properties.NAME_1) featureName = feature.properties.NAME_1;
-    else if (feature.properties.NAME_0) featureName = feature.properties.NAME_0;
-    else if (feature.properties.name) featureName = feature.properties.name;
-
-    return featureName;
-  };
-
-  const setFeatureName = (feature, name) => {
-    if (feature.properties.NAME_2) feature.properties.NAME_2 = name;
-    else if (feature.properties.NAME_1) feature.properties.NAME_1 = name;
-    else if (feature.properties.NAME_0) feature.properties.NAME_0 = name;
-    else if (feature.properties.name) feature.properties.name = name;
-  };
-
-  const selectRegion = (event) => {
-    if (store.selectedFeatures.includes(event.target.feature)) {
-      store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== event.target.feature));
-    } else {
-      store.setSelectedFeatures([...store.selectedFeatures, event.target.feature]);
-    }
-  };
-
-  const onFeature = (feature, layer) => {
-    let country = getFeatureName(feature);
-    if (!country) throw new Error("Could not find region name");
-
-    layer
-      .bindTooltip(country, {
-        className: "countryLabel",
-        permanent: true,
-        opacity: 0.7,
-        direction: "center",
-      })
-      .openTooltip();
-
-    layer.on({
-      dblclick: (event) => {
-        if (!auth.loggedIn) {
-          return;
-        }
-        handleRenameRegion(feature, layer);
-      },
-      mouseover: (event) => {
-        if (!store.selectedFeatures.includes(event.target.feature)) {
-          event.target.setStyle({
-            fillColor: "purple",
-          });
-        }
-      },
-      mouseout: (event) => {
-        if (!store.selectedFeatures.includes(event.target.feature)) {
-          event.target.setStyle({
-            fillColor: "blue",
-          });
-        }
-      },
-      click: (event) => {
-        if (!auth.loggedIn) {
-          return;
-        }
-        selectRegion(event);
-
-        if (store.selectedFeatures.length === 0) {
-          setRegionProps({});
-          handleDrawerClose();
-        } else {
-          setRegionProps(store.selectedFeatures[store.selectedFeatures.length - 1].properties);
-        }
-      },
-    });
-
-    if (store.selectedFeatures.includes(feature)) {
-      layer.setStyle({ fillColor: "green" });
-    }
   };
 
   const handleRenameRegion = (feature, layer) => {
@@ -317,109 +250,120 @@ export default function MapEditor() {
         <Grid item xs={10}>
           <TopToolbar />
           <Box>
-            <MapContainer
-              id="leaflet-canvas"
-              style={{ height: "90vh" }}
-              zoomControl={false}
-              zoom={2}
-              doubleClickZoom={false}
-              center={[20, 100]}
+            <ReactLeafletEditable
+              ref={editRef}
+              map={map}
+              onVertexMarkerDrag={() => console.log("dragging")}
+              onEditing={() => console.log("editing")}
             >
-              <Drawer
-                sx={{
-                  width: drawerWidth,
-                  boxSizing: "border-box",
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
+              <MapContainer
+                id="leaflet-canvas"
+                style={{ height: "90vh" }}
+                editable={true}
+                zoomControl={false}
+                zoom={2}
+                doubleClickZoom={false}
+                center={[20, 100]}
+                whenCreated={setMap}
               >
-                <DrawerHeader>
-                  <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                  </IconButton>
-                </DrawerHeader>
-                {DrawerContent}
-              </Drawer>
-              <Pane
-                key={store.selectedFeatures.length + store.mapUpdates}
-                name="markers"
-                style={{ zIndex: 500 }}
-              >
-                {store.selectedFeatures.length === 1 && renderVertices()}
-              </Pane>
-              <Pane name="mapdata" style={{ zIndex: 499 }}>
-                {store.currentMap && (
-                  <GeoJSON
-                    // key={store.mapUpdates}
-                    key={store.selectedFeatures.length + store.mapUpdates}
-                    style={mapStyle}
-                    data={store.currentMap.json.features}
-                    onEachFeature={onFeature}
-                  />
-                )}
-              </Pane>
-              <ScreenShooter />
-              <ZoomControl position="topright" />
-              {/* {auth.loggedIn && auth.user.id === store.currentMap.mapInfo.authorId && ( */}
-              {/* <div> */}
-              <Control position="topright">
-                <Stack direction="column">
-                  <Tooltip title="Delete">
-                    <Button
-                      sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={handleDelete}
-                    >
-                      <DeleteIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Merge">
-                    <Button
-                      sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={() => merge()}
-                    >
-                      <MergeIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Edit Attributes">
-                    <Button
-                      onClick={editAttribute}
-                      sx={{ color: "black", backgroundColor: "white" }}
-                    >
-                      <EditAttributesIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Rename Region">
-                    <Button
-                      sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={() => {
-                        if (store.selectedFeatures.length !== 1) {
-                          window.alert("Cannot rename more than 1 region at a time");
-                          return;
-                        }
-                        setEditOpen(true);
-                      }}
-                    >
-                      <AbcIcon />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Edit Vertices">
-                    <Button sx={{ color: "black", backgroundColor: "white" }}>
-                      <EditLocationAlt />
-                    </Button>
-                  </Tooltip>
-                </Stack>
-              </Control>
-              {/* </div> */}
-              {/* )} */}
-              <ChangeNameModal
-                layer={currLayer}
-                show={editOpen}
-                feature={currFeature}
-                rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
-                close={() => setEditOpen(false)}
-              />
-            </MapContainer>
+                <Drawer
+                  sx={{
+                    width: drawerWidth,
+                    boxSizing: "border-box",
+                  }}
+                  variant="persistent"
+                  anchor="left"
+                  open={open}
+                >
+                  <DrawerHeader>
+                    <IconButton onClick={handleDrawerClose}>
+                      {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+                  </DrawerHeader>
+                  {DrawerContent}
+                </Drawer>
+                {/* <Pane
+                  key={store.selectedFeatures.length + store.mapUpdates}
+                  name="markers"
+                  style={{ zIndex: 500 }}
+                >
+                  {store.selectedFeatures.length === 1 && renderVertices()}
+                </Pane> */}
+                <Pane name="mapdata" style={{ zIndex: 499 }}>
+                  <GeoJSONMap />
+                  {/* {store.currentMap && (
+                    <GeoJSON
+                      // key={store.mapUpdates}
+                      key={store.selectedFeatures.length + store.mapUpdates}
+                      style={mapStyle}
+                      // map={map}
+                      data={store.currentMap.json.features}
+                      onEachFeature={onFeature}
+                    />
+                  )} */}
+                </Pane>
+                <ScreenShooter />
+                <ZoomControl position="topright" />
+                {/* {auth.loggedIn && auth.user.id === store.currentMap.mapInfo.authorId && ( */}
+                {/* <div> */}
+                <Control position="topright">
+                  <Stack direction="column">
+                    <Tooltip title="Delete">
+                      <Button
+                        sx={{ color: "black", backgroundColor: "white" }}
+                        onClick={handleDelete}
+                      >
+                        <DeleteIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Merge">
+                      <Button
+                        sx={{ color: "black", backgroundColor: "white" }}
+                        onClick={() => merge()}
+                      >
+                        <MergeIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Edit Attributes">
+                      <Button
+                        onClick={editAttribute}
+                        sx={{ color: "black", backgroundColor: "white" }}
+                      >
+                        <EditAttributesIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Rename Region">
+                      <Button
+                        sx={{ color: "black", backgroundColor: "white" }}
+                        onClick={() => {
+                          if (store.selectedFeatures.length !== 1) {
+                            window.alert("Cannot rename more than 1 region at a time");
+                            return;
+                          }
+                          setEditOpen(true);
+                        }}
+                      >
+                        <AbcIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Edit Vertices">
+                      <Button sx={{ color: "black", backgroundColor: "white" }}>
+                        <EditLocationAlt />
+                      </Button>
+                    </Tooltip>
+                  </Stack>
+                </Control>
+                {/* </div> */}
+                {/* )} */}
+                <ChangeNameModal
+                  layer={currLayer}
+                  show={editOpen}
+                  feature={currFeature}
+                  rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
+                  close={() => setEditOpen(false)}
+                />
+              </MapContainer>
+            </ReactLeafletEditable>
           </Box>
         </Grid>
         <Grid item xs={2}>
@@ -454,65 +398,8 @@ const Vertex = (props) => {
     setPoint(props.center);
   }, []);
 
-  const removeVertex = (vertex) => {
-    if (!window.confirm("Are you sure you want to delete this vertex?")) {
-      return;
-    }
-
-    const lat = vertex.lat;
-    const lng = vertex.lng;
-
-    // Get the vertices to remove
-    let toRemove = [];
-    store.currentMap.json.features.forEach((f) => {
-      f.geometry.coordinates[0].forEach((xy) => {
-        if (xy[0] === lng && xy[1] === lat) {
-          // toRemove.push({ feature: f, coords: xy });
-          toRemove.push(f);
-        }
-      });
-    });
-
-    if (toRemove.length >= 3) {
-      window.alert("Cannot delete a vertex shared by more than 2 regions");
-      return;
-    }
-
-    // Remove the vertices
-    // store.currentMap.json.features.forEach((f) => {
-    //   f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-    //     (xy) => !(xy[0] === lng && xy[1] === lat)
-    //   );
-    // });
-    toRemove.forEach((f) => {
-      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-        (coords) => !(coords[0] === lng && coords[1] === lat)
-      );
-    });
-
-    store.setCurrentMap(store.currentMap);
-    toRemove.forEach((f) => {
-      RequestApi.updateFeatureGeometry(f.id, f.geometry);
-    });
-  };
-
   const trackCursor = (event) => {
     setPoint(event.latlng);
-  };
-
-  const updateFeature = () => {
-    if (!point.lat || !point.lng) {
-      return;
-    }
-    let feature = store.currentMap.json.features.find((f) => f.id === props.featureId);
-    let pnt = feature.geometry.coordinates[0].find(
-      (p) => p[0] === props.center[1] && p[1] === props.center[0]
-    );
-    pnt[0] = point.lng;
-    pnt[1] = point.lat;
-
-    store.setCurrentMap(store.currentMap);
-    RequestApi.updateFeatureGeometry(feature.id, feature.geometry);
   };
 
   return (
