@@ -2,6 +2,9 @@ const SequelizeManager = require("../sequelize/managers/SequelizeManager");
 const fs = require("graceful-fs");
 const os = require("os");
 const { convert } = require("geojson2shp");
+const topojsonSimplify = require("topojson-simplify");
+const topojsonServer = require("topojson-server");
+const topojsonClient = require("topojson-client");
 
 exports.createMap = async (req, res) => {
   if (!req.body) {
@@ -10,13 +13,17 @@ exports.createMap = async (req, res) => {
     });
   }
 
+  // Setting minWeight as undefined should I think just line up the points
+  // as mentioned in one of the presentations, not actually lose any data
+  const compressedJson = doCompressMap(req.body.json, undefined);
+
   const mapInfo = await SequelizeManager.createMap(
     req.body.duplicatedId,
     req.body.authorId,
     req.body.title,
     req.body.description,
     req.body.tags,
-    req.body.json
+    compressedJson
   );
 
   if (!mapInfo) {
@@ -27,6 +34,34 @@ exports.createMap = async (req, res) => {
 
   return res.status(201).json({
     data: mapInfo,
+  });
+};
+
+// Helper function to actually do the compression
+const doCompressMap = (geojson, minWeight) => {
+  // Convert geojson to topojson
+  const topology = topojsonServer.topology({ foo: geojson });
+
+  // Simplify the topojson
+  let compressedTopo = topojsonSimplify.presimplify(topology);
+  compressedTopo = topojsonSimplify.simplify(compressedTopo, minWeight);
+
+  // Convert topojson to geojson
+  const geo = topojsonClient.feature(compressedTopo, "foo");
+  return geo;
+};
+
+// Route to do the compression in the editor
+exports.compressMap = (req, res) => {
+  if (!req.body.json) {
+    return res.status(400).json({
+      errorMessage: "Improperly formatted request",
+    });
+  }
+
+  const map = doCompressMap(req.body.json);
+  return res.status(200).json({
+    data: map,
   });
 };
 
@@ -70,8 +105,7 @@ exports.duplicateMap = async (req, res) => {
   return res.status(200).json({
     data: mapInfo,
   });
-
-}
+};
 
 exports.getAllMaps = async (req, res) => {
   const maps = await SequelizeManager.getAllMaps();

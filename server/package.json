@@ -22,7 +22,10 @@
     "nodemon": "^2.0.22",
     "sequelize": "^6.31.0",
     "sequelize-cli": "^6.6.0",
-    "sequelize-mock": "^0.10.2"
+    "sequelize-mock": "^0.10.2",
+    "topojson-client": "^3.1.0",
+    "topojson-server": "^3.0.1",
+    "topojson-simplify": "^3.0.3"
   },
   "devDependencies": {
     "jest": "^29.5.0",
