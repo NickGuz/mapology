@@ -104,7 +104,7 @@ export default function MapEditor() {
   };
 
   const mapStyle = {
-    fillColor: "blue",
+    // fillColor: "blue",
     fillOpacity: 0.5,
     color: "black",
     weight: 1,
@@ -157,18 +157,18 @@ export default function MapEditor() {
         handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
-        if (!store.selectedFeatures.includes(event.target.feature)) {
-          event.target.setStyle({
-            fillColor: "purple",
-          });
-        }
+        // if (!store.selectedFeatures.includes(event.target.feature)) {
+        //   event.target.setStyle({
+        //     fillColor: "purple",
+        //   });
+        // }
       },
       mouseout: (event) => {
-        if (!store.selectedFeatures.includes(event.target.feature)) {
-          event.target.setStyle({
-            fillColor: "blue",
-          });
-        }
+        // if (!store.selectedFeatures.includes(event.target.feature)) {
+        //   event.target.setStyle({
+        //     fillColor: "blue",
+        //   });
+        // }
       },
       click: (event) => {
         if (!auth.loggedIn) {
@@ -187,6 +187,11 @@ export default function MapEditor() {
 
     if (store.selectedFeatures.includes(feature)) {
       layer.setStyle({ fillColor: "green" });
+    } else if (feature.properties.fillColor) {
+      console.log("feature", feature);
+      layer.setStyle({ fillColor: feature.properties.fillColor });
+    } else {
+      layer.setStyle({ fillColor: "blue" });
     }
   };
 

@@ -1,16 +1,35 @@
-import React from 'react'
+import React, { useContext } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { BlockPicker } from "react-color";
 import Slider from "@mui/material/Slider";
+import GlobalStoreContext from "../../store/store";
+import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
 
 const RegionEditor = () => {
+  const [value, setValue] = React.useState(50);
 
-    const [value, setValue] = React.useState(50);
+  const { store } = useContext(GlobalStoreContext);
 
-    const handleSliderChange = (event, newValue) => {
-      setValue(newValue);
-    };
+  const handleSliderChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  // Called when color changed
+  const handleChangeComplete = (event) => {
+    if (store.selectedFeatures.length <= 0) {
+      return;
+    }
+
+    // Set fillColor property in each feature.properties and update backend
+    store.selectedFeatures.forEach((feature) => {
+      feature.properties["fillColor"] = event.hex;
+      RequestApi.updateFeatureProperties(feature.id, feature.properties);
+    });
+
+    // Empty selectedFeatures after the change
+    store.setSelectedFeatures([]);
+  };
 
   return (
     <Box>
@@ -29,7 +48,7 @@ const RegionEditor = () => {
         Color
       </p>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <BlockPicker />
+        <BlockPicker onChangeComplete={handleChangeComplete} />
       </div>
       <p
         id="text-header"
@@ -47,18 +66,12 @@ const RegionEditor = () => {
       </p>
       <Grid item xs sx={{ display: "flex", justifyContent: "center" }}>
         <div style={{ width: 200, marginRight: 20 }}>
-          <Slider
-            value={value}
-            onChange={handleSliderChange}
-            aria-label="opacity slider"
-          />
+          <Slider value={value} onChange={handleSliderChange} aria-label="opacity slider" />
         </div>
         <div>{value}</div>
       </Grid>
     </Box>
   );
-}
+};
 
-export default RegionEditor
-
-
+export default RegionEditor;
