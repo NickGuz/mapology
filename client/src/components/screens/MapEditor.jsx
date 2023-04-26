@@ -123,12 +123,6 @@ export default function MapEditor() {
     weight: 1,
   };
 
-  const handleRenameRegion = (feature, layer) => {
-    setFeature(feature);
-    setLayer(layer);
-    setEditOpen(true);
-  };
-
   const merge = () => {
     // try to do features instead of the properties inside of feature
 
@@ -204,10 +198,10 @@ export default function MapEditor() {
     store.setSelectedFeatures([]);
   };
 
-  let customdata =
-    store.selectedFeatures.length > 0
-      ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
-      : {};
+  // let customdata =
+  //   store.selectedFeatures.length > 0
+  //     ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
+  //     : {};
 
   let DrawerContent = editingAttr ? (
     <JsonTree data={regionProps} />
@@ -289,9 +283,9 @@ export default function MapEditor() {
                 >
                   {store.selectedFeatures.length === 1 && renderVertices()}
                 </Pane> */}
-                <Pane name="mapdata" style={{ zIndex: 499 }}>
-                  <GeoJSONMap />
-                  {/* {store.currentMap && (
+                {/* <Pane name="mapdata" style={{ zIndex: 499 }}> */}
+                <GeoJSONMap />
+                {/* {store.currentMap && (
                     <GeoJSON
                       // key={store.mapUpdates}
                       key={store.selectedFeatures.length + store.mapUpdates}
@@ -301,12 +295,12 @@ export default function MapEditor() {
                       onEachFeature={onFeature}
                     />
                   )} */}
-                </Pane>
+                {/* </Pane> */}
                 <ScreenShooter />
                 <ZoomControl position="topright" />
                 {/* {auth.loggedIn && auth.user.id === store.currentMap.mapInfo.authorId && ( */}
                 {/* <div> */}
-                <Control position="topright">
+                {/* <Control position="topright">
                   <Stack direction="column">
                     <Tooltip title="Delete">
                       <Button
@@ -352,7 +346,7 @@ export default function MapEditor() {
                       </Button>
                     </Tooltip>
                   </Stack>
-                </Control>
+                </Control> */}
                 {/* </div> */}
                 {/* )} */}
                 <ChangeNameModal
@@ -388,49 +382,49 @@ export default function MapEditor() {
   );
 }
 
-const Vertex = (props) => {
-  const [point, setPoint] = useState(null);
+// const Vertex = (props) => {
+//   const [point, setPoint] = useState(null);
 
-  const map = useMap();
-  const { store } = useContext(GlobalStoreContext);
+//   const map = useMap();
+//   const { store } = useContext(GlobalStoreContext);
 
-  useEffect(() => {
-    setPoint(props.center);
-  }, []);
+//   useEffect(() => {
+//     setPoint(props.center);
+//   }, []);
 
-  const trackCursor = (event) => {
-    setPoint(event.latlng);
-  };
+//   const trackCursor = (event) => {
+//     setPoint(event.latlng);
+//   };
 
-  return (
-    <>
-      {point && (
-        <CircleMarker
-          center={point}
-          pathOptions={{
-            color: "blue",
-            fillColor: "blue",
-            bubblingMouseEvents: false,
-            fillOpacity: 1.0,
-          }}
-          radius={5}
-          draggable={true}
-          eventHandlers={{
-            dblclick: (e) => {
-              removeVertex(e.latlng);
-            },
-            mousedown: (e) => {
-              map.on("mousemove", trackCursor);
-              map.dragging.disable();
-            },
-            mouseup: (e) => {
-              map.off("mousemove");
-              map.dragging.enable();
-              updateFeature();
-            },
-          }}
-        ></CircleMarker>
-      )}
-    </>
-  );
-};
+//   return (
+//     <>
+//       {point && (
+//         <CircleMarker
+//           center={point}
+//           pathOptions={{
+//             color: "blue",
+//             fillColor: "blue",
+//             bubblingMouseEvents: false,
+//             fillOpacity: 1.0,
+//           }}
+//           radius={5}
+//           draggable={true}
+//           eventHandlers={{
+//             dblclick: (e) => {
+//               removeVertex(e.latlng);
+//             },
+//             mousedown: (e) => {
+//               map.on("mousemove", trackCursor);
+//               map.dragging.disable();
+//             },
+//             mouseup: (e) => {
+//               map.off("mousemove");
+//               map.dragging.enable();
+//               updateFeature();
+//             },
+//           }}
+//         ></CircleMarker>
+//       )}
+//     </>
+//   );
+// };
