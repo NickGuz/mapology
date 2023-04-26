@@ -12,7 +12,7 @@ const url = process.env.NODE_ENV ? prod : dev;
 
 const app = express();
 // app.use(express.json()); // parses incoming requests with JSON payloads
-app.use(bodyParser.json({ limit: "1000kb" }));
+app.use(bodyParser.json({ limit: "10000kb" }));
 app.use(cors({ credentials: true, origin: url }));
 app.use(express.static(path.join(process.cwd() + "/build")));
 
