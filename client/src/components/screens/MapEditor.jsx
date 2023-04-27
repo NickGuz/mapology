@@ -206,7 +206,7 @@ export default function MapEditor() {
     setEditOpen(true);
   };
 
-  const merge = () => {
+  const merge = async () => {
     // try to do features instead of the properties inside of feature
 
     const firstGeom = store.selectedFeatures[0];
@@ -223,14 +223,26 @@ export default function MapEditor() {
 
     mergedFeature.properties.NAME_0 = name;
 
-    console.log(store.currentMap.json.features);
+    // Delete features from DB
+    store.selectedFeatures.forEach((f) => {
+      RequestApi.deleteFeature(f.id);
+    });
+
+    // Add new feature to DB first to get back auto-generated ID
+    const res = await RequestApi.insertFeature(store.currentMap.mapInfo.id, mergedFeature);
+    const newFeature = res.data.data;
+
+    // Add new feature to current json data
+    store.currentMap.json.features.push(newFeature);
+
+    // Delete merged regions
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (region) => !store.selectedFeatures.includes(region)
     );
-    store.currentMap.json.features.push(mergedFeature);
-    console.log(store.currentMap.json.features);
 
+    // Update the store to rerender
     store.setCurrentMap(store.currentMap);
+    store.setSelectedFeatures([]);
   };
 
   const editAttribute = (event) => {
@@ -384,10 +396,7 @@ export default function MapEditor() {
                     </Button>
                   </Tooltip>
                   <Tooltip title="Merge">
-                    <Button
-                      sx={{ color: "black", backgroundColor: "white" }}
-                      onClick={() => merge()}
-                    >
+                    <Button sx={{ color: "black", backgroundColor: "white" }} onClick={merge}>
                       <MergeIcon />
                     </Button>
                   </Tooltip>
