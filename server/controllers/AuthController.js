@@ -2,10 +2,31 @@ const auth = require('../auth')
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { User } = require("../sequelize/sequelize");
-exports.loggedIn = () => {
-	
 
-};
+
+
+exports.loggedIn = async (req, res) => {
+    try {
+        let userId = auth.verifyUser(req);
+        if (!userId) {
+            return res.status(400).json({
+                loggedIn: false,
+                user: userId,
+            })
+        }
+
+        const loggedInUser = await User.findByPk(userId);
+        console.log("loggedInUser: " + loggedInUser);
+
+        return res.status(200).json({
+            loggedIn: true,
+            user: loggedInUser
+        })
+    } catch (err) {
+        console.log("err: " + err);
+        res.json(false);
+    }
+}
 
 exports.login = async (req, res) => {
 	console.log("login user");
@@ -40,7 +61,7 @@ exports.login = async (req, res) => {
                 })
         }
 
-		const token = auth.signToken(user._id);
+		const token = auth.signToken(user.id);
 		console.log(token);
 
 		res.cookie("token", token, {
@@ -95,6 +116,13 @@ exports.register = async (req, res) => {
 			username: req.body.username,
 			password: hash,
 		  });
+		  const token = auth.signToken(user.id);
+		  res.cookie("token", token, {
+			httpOnly: true,
+			secure: true,
+			sameSite: "none"
+		}).send();
+		  
 	
 		  return res.status(200).json(user);
 		} catch (e) {

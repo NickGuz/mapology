@@ -15,6 +15,7 @@ const HomeScreen = (props) => {
       const allMaps = await getAllMaps();
       store.setDisplayedMaps(allMaps.data.data);
     };
+    console.log(auth.user);
 
     getData().catch(console.error);
   }, []);

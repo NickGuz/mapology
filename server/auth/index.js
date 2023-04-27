@@ -40,6 +40,7 @@ function authManager() {
             const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
             return decodedToken.userId;
         } catch (err) {
+            console.log(err);
             return null;
         }
     }
