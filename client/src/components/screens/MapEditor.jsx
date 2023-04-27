@@ -104,9 +104,7 @@ export default function MapEditor() {
   };
 
   const mapStyle = {
-    // fillColor: "blue",
     fillOpacity: 0.5,
-    color: "black",
     weight: 1,
   };
 
@@ -185,13 +183,20 @@ export default function MapEditor() {
       },
     });
 
+    // Set fill color
     if (store.selectedFeatures.includes(feature)) {
       layer.setStyle({ fillColor: "green" });
     } else if (feature.properties.fillColor) {
-      console.log("feature", feature);
       layer.setStyle({ fillColor: feature.properties.fillColor });
     } else {
       layer.setStyle({ fillColor: "blue" });
+    }
+
+    // Set border color
+    if (feature.properties.borderColor) {
+      layer.setStyle({ color: feature.properties.borderColor });
+    } else {
+      layer.setStyle({ color: "black" });
     }
   };
 
