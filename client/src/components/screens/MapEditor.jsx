@@ -20,6 +20,7 @@ import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
 import ScreenShooter from "../util/ScreenShooter";
 import TopToolbar from "../util/TopToolbar";
 import AuthContext from "../../auth/AuthContextProvider";
+import Vertex from "../util/Vertex";
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -462,107 +463,3 @@ export default function MapEditor() {
     </Box>
   );
 }
-
-const Vertex = (props) => {
-  const [point, setPoint] = useState(null);
-
-  const map = useMap();
-  const { store } = useContext(GlobalStoreContext);
-
-  useEffect(() => {
-    setPoint(props.center);
-  }, []);
-
-  const removeVertex = (vertex) => {
-    if (!window.confirm("Are you sure you want to delete this vertex?")) {
-      return;
-    }
-
-    const lat = vertex.lat;
-    const lng = vertex.lng;
-
-    // Get the vertices to remove
-    let toRemove = [];
-    store.currentMap.json.features.forEach((f) => {
-      f.geometry.coordinates[0].forEach((xy) => {
-        if (xy[0] === lng && xy[1] === lat) {
-          // toRemove.push({ feature: f, coords: xy });
-          toRemove.push(f);
-        }
-      });
-    });
-
-    if (toRemove.length >= 3) {
-      window.alert("Cannot delete a vertex shared by more than 2 regions");
-      return;
-    }
-
-    // Remove the vertices
-    // store.currentMap.json.features.forEach((f) => {
-    //   f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-    //     (xy) => !(xy[0] === lng && xy[1] === lat)
-    //   );
-    // });
-    toRemove.forEach((f) => {
-      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-        (coords) => !(coords[0] === lng && coords[1] === lat)
-      );
-    });
-
-    store.setCurrentMap(store.currentMap);
-    toRemove.forEach((f) => {
-      RequestApi.updateFeatureGeometry(f.id, f.geometry);
-    });
-  };
-
-  const trackCursor = (event) => {
-    setPoint(event.latlng);
-  };
-
-  const updateFeature = () => {
-    if (!point.lat || !point.lng) {
-      return;
-    }
-    let feature = store.currentMap.json.features.find((f) => f.id === props.featureId);
-    let pnt = feature.geometry.coordinates[0].find(
-      (p) => p[0] === props.center[1] && p[1] === props.center[0]
-    );
-    pnt[0] = point.lng;
-    pnt[1] = point.lat;
-
-    store.setCurrentMap(store.currentMap);
-    RequestApi.updateFeatureGeometry(feature.id, feature.geometry);
-  };
-
-  return (
-    <>
-      {point && (
-        <CircleMarker
-          center={point}
-          pathOptions={{
-            color: "blue",
-            fillColor: "blue",
-            bubblingMouseEvents: false,
-            fillOpacity: 1.0,
-          }}
-          radius={5}
-          draggable={true}
-          eventHandlers={{
-            dblclick: (e) => {
-              removeVertex(e.latlng);
-            },
-            mousedown: (e) => {
-              map.on("mousemove", trackCursor);
-              map.dragging.disable();
-            },
-            mouseup: (e) => {
-              map.off("mousemove");
-              map.dragging.enable();
-              updateFeature();
-            },
-          }}
-        ></CircleMarker>
-      )}
-    </>
-  );
-};
