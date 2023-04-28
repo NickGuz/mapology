@@ -221,7 +221,6 @@ exports.updateFeatureProperties = async (req, res) => {
 };
 
 exports.updateFeatureGeometry = async (req, res) => {
-  console.log("UPDATING");
   const feature = await SequelizeManager.updateFeatureGeometry(req.params.id, req.body.data);
   return res.status(200).json({
     data: feature,
