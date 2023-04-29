@@ -201,12 +201,18 @@ export default function MapEditor() {
   };
 
   const handleRenameRegion = (feature, layer) => {
+    if (!auth.loggedIn) {
+      return;
+    }
     setFeature(feature);
     setLayer(layer);
     setEditOpen(true);
   };
 
   const merge = async () => {
+    if (!auth.loggedIn) {
+      return;
+    }
     // try to do features instead of the properties inside of feature
 
     const firstGeom = store.selectedFeatures[0];
@@ -409,6 +415,9 @@ export default function MapEditor() {
                     <Button
                       sx={{ color: "black", backgroundColor: "white" }}
                       onClick={() => {
+                        if (!auth.loggedIn) {
+                          return;
+                        }
                         if (store.selectedFeatures.length !== 1) {
                           window.alert("Cannot rename more than 1 region at a time");
                           return;
