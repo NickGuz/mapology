@@ -7,7 +7,7 @@ exports.loggedIn = async (req, res) => {
   try {
     let userId = auth.verifyUser(req);
     if (!userId) {
-      return res.status(400).json({
+      return res.status(100).json({
         loggedIn: false,
         user: userId,
       });

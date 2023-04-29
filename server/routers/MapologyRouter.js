@@ -33,4 +33,12 @@ router.get("/downloadgeo/:id", GlobalStoreController.downloadMapAsGeoJSON);
 
 router.get("/downloadshp/:id", GlobalStoreController.downloadMapAsShapefile);
 
+// Kinda band-aid fix for empty tags and empty term
+router.get("/search/map/:term//:sort", GlobalStoreController.searchMaps);
+router.get("/search/map///:sort", GlobalStoreController.searchMaps);
+router.get("/search/map//:tags/:sort", GlobalStoreController.searchMaps);
+router.get("/search/map/:term/:tags/:sort", GlobalStoreController.searchMaps);
+
+router.get("/tags", GlobalStoreController.getAllTags);
+
 module.exports = router;

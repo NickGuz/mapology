@@ -11,11 +11,11 @@ const MapGridType = {
 const MapGrid = (props) => {
   return (
     <div
-      style={{
-        marginLeft: "10%",
-        marginRight: "10%",
-        marginBottom: "3%",
-      }}
+    // style={{
+    //   marginLeft: "10%",
+    //   marginRight: "10%",
+    //   marginBottom: "3%",
+    // }}
     >
       <Grid container spacing={2} style={{ marginTop: "5px" }}>
         {props.mapData.map((data) => (

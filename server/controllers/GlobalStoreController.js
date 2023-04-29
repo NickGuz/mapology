@@ -294,3 +294,18 @@ exports.downloadMapAsShapefile = async (req, res) => {
     return res.status(200).send(data);
   });
 };
+
+exports.searchMaps = async (req, res) => {
+  const searchTerm = req.params.term;
+  const searchTags = req.params.tags ? req.params.tags.split("&") : null;
+  const sortType = req.params.sort;
+
+  const maps = await SequelizeManager.searchMaps(searchTerm, searchTags, sortType);
+
+  return res.status(200).json(maps);
+};
+
+exports.getAllTags = async (req, res) => {
+  const tags = await SequelizeManager.getAllTags();
+  return res.status(200).json(tags);
+};
