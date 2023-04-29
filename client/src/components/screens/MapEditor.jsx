@@ -112,6 +112,7 @@ export default function MapEditor() {
 
       if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
         setAuthorized(true);
+        console.log("authorized");
       }
     };
 
@@ -283,6 +284,10 @@ export default function MapEditor() {
                 center={[20, 100]}
                 whenCreated={setMap}
               >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
                 <Drawer
                   sx={{
                     width: drawerWidth,

@@ -13,6 +13,7 @@ import MergeIcon from "@mui/icons-material/Merge";
 import EditAttributesIcon from "@mui/icons-material/EditAttributes";
 import AbcIcon from "@mui/icons-material/Abc";
 import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
+import { GeomanControls } from "react-leaflet-geoman-v2";
 
 const GeoJSONMap = (props) => {
   const [feature, setFeature] = useState();
@@ -29,6 +30,7 @@ const GeoJSONMap = (props) => {
     console.log("otps", map.options);
     map.on("editable:vertex:dragend", handleVertexDragEnd);
     map.on("editable:vertex:rawclick", handleVertexRawClick);
+    map.on("pm:globaleditmodetoggled", () => console.log("dragend"));
   }, []);
 
   const mapStyle = {
@@ -241,18 +243,18 @@ const GeoJSONMap = (props) => {
         handleRenameRegion(feature, layer);
       },
       mouseover: (event) => {
-        if (!store.selectedFeatures.includes(event.target.feature)) {
-          event.target.setStyle({
-            fillColor: "purple",
-          });
-        }
+        // if (!store.selectedFeatures.includes(event.target.feature)) {
+        //   event.target.setStyle({
+        //     fillColor: "purple",
+        //   });
+        // }
       },
       mouseout: (event) => {
-        if (!store.selectedFeatures.includes(event.target.feature)) {
-          event.target.setStyle({
-            fillColor: "blue",
-          });
-        }
+        // if (!store.selectedFeatures.includes(event.target.feature)) {
+        //   event.target.setStyle({
+        //     fillColor: "blue",
+        //   });
+        // }
       },
       click: (event) => {
         // if (!auth.loggedIn) {
@@ -262,6 +264,15 @@ const GeoJSONMap = (props) => {
         // console.log("selecting", event.sourceTarget);
         // selectLayer(layer);
         layer.toggleEdit();
+        if (layer.editEnabled()) {
+          console.log("setting style", layer);
+          layer.setStyle({ fillColor: "green" });
+          // selectLayer(layer);
+          store.setSelectedFeatures([...store.selectedFeatures, feature]);
+        } else {
+          store.setSelectedFeatures(store.selectedFeatures.filter((f) => f.id !== feature.id));
+          layer.setStyle({ fillColor: "blue" });
+        }
         // selectLayer(event);
         // if (store.selectedFeatures.length === 0) {
         //   setRegionProps({});
@@ -274,13 +285,14 @@ const GeoJSONMap = (props) => {
 
     // set selected features
     // if (layer.editEnabled()) {
+    //   console.log("edit enabled");
     //   layer.setStyle({ fillColor: "green" });
     // }
 
-    const selected = store.selectedFeatures.find((l) => l.feature.id === layer.feature.id);
+    const selected = store.selectedFeatures.find((f) => f.id === feature.id);
     if (selected) {
-      console.log(layer);
-      layer.setStyle({ fillColor: "green" });
+      console.log("region is selected");
+      // layer.setStyle({ fillColor: "green" });
     }
   };
 
@@ -337,6 +349,26 @@ const GeoJSONMap = (props) => {
           </Tooltip>
         </Stack>
       </Control>
+      <GeomanControls
+        options={{
+          position: "topleft",
+          drawText: true,
+          rotateMode: false,
+          drawMarker: false,
+          drawPolyline: false,
+          drawCircle: false,
+          drawCircleMarker: false,
+          drawRectangle: false,
+          cutPolygon: false,
+        }}
+        globalOptions={{
+          continueDrawing: true,
+          editable: false,
+        }}
+        onCreate={(e) => console.log("created", e)}
+        onChange={(e) => console.log("changed", e)}
+        onEdit={(e) => console.log("edited", e)}
+      />
     </div>
   );
 };
