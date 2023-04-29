@@ -40,15 +40,26 @@ const TopToolbar = (props) => {
     );
     setAnchorEl(null);
   };
-
+  const handleUndo = () => {
+    store.undo();
+    
+  }
+  const handleRedo = () => {
+    store.undo();
+    
+  }
   return (
     <Box>
       {auth.loggedIn && (
         <>
-          <IconButton>
+          <IconButton
+            onClick={handleUndo}
+          >
             <UndoIcon />
           </IconButton>
-          <IconButton>
+          <IconButton
+            onClick={handleRedo}
+          >
             <RedoIcon />
           </IconButton>
         </>

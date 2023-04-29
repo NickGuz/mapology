@@ -20,7 +20,7 @@ const Vertex = (props) => {
 
     const lat = vertex.lat;
     const lng = vertex.lng;
-
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
     // Get the vertices to remove
     let toRemove = [];
     store.currentMap.json.features.forEach((f) => {
@@ -48,7 +48,8 @@ const Vertex = (props) => {
         (coords) => !(coords[0] === lng && coords[1] === lat)
       );
     });
-
+    store.addEditMapTransaction (mapClone, store.currentMap)
+    
     store.setCurrentMap(store.currentMap);
     toRemove.forEach((f) => {
       RequestApi.updateFeatureGeometry(f.id, f.geometry);

@@ -2,6 +2,12 @@ import { createContext, useEffect, useState, useContext} from "react";
 import { getMapById, getAllMaps } from "./GlobalStoreHttpRequestApi";
 // import { useNavigate } from "react-router-dom";
 import AuthContext from "../auth/AuthContextProvider";
+import EditMap_Transaction from "../transactions/EditMap_Transaction";
+import jsTPS from "../common/jsTPS";
+var jsondiffpatch = require('jsondiffpatch');
+var _ = require('lodash');
+
+const tps = new jsTPS();
 
 export const GlobalStoreContext = createContext({});
 
@@ -22,9 +28,6 @@ export const PageViewTypes = {
 
 function GlobalStoreContextProvider(props) {
   const { auth } = useContext(AuthContext);
-  useEffect(() => {
-    console.log("global store testing things")
-  }, [auth.user]);
   const [store, setStore] = useState({
     pageView: PageViewTypes.HOME,
     importDialogOpen: false,
@@ -142,6 +145,20 @@ function GlobalStoreContextProvider(props) {
       payload: features,
     });
   };
+
+  store.addEditMapTransaction = (oldMap, newMap) => {
+    // var delta = jsondiffpatch.diff(oldMap, newMap);
+    // jsondiffpatch.unpatch(store.currentMap, delta);
+    let transaction = new EditMap_Transaction(store, oldMap);
+    tps.addTransaction(transaction);
+  
+  }
+  store.undo = function () {
+    tps.undoTransaction();
+  }
+  store.redo = function () {
+      tps.redoTransaction();
+  }
 
   return (
     <GlobalStoreContext.Provider

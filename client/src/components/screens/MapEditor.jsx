@@ -92,7 +92,6 @@ export default function MapEditor() {
 
   useEffect(() => {
     store.getMapById(routeParams.id);
-    console.log("rendering");
   }, []);
 
   const handleDrawerOpen = () => {
@@ -317,7 +316,7 @@ export default function MapEditor() {
         ></Vertex>
       ));
     } else {
-      console.log(store.selectedFeatures[0].geometry.coordinates);
+      //console.log(store.selectedFeatures[0].geometry.coordinates);
       // if it's a multipolygon
       let coords = [];
       for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
