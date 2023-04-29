@@ -1,10 +1,11 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./auth-request-api/AuthRequestApi";
 
 export const AuthContext = createContext({});
 
 const AuthActionType = {
+  GET_LOGGED_IN: "GET_LOGGED_IN",
   REGISTER_USER: "REGISTER_USER",
   GET_ALL_USERS: "GET_ALL_USERS",
   OPEN_LOGIN_DIALOG: "OPEN_LOGIN_DIALOG",
@@ -28,6 +29,10 @@ function AuthContextProvider(props) {
     invalidEmail: false,
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    auth.getLoggedIn();
+  }, []);
 
   const authReducer = (action) => {
     const { type, payload } = action;
@@ -81,8 +86,28 @@ function AuthContextProvider(props) {
           loginDialogOpen: false,
         });
       }
+      case AuthActionType.GET_LOGGED_IN: {
+        return setAuth({
+          ...auth,
+          user: payload.user,
+          loggedIn: payload.loggedIn,
+        });
+      }
       default:
         return auth;
+    }
+  };
+
+  auth.getLoggedIn = async function() {
+    const response = await api.getLoggedIn();
+    if (response.status === 200) {
+      authReducer({
+        type: AuthActionType.GET_LOGGED_IN,
+        payload: {
+          loggedIn: response.data.loggedIn,
+          user: response.data.user,
+        },
+      });
     }
   };
 
@@ -100,7 +125,6 @@ function AuthContextProvider(props) {
 
   auth.getAllUsers = async function() {
     const response = await api.getAllUsers();
-    console.log(response);
     return response;
 
     // if (response.status === 200) {
@@ -138,7 +162,6 @@ function AuthContextProvider(props) {
 
   auth.registerUser = async function(username, email, password, confirmPassword) {
     const response = await api.registerUser(username, email, password, confirmPassword);
-    console.log("registered user ", response);
 
     if (response.status === 200) {
       authReducer({

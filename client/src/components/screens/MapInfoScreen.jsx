@@ -36,7 +36,6 @@ const MapInfoScreen = (props) => {
     const fetchData = async () => {
       const mapRes = await getMapById(routeParams.id);
       setMapData(mapRes.data.data);
-      console.log("map data set", mapRes.data.data);
     };
 
     fetchData();
@@ -57,7 +56,6 @@ const MapInfoScreen = (props) => {
     if (!mapData) {
       return;
     }
-    console.log("deleting map:" + mapData.mapInfo.id);
     deleteMap(mapData.mapInfo.id);
     setDeleteOpen(false);
     navigate("/");

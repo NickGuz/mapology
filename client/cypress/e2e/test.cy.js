@@ -7,6 +7,7 @@ describe("template spec", () => {
 
   it("Map cards load", () => {
     cy.visit("http://localhost:3000/");
+    cy.wait(1000);
     cy.contains("Duplicate").should("exist");
     cy.contains("Details").should("exist");
   });

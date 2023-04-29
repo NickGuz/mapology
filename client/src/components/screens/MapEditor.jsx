@@ -99,12 +99,24 @@ export default function MapEditor() {
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
+  const [authorized, setAuthorized] = useState(false);
 
   const routeParams = useParams();
 
   useEffect(() => {
-    store.getMapById(routeParams.id);
-    console.log("rendering");
+    const fetchData = async () => {
+      // await store.getMapById(routeParams.id);
+      const res = await RequestApi.getMapById(routeParams.id);
+      const map = res.data.data;
+      store.setCurrentMap(map);
+
+      if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
+        setAuthorized(true);
+      }
+    };
+
+    console.log("fetching data");
+    fetchData();
   }, []);
 
   const handleDrawerOpen = () => {
@@ -117,17 +129,14 @@ export default function MapEditor() {
   };
 
   const mapStyle = {
-    fillColor: "blue",
     fillOpacity: 0.5,
-    color: "black",
     weight: 1,
   };
 
-  const merge = () => {
+  const merge = async () => {
     // try to do features instead of the properties inside of feature
 
     const firstGeom = store.selectedFeatures[0];
-    console.log(firstGeom);
     // const firstProps = store.selectedFeatures[0].properties;
     // console.log(firstProps)
 
@@ -140,17 +149,33 @@ export default function MapEditor() {
 
     mergedFeature.properties.NAME_0 = name;
 
-    console.log(store.currentMap.json.features);
+    // Delete features from DB
+    store.selectedFeatures.forEach((f) => {
+      RequestApi.deleteFeature(f.id);
+    });
+
+    // Add new feature to DB first to get back auto-generated ID
+    const res = await RequestApi.insertFeature(store.currentMap.mapInfo.id, mergedFeature);
+    const newFeature = res.data.data;
+
+    // Add new feature to current json data
+    store.currentMap.json.features.push(newFeature);
+
+    // Delete merged regions
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (region) => !store.selectedFeatures.includes(region)
     );
-    store.currentMap.json.features.push(mergedFeature);
-    console.log(store.currentMap.json.features);
 
+    // Update the store to rerender
     store.setCurrentMap(store.currentMap);
+    store.setSelectedFeatures([]);
   };
 
   const editAttribute = (event) => {
+    if (!authorized) {
+      return;
+    }
+
     setEdit(true);
     setCustomAttr(false);
     if (regionProps != null) {
@@ -163,7 +188,6 @@ export default function MapEditor() {
     // setfeatureureName(feature, name);
     renameAll(feature, oldName, name);
 
-    console.log("feature id: " + feature.id);
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
     store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
@@ -221,7 +245,6 @@ export default function MapEditor() {
         ></Vertex>
       ));
     } else {
-      console.log(store.selectedFeatures[0].geometry.coordinates);
       // if it's a multipolygon
       let coords = [];
       for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
@@ -368,7 +391,7 @@ export default function MapEditor() {
               borderColor: "darkgray",
             }}
           >
-            {auth.loggedIn && (
+            {authorized && (
               <div>
                 <TextEditor />
                 <RegionEditor />
@@ -381,50 +404,3 @@ export default function MapEditor() {
     </Box>
   );
 }
-
-// const Vertex = (props) => {
-//   const [point, setPoint] = useState(null);
-
-//   const map = useMap();
-//   const { store } = useContext(GlobalStoreContext);
-
-//   useEffect(() => {
-//     setPoint(props.center);
-//   }, []);
-
-//   const trackCursor = (event) => {
-//     setPoint(event.latlng);
-//   };
-
-//   return (
-//     <>
-//       {point && (
-//         <CircleMarker
-//           center={point}
-//           pathOptions={{
-//             color: "blue",
-//             fillColor: "blue",
-//             bubblingMouseEvents: false,
-//             fillOpacity: 1.0,
-//           }}
-//           radius={5}
-//           draggable={true}
-//           eventHandlers={{
-//             dblclick: (e) => {
-//               removeVertex(e.latlng);
-//             },
-//             mousedown: (e) => {
-//               map.on("mousemove", trackCursor);
-//               map.dragging.disable();
-//             },
-//             mouseup: (e) => {
-//               map.off("mousemove");
-//               map.dragging.enable();
-//               updateFeature();
-//             },
-//           }}
-//         ></CircleMarker>
-//       )}
-//     </>
-//   );
-// };

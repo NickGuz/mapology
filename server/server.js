@@ -5,6 +5,8 @@ const path = require("path");
 const mapologyRoutes = require("./routers/MapologyRouter");
 const authRoutes = require("./routers/AuthRouter");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
+
 
 const prod = "https://mapology-1.herokuapp.com/";
 const dev = "http://localhost:3000";
@@ -12,9 +14,10 @@ const url = process.env.NODE_ENV ? prod : dev;
 
 const app = express();
 // app.use(express.json()); // parses incoming requests with JSON payloads
-app.use(bodyParser.json({ limit: "1000kb" }));
+app.use(bodyParser.json({ limit: "10000kb" }));
 app.use(cors({ credentials: true, origin: url }));
 app.use(express.static(path.join(process.cwd() + "/build")));
+app.use(cookieParser())
 
 // Setup our routes
 app.use("/api", mapologyRoutes);

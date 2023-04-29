@@ -24,22 +24,26 @@ const HomeScreen = (props) => {
       style={{
         paddingTop: "30px",
         justifyContent: "center",
+        marginLeft: "10%",
+        marginRight: "10%",
       }}
     >
-      <Carousel
-        sx={{
-          textAlign: "center",
-        }}
-        navButtonsWrapperProps={{
-          style: {
-            minWidth: "28%",
-          },
-        }}
-      >
-        {store.displayedMaps.map((item, i) => (
-          <Item key={i} item={item} />
-        ))}
-      </Carousel>
+      <div style={{ justifyContent: "center" }}>
+        <Carousel
+          sx={{
+            textAlign: "center",
+          }}
+          navButtonsWrapperProps={{
+            style: {
+              minWidth: "28%",
+            },
+          }}
+        >
+          {store.displayedMaps.map((item, i) => (
+            <Item key={i} item={item} />
+          ))}
+        </Carousel>
+      </div>
       <MapGrid mapData={store.displayedMaps} type={MapGridType.BROWSE} />
     </div>
   );
@@ -48,12 +52,10 @@ const HomeScreen = (props) => {
 const Item = (props) => {
   return (
     <Paper
-      elevation={3}
       sx={{
         textAlign: "center",
-        maxWidth: "80%",
-        marginLeft: "10%",
       }}
+      variant="outlined"
     >
       <img
         style={{
