@@ -148,7 +148,8 @@ export default class jsTPS {
         this.transactions[this.mostRecentTransaction+1] = transaction;
 
         // AND EXECUTE IT
-        this.doTransaction();
+        //this.doTransaction();
+        this.mostRecentTransaction++;
     }
 
     /**

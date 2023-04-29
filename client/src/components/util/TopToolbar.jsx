@@ -45,7 +45,7 @@ const TopToolbar = (props) => {
     
   }
   const handleRedo = () => {
-    store.undo();
+    store.redo();
     
   }
   return (

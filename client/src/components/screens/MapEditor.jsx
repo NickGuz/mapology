@@ -94,6 +94,10 @@ export default function MapEditor() {
     store.getMapById(routeParams.id);
   }, []);
 
+  useEffect(() => {
+    store.setCurrentMap(store.currentMap);
+  }, [store.currentMap]);
+
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
     setOpen(true);

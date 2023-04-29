@@ -27,6 +27,7 @@ export const PageViewTypes = {
 };
 
 function GlobalStoreContextProvider(props) {
+  
   const { auth } = useContext(AuthContext);
   const [store, setStore] = useState({
     pageView: PageViewTypes.HOME,
@@ -37,7 +38,7 @@ function GlobalStoreContextProvider(props) {
     selectedFeatures: [],
     mapUpdates: 0,
   });
-
+  
   // const navigate = useNavigate();
   
 
@@ -147,17 +148,21 @@ function GlobalStoreContextProvider(props) {
   };
 
   store.addEditMapTransaction = (oldMap, newMap) => {
-    // var delta = jsondiffpatch.diff(oldMap, newMap);
-    // jsondiffpatch.unpatch(store.currentMap, delta);
-    let transaction = new EditMap_Transaction(store, oldMap);
+    let delta = jsondiffpatch.diff(oldMap, newMap);
+    let transaction = new EditMap_Transaction(store, oldMap, delta);
     tps.addTransaction(transaction);
   
   }
+
   store.undo = function () {
     tps.undoTransaction();
+    console.log(tps);
+    store.setCurrentMap(store.currentMap);
   }
   store.redo = function () {
-      tps.redoTransaction();
+    tps.doTransaction();
+    console.log(tps);
+    //store.setCurrentMap(store.currentMap);
   }
 
   return (
