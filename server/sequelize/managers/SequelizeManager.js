@@ -1,4 +1,4 @@
-const { MapInfo, Features, Tags, User } = require("../sequelize");
+const { sequelize, MapInfo, Features, Tags, User, Likes, Dislikes } = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -144,11 +144,20 @@ exports.deleteFeature = async (featureId) => {
 };
 
 exports.searchMaps = async (searchTerm, searchTags, sortType) => {
+  let orderBy = null;
+  if (sortType === "TOP_RATED") {
+    orderBy = [[]];
+  } else if (sortType === "RECENTLY_UPDATED") {
+    orderBy = [["updatedAt", "DESC"]];
+  }
+
   if (searchTerm === "null") {
     searchTerm = null;
   }
+
+  // If we don't have a search term, but we have tags
   if (!searchTerm && searchTags) {
-    return await MapInfo.findAll({
+    const results = await MapInfo.findAll({
       include: [
         {
           model: Tags,
@@ -158,10 +167,22 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             },
           },
         },
+        //   Likes,
+        //   Dislikes,
+        // ],
+        // attributes: {
+        //   include: [[sequelize.fn("COUNT", sequelize.col("likes.mapId")), "rating"]],
+        // },
       ],
     });
+
+    console.log("RESULTS", results);
+    return results;
+    // If we don't have a search term or tags
   } else if (!searchTerm && (!searchTags || searchTags.length <= 0)) {
-    return await MapInfo.findAll();
+    return await MapInfo.findAll({ order: [["createdAt", "DESC"]] });
+
+    // If we have a search term, but not tags
   } else if (!searchTags || searchTags.length <= 0) {
     return await MapInfo.findAll({
       where: {
@@ -179,6 +200,8 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
         ],
       },
     });
+
+    // If we have both a search term and tags
   } else {
     return await MapInfo.findAll({
       include: [

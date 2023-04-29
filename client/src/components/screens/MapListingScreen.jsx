@@ -5,7 +5,7 @@ import TagsInput from "../util/TagsInput";
 import GlobalStoreContext from "../../store/store";
 import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
 
-const SortByValue = {
+export const SortByValue = {
   RELEVANCE: "RELEVANCE",
   // FEATURED: "FEATURED",
   TOP_RATED: "TOP_RATED",
@@ -28,19 +28,13 @@ const MapListingScreen = (props) => {
       store.setDisplayedMaps(res.data);
     };
 
-    const fetchBrowseData = async () => {
-      const res = await RequestApi.getAllMaps();
-      store.setDisplayedMaps(res.data.data);
-    };
+    // const fetchBrowseData = async () => {
+    //   const res = await RequestApi.getAllMaps();
+    //   store.setDisplayedMaps(res.data.data);
+    // };
 
     console.log("search term in useeffect", store.searchTerm);
-    if (store.searchTerm || store.searchTags.length > 0) {
-      console.log("fetching data");
-      console.log(store.searchTerm);
-      fetchSearchData();
-    } else {
-      fetchBrowseData();
-    }
+    fetchSearchData();
   }, [store.searchTerm, store.searchTags]);
 
   const handleSortByChange = (event) => {

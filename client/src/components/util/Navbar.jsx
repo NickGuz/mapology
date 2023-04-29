@@ -65,7 +65,7 @@ const Navbar = (props) => {
   const handleBrowse = () => {
     store.setCurrentMap(null);
     store.setSearchTerm(null);
-    store.setSearchTags([]);
+    // store.setSearchTags([]);
     console.log("setting search term to null");
     navigate("/map-listings/");
   };
