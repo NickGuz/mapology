@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useContext} from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 import { getMapById, getAllMaps } from "./GlobalStoreHttpRequestApi";
 // import { useNavigate } from "react-router-dom";
 import AuthContext from "../auth/AuthContextProvider";
@@ -12,7 +12,9 @@ export const GlobalStoreActionType = {
   CURR_MAP: "CURR_MAP",
   SET_DISPLAYED_MAPS: "SET_DISPLAYED_MAPS",
   SET_SELECTED_FEATURES: "SET_SELECTED_FEATURES",
-
+  SET_SEARCH_TERM: "SET_SEARCH_TERM",
+  SET_SEARCH_TAGS: "SET_SEARCH_TAGS",
+  SET_SORT_TYPE: "SET_SORT_TYPE",
 };
 
 export const PageViewTypes = {
@@ -23,7 +25,7 @@ export const PageViewTypes = {
 function GlobalStoreContextProvider(props) {
   const { auth } = useContext(AuthContext);
   useEffect(() => {
-    console.log("global store testing things")
+    // console.log("global store testing things");
   }, [auth.user]);
   const [store, setStore] = useState({
     pageView: PageViewTypes.HOME,
@@ -33,10 +35,12 @@ function GlobalStoreContextProvider(props) {
     displayedMaps: [],
     selectedFeatures: [],
     mapUpdates: 0,
+    searchTerm: null,
+    searchTags: [],
+    sortType: null,
   });
 
   // const navigate = useNavigate();
-  
 
   const storeReducer = (action) => {
     const { type, payload } = action;
@@ -77,6 +81,24 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           selectedFeatures: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_SEARCH_TERM: {
+        return setStore({
+          ...store,
+          searchTerm: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_SEARCH_TAGS: {
+        return setStore({
+          ...store,
+          searchTags: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_SORT_TYPE: {
+        return setStore({
+          ...store,
+          sortType: payload,
         });
       }
       default: {
@@ -136,10 +158,30 @@ function GlobalStoreContextProvider(props) {
   };
 
   store.setSelectedFeatures = (features) => {
-    console.log("setting");
     storeReducer({
       type: GlobalStoreActionType.SET_SELECTED_FEATURES,
       payload: features,
+    });
+  };
+
+  store.setSearchTerm = (term) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_SEARCH_TERM,
+      payload: term,
+    });
+  };
+
+  store.setSearchTags = (tags) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_SEARCH_TAGS,
+      payload: tags,
+    });
+  };
+
+  store.setSortType = (type) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_SORT_TYPE,
+      payload: type,
     });
   };
 

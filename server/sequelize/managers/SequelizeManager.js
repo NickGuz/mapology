@@ -1,4 +1,6 @@
 const { MapInfo, Features, Tags, User } = require("../sequelize");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 exports.createMap = async (duplicatedId, authorId, title, description, tags, json) => {
   // Might need to parse json from string first - JSON.parse(json)
@@ -24,6 +26,7 @@ exports.createMap = async (duplicatedId, authorId, title, description, tags, jso
     });
   }
 
+  console.log("tags", tags);
   // Load in map tags
   for (let tag of tags) {
     await Tags.create({
@@ -138,4 +141,74 @@ exports.deleteFeature = async (featureId) => {
       id: featureId,
     },
   });
+};
+
+exports.searchMaps = async (searchTerm, searchTags, sortType) => {
+  if (searchTerm === "null") {
+    searchTerm = null;
+  }
+  if (!searchTerm && searchTags) {
+    return await MapInfo.findAll({
+      include: [
+        {
+          model: Tags,
+          where: {
+            tagName: {
+              [Op.in]: searchTags,
+            },
+          },
+        },
+      ],
+    });
+  } else if (!searchTerm && (!searchTags || searchTags.length <= 0)) {
+    return await MapInfo.findAll();
+  } else if (!searchTags || searchTags.length <= 0) {
+    return await MapInfo.findAll({
+      where: {
+        [Op.or]: [
+          {
+            title: {
+              [Op.substring]: searchTerm,
+            },
+          },
+          {
+            description: {
+              [Op.substring]: searchTerm,
+            },
+          },
+        ],
+      },
+    });
+  } else {
+    return await MapInfo.findAll({
+      include: [
+        {
+          model: Tags,
+          where: {
+            tagName: {
+              [Op.in]: searchTags,
+            },
+          },
+        },
+      ],
+      where: {
+        [Op.or]: [
+          {
+            title: {
+              [Op.substring]: searchTerm,
+            },
+          },
+          {
+            description: {
+              [Op.substring]: searchTerm,
+            },
+          },
+        ],
+      },
+    });
+  }
+};
+
+exports.getAllTags = async () => {
+  return await Tags.findAll();
 };

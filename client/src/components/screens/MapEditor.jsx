@@ -92,7 +92,6 @@ export default function MapEditor() {
 
   useEffect(() => {
     store.getMapById(routeParams.id);
-    console.log("rendering");
   }, []);
 
   const handleDrawerOpen = () => {
@@ -211,7 +210,6 @@ export default function MapEditor() {
     // try to do features instead of the properties inside of feature
 
     const firstGeom = store.selectedFeatures[0];
-    console.log(firstGeom);
     // const firstProps = store.selectedFeatures[0].properties;
     // console.log(firstProps)
 
@@ -259,7 +257,6 @@ export default function MapEditor() {
     // setfeatureureName(feature, name);
     renameAll(feature, oldName, name);
 
-    console.log("feature id: " + feature.id);
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
     store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
@@ -317,7 +314,6 @@ export default function MapEditor() {
         ></Vertex>
       ));
     } else {
-      console.log(store.selectedFeatures[0].geometry.coordinates);
       // if it's a multipolygon
       let coords = [];
       for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
