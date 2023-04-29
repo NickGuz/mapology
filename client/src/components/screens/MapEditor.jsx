@@ -87,11 +87,24 @@ export default function MapEditor() {
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
+  const [authorized, setAuthorized] = useState(false);
 
   const routeParams = useParams();
 
   useEffect(() => {
-    store.getMapById(routeParams.id);
+    const fetchData = async () => {
+      // await store.getMapById(routeParams.id);
+      const res = await RequestApi.getMapById(routeParams.id);
+      const map = res.data.data;
+      store.setCurrentMap(map);
+
+      if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
+        setAuthorized(true);
+      }
+    };
+
+    console.log("fetching data");
+    fetchData();
   }, []);
 
   const handleDrawerOpen = () => {
@@ -149,7 +162,7 @@ export default function MapEditor() {
 
     layer.on({
       dblclick: (event) => {
-        if (!auth.loggedIn) {
+        if (!authorized) {
           return;
         }
         handleRenameRegion(feature, layer);
@@ -169,7 +182,7 @@ export default function MapEditor() {
         // }
       },
       click: (event) => {
-        if (!auth.loggedIn) {
+        if (!authorized) {
           return;
         }
         selectRegion(event);
@@ -201,7 +214,7 @@ export default function MapEditor() {
   };
 
   const handleRenameRegion = (feature, layer) => {
-    if (!auth.loggedIn) {
+    if (!authorized) {
       return;
     }
     setFeature(feature);
@@ -210,7 +223,7 @@ export default function MapEditor() {
   };
 
   const merge = async () => {
-    if (!auth.loggedIn) {
+    if (!authorized) {
       return;
     }
     // try to do features instead of the properties inside of feature
@@ -251,6 +264,10 @@ export default function MapEditor() {
   };
 
   const editAttribute = (event) => {
+    if (!authorized) {
+      return;
+    }
+
     setEdit(true);
     setCustomAttr(false);
     if (regionProps != null) {
@@ -415,7 +432,7 @@ export default function MapEditor() {
                     <Button
                       sx={{ color: "black", backgroundColor: "white" }}
                       onClick={() => {
-                        if (!auth.loggedIn) {
+                        if (!authorized) {
                           return;
                         }
                         if (store.selectedFeatures.length !== 1) {
@@ -455,7 +472,7 @@ export default function MapEditor() {
               borderColor: "darkgray",
             }}
           >
-            {auth.loggedIn && (
+            {authorized && (
               <div>
                 <TextEditor />
                 <RegionEditor />

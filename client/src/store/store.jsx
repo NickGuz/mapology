@@ -128,18 +128,18 @@ function GlobalStoreContextProvider(props) {
     });
   };
 
-  store.getMapById = (id) => {
-    async function asyncGetMapById(id) {
-      let response = await getMapById(id);
-      if (response.status == 200) {
-        let map = response.data.data;
-        storeReducer({
-          type: GlobalStoreActionType.CURR_MAP,
-          payload: map,
-        });
-      }
+  store.getMapById = async (id) => {
+    // async function asyncGetMapById(id) {
+    let response = await getMapById(id);
+    if (response.status == 200) {
+      let map = response.data.data;
+      storeReducer({
+        type: GlobalStoreActionType.CURR_MAP,
+        payload: map,
+      });
     }
-    asyncGetMapById(id);
+    // }
+    // asyncGetMapById(id);
   };
 
   store.displayAllMaps = async () => {
