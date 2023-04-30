@@ -1,22 +1,21 @@
-import * as React from "react";
-import { useState, useContext, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { MapContainer, ZoomControl, TileLayer } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import ChangeNameModal from "../modals/ChangeNameModal";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import { styled, useTheme } from "@mui/material/styles";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import GlobalStoreContext from "../../store/store";
-import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
-import ScreenShooter from "../util/ScreenShooter";
-import TopToolbar from "../util/TopToolbar";
-import AuthContext from "../../auth/AuthContextProvider";
-import "leaflet-editable";
-import ReactLeafletEditable from "react-leaflet-editable";
+import * as React from 'react';
+import { useState, useContext, useEffect } from 'react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { MapContainer, ZoomControl, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import ChangeNameModal from '../modals/ChangeNameModal';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import { styled, useTheme } from '@mui/material/styles';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import GlobalStoreContext from '../../store/store';
+import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
+import ScreenShooter from '../util/ScreenShooter';
+import TopToolbar from '../util/TopToolbar';
+import AuthContext from '../../auth/AuthContextProvider';
+import 'leaflet-editable';
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -24,13 +23,13 @@ import {
   //UPDATE_DELTA_TYPE,
   //DATA_TYPES,
   //INPUT_USAGE_TYPES,
-} from "react-editable-json-tree";
+} from 'react-editable-json-tree';
 
-import GeoJSONMap from "../util/GeoJSONMap";
-import TextEditor from "../util/TextEditor";
-import RegionEditor from "../util/RegionEditor";
-import LegendEditor from "../util/LegendEditor";
-import { useParams } from "react-router-dom";
+import GeoJSONMap from '../util/GeoJSONMap';
+import TextEditor from '../util/TextEditor';
+import RegionEditor from '../util/RegionEditor';
+import LegendEditor from '../util/LegendEditor';
+import { useParams } from 'react-router-dom';
 // const turf = require("@turf/turf");
 
 const drawerWidth = 350;
@@ -52,14 +51,14 @@ const drawerWidth = 350;
 //       }),
 //     }),
 //   );
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  backgroundColor: "#03a9f4",
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: '#03a9f4',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
+  justifyContent: 'flex-end',
 }));
 
 export default function MapEditor() {
@@ -88,11 +87,11 @@ export default function MapEditor() {
 
       if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
         setAuthorized(true);
-        console.log("authorized");
+        console.log('authorized');
       }
     };
 
-    console.log("fetching data");
+    console.log('fetching data');
     fetchData();
   }, [auth.loggedIn]);
 
@@ -167,27 +166,21 @@ export default function MapEditor() {
         <Grid item xs={10}>
           <TopToolbar />
           <Box>
-            <ReactLeafletEditable
-              ref={editRef}
-              map={map}
-              onVertexMarkerDrag={() => console.log("dragging")}
-              onEditing={() => console.log("editing")}
+            <MapContainer
+              id="leaflet-canvas"
+              style={{ height: '90vh' }}
+              editable={true}
+              zoomControl={false}
+              zoom={2}
+              doubleClickZoom={false}
+              center={[20, 100]}
+              whenCreated={setMap}
             >
-              <MapContainer
-                id="leaflet-canvas"
-                style={{ height: "90vh" }}
-                editable={true}
-                zoomControl={false}
-                zoom={2}
-                doubleClickZoom={false}
-                center={[20, 100]}
-                whenCreated={setMap}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {/* <Drawer
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {/* <Drawer
                   sx={{
                     width: drawerWidth,
                     boxSizing: "border-box",
@@ -203,27 +196,26 @@ export default function MapEditor() {
                   </DrawerHeader>
                   {DrawerContent}
                 </Drawer> */}
-                {/* <Pane
+              {/* <Pane
                   key={store.selectedFeatures.length + store.mapUpdates}
                   name="markers"
                   style={{ zIndex: 500 }}
                 >
                   {store.selectedFeatures.length === 1 && renderVertices()}
                 </Pane> */}
-                {/* <Pane name="mapdata" style={{ zIndex: 499 }}> */}
-                <GeoJSONMap />
-                <ScreenShooter />
-                <ZoomControl position="topright" />
-              </MapContainer>
-            </ReactLeafletEditable>
+              {/* <Pane name="mapdata" style={{ zIndex: 499 }}> */}
+              <GeoJSONMap />
+              <ScreenShooter />
+              <ZoomControl position="topright" />
+            </MapContainer>
           </Box>
         </Grid>
         <Grid item xs={2}>
           <Box
             sx={{
-              borderLeft: "1px solid",
-              borderRight: "1px solid",
-              borderColor: "darkgray",
+              borderLeft: '1px solid',
+              borderRight: '1px solid',
+              borderColor: 'darkgray',
             }}
           >
             {authorized && (
