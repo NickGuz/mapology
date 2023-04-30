@@ -11,7 +11,9 @@ const Vertex = (props) => {
 
   useEffect(() => {
     setPoint(props.center);
-  }, []);
+  },[]);
+
+
 
   const removeVertex = (vertex) => {
     if (!window.confirm("Are you sure you want to delete this vertex?")) {
@@ -20,7 +22,7 @@ const Vertex = (props) => {
 
     const lat = vertex.lat;
     const lng = vertex.lng;
-
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
     // Get the vertices to remove
     let toRemove = [];
     store.currentMap.json.features.forEach((f) => {
@@ -48,11 +50,13 @@ const Vertex = (props) => {
         (coords) => !(coords[0] === lng && coords[1] === lat)
       );
     });
-
+    
+    
     store.setCurrentMap(store.currentMap);
     toRemove.forEach((f) => {
       RequestApi.updateFeatureGeometry(f.id, f.geometry);
     });
+    store.addEditMapTransaction (mapClone, store.currentMap)
   };
 
   const trackCursor = (event) => {
@@ -63,7 +67,7 @@ const Vertex = (props) => {
     if (!point.lat || !point.lng) {
       return;
     }
-
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
     // Get all features with this coordinate
     // Not very efficient but doesn't noticeably slow anything down yet??
     let features = [];
@@ -104,6 +108,7 @@ const Vertex = (props) => {
 
       store.setCurrentMap(store.currentMap);
       RequestApi.updateFeatureGeometry(feature.id, feature.geometry);
+      store.addEditMapTransaction (mapClone, store.currentMap)
     });
   };
 
