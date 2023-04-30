@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -25,8 +25,14 @@ const PropertiesModal = (props) => {
         store.selectedFeatures[0]?.properties || {}
     );
 
-    // console.log("store.selectedFeatures", store.selectedFeatures);
-    console.log("properties", properties);
+    useEffect(() => {
+        // Update properties every time store.selectedFeatures changes
+        setProperties(store.selectedFeatures[0]?.properties || {});
+    }, [store.selectedFeatures]);
+
+    console.log("store.selectedFeatures", store.selectedFeatures[0]);
+    console.log(store.selectedFeatures.length);
+    // console.log("properties", properties);
 
     function handlePropertyChange(key, value) {
         setProperties((prevProperties) => ({

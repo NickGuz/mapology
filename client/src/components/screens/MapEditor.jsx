@@ -477,6 +477,8 @@ export default function MapEditor() {
                 close={() => setEditOpen(false)}
               />
               <PropertiesModal 
+                layer={currLayer}
+                updateProperties={updateProperties}
                 show={propOpen}
                 close={() => setPropOpen(false)}
               />
