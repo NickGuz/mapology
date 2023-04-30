@@ -21,6 +21,7 @@ import ScreenShooter from "../util/ScreenShooter";
 import TopToolbar from "../util/TopToolbar";
 import AuthContext from "../../auth/AuthContextProvider";
 import Vertex from "../util/Vertex";
+import PropertiesModal from "../modals/RegionPropertyModal"
 import {
   JsonTree,
   //ADD_DELTA_TYPE,
@@ -88,6 +89,7 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
+  const [propOpen, setPropOpen] = useState(false);
 
   const routeParams = useParams();
 
@@ -314,6 +316,17 @@ export default function MapEditor() {
     store.setSelectedFeatures([]);
   };
 
+  const updateProperties = (feature, properties) => {
+      feature.properties = properties;
+
+      RequestApi.updateFeatureProperties(feature.id, feature.properties);
+
+      store.setSelectedFeatures(
+          store.selectedFeatures.filter((x) => x !== feature)
+      );
+  };
+
+
   let customdata =
     store.selectedFeatures.length > 0
       ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
@@ -422,7 +435,9 @@ export default function MapEditor() {
                   </Tooltip>
                   <Tooltip title="Edit Attributes">
                     <Button
-                      onClick={editAttribute}
+                      onClick={() => {
+                        setPropOpen(true);
+                      }}
                       sx={{ color: "black", backgroundColor: "white" }}
                     >
                       <EditAttributesIcon />
@@ -460,6 +475,10 @@ export default function MapEditor() {
                 feature={currFeature}
                 rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
                 close={() => setEditOpen(false)}
+              />
+              <PropertiesModal 
+                show={propOpen}
+                close={() => setPropOpen(false)}
               />
             </MapContainer>
           </Box>
