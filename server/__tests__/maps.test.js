@@ -3,10 +3,10 @@ process.env.TEST = true;
 const supertest = require("supertest");
 const server = require("../server");
 const { Features } = require("../sequelize/sequelize");
-let f = Features;
 
 const app = server;
 
+// Test get all maps
 test("GET /maps", async () => {
     await supertest(app)
         .get("/api/maps")
@@ -16,42 +16,44 @@ test("GET /maps", async () => {
         });
 });
 
-// test to place feature, doesn't work
-// test("POST /feature", async () => {
-//     const newFeature = {
-//         mapId: 1,
-//         type: "Feature",
-//         properties: {
-//             name: "New feature",
-//             description: "This is a new feature",
-//         },
-//         geometry: {
-//             type: "Point",
-//             coordinates: [10, 20],
-//         },
-//     };
+// Test insert new feature
+test("POST /feature", async () => {
+    const newFeature = {
+        mapId: 1,
+        data: {
+            type: "Feature",
+            properties: {
+                name: "New feature",
+                description: "This is a new feature",
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [10, 20],
+            },
+        }
+    };
 
-//     await supertest(app)
-//         .post("/api/feature")
-//         .send(newFeature)
-//         .expect(201)
-//         .then(async (response) => {
-//             expect(response.body.id).toBeTruthy();
-//             expect(response.body.mapId).toBe(newFeature.mapId);
-//             expect(response.body.type).toBe(newFeature.type);
-//             expect(response.body.properties).toEqual(newFeature.properties);
-//             expect(response.body.geometry).toEqual(newFeature.geometry);
+    await supertest(app)
+        .post("/api/feature")
+        .send(newFeature)
+        .expect(201)
+        .then(async (response) => {
+            expect(response.body.data.id).toBeTruthy();
+            expect(response.body.data.mapId).toBe(newFeature.mapId);
+            expect(response.body.data.type).toBe(newFeature.data.type);
+            expect(response.body.data.properties).toEqual(newFeature.data.properties);
+            expect(response.body.data.geometry).toEqual(newFeature.data.geometry);
 
-//             const insertedFeature = await f.findOne({
-//                 where: { id: response.body.id },
-//             });
-//             expect(insertedFeature).toBeTruthy();
-//             expect(insertedFeature.mapId).toBe(newFeature.mapId);
-//             expect(insertedFeature.type).toBe(newFeature.type);
-//             expect(insertedFeature.properties).toEqual(newFeature.properties);
-//             expect(insertedFeature.geometry).toEqual(newFeature.geometry);
-//         });
-// });
+            const insertedFeature = await Features.findOne({
+                where: response.body.data
+            });
+            expect(insertedFeature).toBeTruthy();
+            expect(insertedFeature.mapId).toBe(newFeature.mapId);
+            expect(insertedFeature.type).toBe(newFeature.data.type);
+            expect(insertedFeature.properties).toEqual(newFeature.data.properties);
+            expect(insertedFeature.geometry).toEqual(newFeature.data.geometry);
+        });
+});
 
 
 afterAll((done) => {
