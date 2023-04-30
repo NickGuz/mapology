@@ -75,12 +75,16 @@ const GeoJSONMap = () => {
   };
 
   const rename = (feature, name /*, layer*/) => {
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
+
     const oldName = getFeatureName(feature);
     // setfeatureName(feature, name);
     renameAll(feature, oldName, name);
 
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
+    store.setCurrentMap(store.currentMap);
+    store.addEditMapTransaction(mapClone, store.currentMap);
     store.setSelectedFeatures(
       store.selectedFeatures.filter((x) => x !== feature)
     );
