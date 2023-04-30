@@ -3,16 +3,14 @@ var jsondiffpatch = require('jsondiffpatch');
 var _ = require('lodash');
 
 export default class EditMap_Transaction extends jsTPS_Transaction {
-    constructor(initStore, initOldMap, initDelta) {
+    constructor(initStore, initDelta) {
         super();
         this.store = initStore;
-        this.oldMap = initOldMap;
         this.delta = initDelta;
-      
     }
 
     doTransaction() {
-        
+        jsondiffpatch.patch(this.store.currentMap, this.delta);
     }
     
     undoTransaction() {

@@ -212,7 +212,7 @@ export default function MapEditor() {
 
   const merge = async () => {
     // try to do features instead of the properties inside of feature
-
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
     const firstGeom = store.selectedFeatures[0];
     console.log(firstGeom);
     // const firstProps = store.selectedFeatures[0].properties;
@@ -247,6 +247,7 @@ export default function MapEditor() {
     // Update the store to rerender
     store.setCurrentMap(store.currentMap);
     store.setSelectedFeatures([]);
+    store.addEditMapTransaction (mapClone, store.currentMap)
   };
 
   const editAttribute = (event) => {
@@ -282,6 +283,7 @@ export default function MapEditor() {
     if (store.selectedFeatures.length < 1) {
       return;
     }
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
 
     let featureIds = [];
     store.selectedFeatures.forEach((f) => featureIds.push(f.id));
@@ -295,6 +297,8 @@ export default function MapEditor() {
     );
     store.setCurrentMap(store.currentMap);
     store.setSelectedFeatures([]);
+    store.addEditMapTransaction (mapClone, store.currentMap)
+
   };
 
   let customdata =
