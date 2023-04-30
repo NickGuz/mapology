@@ -148,7 +148,6 @@ function GlobalStoreContextProvider(props) {
   };
 
   store.addEditMapTransaction = (oldMap, newMap) => {
-    store.setSelectedFeatures([]);
     let delta = jsondiffpatch.diff(oldMap, newMap);
     let transaction = new EditMap_Transaction(store, delta);
     tps.addTransaction(transaction);
@@ -157,12 +156,10 @@ function GlobalStoreContextProvider(props) {
 
   store.undo = function () {
     tps.undoTransaction();
-    console.log(tps);
     store.setCurrentMap(store.currentMap);
   }
   store.redo = function () {
     tps.doTransaction();
-    console.log(tps);
     store.setCurrentMap(store.currentMap);
   }
 
