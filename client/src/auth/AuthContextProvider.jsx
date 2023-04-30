@@ -32,7 +32,7 @@ function AuthContextProvider(props) {
 
   useEffect(() => {
     auth.getLoggedIn();
-}, []);
+  }, []);
 
   const authReducer = (action) => {
     const { type, payload } = action;
@@ -91,26 +91,25 @@ function AuthContextProvider(props) {
           ...auth,
           user: payload.user,
           loggedIn: payload.loggedIn,
-           
         });
-    }
+      }
       default:
         return auth;
     }
   };
 
-  auth.getLoggedIn = async function () {
+  auth.getLoggedIn = async function() {
     const response = await api.getLoggedIn();
     if (response.status === 200) {
-        authReducer({
-            type: AuthActionType.GET_LOGGED_IN,
-            payload: {
-                loggedIn: response.data.loggedIn,
-                user: response.data.user
-            }
-        });
+      authReducer({
+        type: AuthActionType.GET_LOGGED_IN,
+        payload: {
+          loggedIn: response.data.loggedIn,
+          user: response.data.user,
+        },
+      });
     }
-}
+  };
 
   auth.openLoginDialog = () => {
     authReducer({
@@ -126,7 +125,6 @@ function AuthContextProvider(props) {
 
   auth.getAllUsers = async function() {
     const response = await api.getAllUsers();
-    console.log(response);
     return response;
 
     // if (response.status === 200) {

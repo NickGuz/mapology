@@ -24,8 +24,6 @@ const ImportModal = (props) => {
 
   const handleSubmit = () => {
     store.setOpenImportDialog(false);
-    console.log("filesToUpload", filesToUpload);
-    console.log("tags", tags);
 
     if (filesToUpload.length === 2) {
       let shpFile, dbfFile;
@@ -93,7 +91,6 @@ const ImportModal = (props) => {
   };
 
   const handleFilesChange = (files) => {
-    console.log("files", files);
     // update chosen files
     setFilesToUpload([...files]);
   };

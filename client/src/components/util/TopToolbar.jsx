@@ -4,7 +4,7 @@ import RedoIcon from "@mui/icons-material/Redo";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SaveIcon from "@mui/icons-material/Save";
 import DownloadIcon from "@mui/icons-material/Download";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -14,8 +14,18 @@ import AuthContext from "../../auth/AuthContextProvider";
 
 const TopToolbar = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [authorized, setAuthorized] = useState(false);
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (auth.loggedIn && store.currentMap && auth.user.id === store.currentMap.mapInfo.authorId) {
+      setAuthorized(true);
+    } else {
+      setAuthorized(false);
+    }
+    console.log("top toolbar re-rendering");
+  }, [store.currentMap]);
 
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
@@ -50,7 +60,7 @@ const TopToolbar = (props) => {
   }
   return (
     <Box>
-      {auth.loggedIn && (
+      {authorized && (
         <>
           <IconButton
             onClick={handleUndo}
@@ -67,7 +77,7 @@ const TopToolbar = (props) => {
       <IconButton>
         <ContentCopyIcon />
       </IconButton>
-      {auth.loggedIn && (
+      {authorized && (
         <IconButton>
           <SaveIcon />
         </IconButton>

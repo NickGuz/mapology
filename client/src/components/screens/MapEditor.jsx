@@ -87,11 +87,24 @@ export default function MapEditor() {
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
+  const [authorized, setAuthorized] = useState(false);
 
   const routeParams = useParams();
 
   useEffect(() => {
-    store.getMapById(routeParams.id);
+    const fetchData = async () => {
+      // await store.getMapById(routeParams.id);
+      const res = await RequestApi.getMapById(routeParams.id);
+      const map = res.data.data;
+      store.setCurrentMap(map);
+
+      if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
+        setAuthorized(true);
+      }
+    };
+
+    console.log("fetching data");
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -153,7 +166,7 @@ export default function MapEditor() {
 
     layer.on({
       dblclick: (event) => {
-        if (!auth.loggedIn) {
+        if (!authorized) {
           return;
         }
         handleRenameRegion(feature, layer);
@@ -173,7 +186,7 @@ export default function MapEditor() {
         // }
       },
       click: (event) => {
-        if (!auth.loggedIn) {
+        if (!authorized) {
           return;
         }
         selectRegion(event);
@@ -205,16 +218,21 @@ export default function MapEditor() {
   };
 
   const handleRenameRegion = (feature, layer) => {
+    if (!authorized) {
+      return;
+    }
     setFeature(feature);
     setLayer(layer);
     setEditOpen(true);
   };
 
   const merge = async () => {
+    if (!authorized) {
+      return;
+    }
     // try to do features instead of the properties inside of feature
     let mapClone = JSON.parse(JSON.stringify(store.currentMap));
     const firstGeom = store.selectedFeatures[0];
-    console.log(firstGeom);
     // const firstProps = store.selectedFeatures[0].properties;
     // console.log(firstProps)
 
@@ -251,6 +269,10 @@ export default function MapEditor() {
   };
 
   const editAttribute = (event) => {
+    if (!authorized) {
+      return;
+    }
+
     setEdit(true);
     setCustomAttr(false);
     if (regionProps != null) {
@@ -263,7 +285,6 @@ export default function MapEditor() {
     // setfeatureureName(feature, name);
     renameAll(feature, oldName, name);
 
-    console.log("feature id: " + feature.id);
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
     store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
@@ -324,7 +345,6 @@ export default function MapEditor() {
         ></Vertex>
       ));
     } else {
-      //console.log(store.selectedFeatures[0].geometry.coordinates);
       // if it's a multipolygon
       let coords = [];
       for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
@@ -420,6 +440,9 @@ export default function MapEditor() {
                     <Button
                       sx={{ color: "black", backgroundColor: "white" }}
                       onClick={() => {
+                        if (!authorized) {
+                          return;
+                        }
                         if (store.selectedFeatures.length !== 1) {
                           window.alert("Cannot rename more than 1 region at a time");
                           return;
@@ -457,7 +480,7 @@ export default function MapEditor() {
               borderColor: "darkgray",
             }}
           >
-            {auth.loggedIn && (
+            {authorized && (
               <div>
                 <TextEditor />
                 <RegionEditor />
