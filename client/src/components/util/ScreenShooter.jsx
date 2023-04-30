@@ -2,6 +2,7 @@ import * as L from "leaflet";
 import { useEffect, useState } from "react";
 import FileSaver from "file-saver";
 import { useMap } from "react-leaflet";
+import "leaflet-simple-map-screenshoter";
 // import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 
 const ScreenShooter = (props) => {

@@ -2,20 +2,7 @@ import * as React from "react";
 import { useState, useContext, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import {
-  MapContainer,
-  GeoJSON,
-  ZoomControl,
-  useMap,
-  Pane,
-  CircleMarker,
-  TileLayer,
-} from "react-leaflet";
-import * as L from "leaflet";
-import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
-import Control from "react-leaflet-custom-control";
-import mapData from "../../example-data/countries.json";
-import { Stack, Button, Tooltip, Menu, MenuItem } from "@mui/material";
+import { MapContainer, ZoomControl, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import ChangeNameModal from "../modals/ChangeNameModal";
 import Drawer from "@mui/material/Drawer";
@@ -43,19 +30,8 @@ import GeoJSONMap from "../util/GeoJSONMap";
 import TextEditor from "../util/TextEditor";
 import RegionEditor from "../util/RegionEditor";
 import LegendEditor from "../util/LegendEditor";
-import UndoIcon from "@mui/icons-material/Undo";
-import RedoIcon from "@mui/icons-material/Redo";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import SaveIcon from "@mui/icons-material/Save";
-import DownloadIcon from "@mui/icons-material/Download";
-import MergeIcon from "@mui/icons-material/Merge";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditAttributesIcon from "@mui/icons-material/EditAttributes";
-import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
-import AbcIcon from "@mui/icons-material/Abc";
-import ListItemText from "@mui/material/ListItemText";
 import { useParams } from "react-router-dom";
-const turf = require("@turf/turf");
+// const turf = require("@turf/turf");
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -118,7 +94,7 @@ export default function MapEditor() {
 
     console.log("fetching data");
     fetchData();
-  }, []);
+  }, [auth.loggedIn]);
 
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
@@ -134,44 +110,6 @@ export default function MapEditor() {
     weight: 1,
   };
 
-  const merge = async () => {
-    // try to do features instead of the properties inside of feature
-
-    const firstGeom = store.selectedFeatures[0];
-    // const firstProps = store.selectedFeatures[0].properties;
-    // console.log(firstProps)
-
-    let name = window.prompt("Input a name for the merged region");
-    if (!name) return;
-
-    const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
-      return turf.union(merged, region);
-    }, firstGeom);
-
-    mergedFeature.properties.NAME_0 = name;
-
-    // Delete features from DB
-    store.selectedFeatures.forEach((f) => {
-      RequestApi.deleteFeature(f.id);
-    });
-
-    // Add new feature to DB first to get back auto-generated ID
-    const res = await RequestApi.insertFeature(store.currentMap.mapInfo.id, mergedFeature);
-    const newFeature = res.data.data;
-
-    // Add new feature to current json data
-    store.currentMap.json.features.push(newFeature);
-
-    // Delete merged regions
-    store.currentMap.json.features = store.currentMap.json.features.filter(
-      (region) => !store.selectedFeatures.includes(region)
-    );
-
-    // Update the store to rerender
-    store.setCurrentMap(store.currentMap);
-    store.setSelectedFeatures([]);
-  };
-
   const editAttribute = (event) => {
     if (!authorized) {
       return;
@@ -184,83 +122,44 @@ export default function MapEditor() {
     }
   };
 
-  const rename = (feature, name /*, layer*/) => {
-    const oldName = getFeatureName(feature);
-    // setfeatureureName(feature, name);
-    renameAll(feature, oldName, name);
-
-    RequestApi.updateFeatureProperties(feature.id, feature.properties);
-
-    store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
-  };
-
-  const renameAll = (feature, oldName, newName) => {
-    // find all keys with the old name
-    let keys = Object.keys(feature.properties);
-    for (let key of keys) {
-      if (feature.properties[key] === oldName) {
-        feature.properties[key] = newName;
-      }
-    }
-  };
-
-  const handleDelete = () => {
-    if (store.selectedFeatures.length < 1) {
-      return;
-    }
-
-    let featureIds = [];
-    store.selectedFeatures.forEach((f) => featureIds.push(f.id));
-
-    for (let fid of featureIds) {
-      RequestApi.deleteFeature(fid);
-    }
-
-    store.currentMap.json.features = store.currentMap.json.features.filter(
-      (f) => !featureIds.includes(f.id)
-    );
-    store.setCurrentMap(store.currentMap);
-    store.setSelectedFeatures([]);
-  };
-
   // let customdata =
   //   store.selectedFeatures.length > 0
   //     ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
   //     : {};
 
-  let DrawerContent = editingAttr ? (
-    <JsonTree data={regionProps} />
-  ) : customAttr ? (
-    <JsonTree data={customdata} />
-  ) : (
-    <Box>other</Box>
-  );
+  // let DrawerContent = editingAttr ? (
+  //   <JsonTree data={regionProps} />
+  // ) : customAttr ? (
+  //   <JsonTree data={customdata} />
+  // ) : (
+  //   <Box>other</Box>
+  // );
 
-  const renderVertices = () => {
-    if (store.selectedFeatures[0].geometry.coordinates.length === 1) {
-      return store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
-        <Vertex
-          key={i}
-          featureId={store.selectedFeatures[0].id}
-          center={[point[1], point[0]]}
-        ></Vertex>
-      ));
-    } else {
-      // if it's a multipolygon
-      let coords = [];
-      for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
-        polygon[0].forEach((coord) => coords.push(coord));
-      }
+  // const renderVertices = () => {
+  //   if (store.selectedFeatures[0].geometry.coordinates.length === 1) {
+  //     return store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
+  //       <Vertex
+  //         key={i}
+  //         featureId={store.selectedFeatures[0].id}
+  //         center={[point[1], point[0]]}
+  //       ></Vertex>
+  //     ));
+  //   } else {
+  //     // if it's a multipolygon
+  //     let coords = [];
+  //     for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
+  //       polygon[0].forEach((coord) => coords.push(coord));
+  //     }
 
-      return coords.map((point, i) => (
-        <Vertex
-          key={i}
-          featureId={store.selectedFeatures[0].id}
-          center={[point[1], point[0]]}
-        ></Vertex>
-      ));
-    }
-  };
+  //     return coords.map((point, i) => (
+  //       <Vertex
+  //         key={i}
+  //         featureId={store.selectedFeatures[0].id}
+  //         center={[point[1], point[0]]}
+  //       ></Vertex>
+  //     ));
+  //   }
+  // };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -288,7 +187,7 @@ export default function MapEditor() {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Drawer
+                {/* <Drawer
                   sx={{
                     width: drawerWidth,
                     boxSizing: "border-box",
@@ -303,7 +202,7 @@ export default function MapEditor() {
                     </IconButton>
                   </DrawerHeader>
                   {DrawerContent}
-                </Drawer>
+                </Drawer> */}
                 {/* <Pane
                   key={store.selectedFeatures.length + store.mapUpdates}
                   name="markers"
@@ -313,77 +212,8 @@ export default function MapEditor() {
                 </Pane> */}
                 {/* <Pane name="mapdata" style={{ zIndex: 499 }}> */}
                 <GeoJSONMap />
-                {/* {store.currentMap && (
-                    <GeoJSON
-                      // key={store.mapUpdates}
-                      key={store.selectedFeatures.length + store.mapUpdates}
-                      style={mapStyle}
-                      // map={map}
-                      data={store.currentMap.json.features}
-                      onEachFeature={onFeature}
-                    />
-                  )} */}
-                {/* </Pane> */}
                 <ScreenShooter />
                 <ZoomControl position="topright" />
-                {/* {auth.loggedIn && auth.user.id === store.currentMap.mapInfo.authorId && ( */}
-                {/* <div> */}
-                {/* <Control position="topright">
-                  <Stack direction="column">
-                    <Tooltip title="Delete">
-                      <Button
-                        sx={{ color: "black", backgroundColor: "white" }}
-                        onClick={handleDelete}
-                      >
-                        <DeleteIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Merge">
-                      <Button
-                        sx={{ color: "black", backgroundColor: "white" }}
-                        onClick={() => merge()}
-                      >
-                        <MergeIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Edit Attributes">
-                      <Button
-                        onClick={editAttribute}
-                        sx={{ color: "black", backgroundColor: "white" }}
-                      >
-                        <EditAttributesIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Rename Region">
-                      <Button
-                        sx={{ color: "black", backgroundColor: "white" }}
-                        onClick={() => {
-                          if (store.selectedFeatures.length !== 1) {
-                            window.alert("Cannot rename more than 1 region at a time");
-                            return;
-                          }
-                          setEditOpen(true);
-                        }}
-                      >
-                        <AbcIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Edit Vertices">
-                      <Button sx={{ color: "black", backgroundColor: "white" }}>
-                        <EditLocationAlt />
-                      </Button>
-                    </Tooltip>
-                  </Stack>
-                </Control> */}
-                {/* </div> */}
-                {/* )} */}
-                <ChangeNameModal
-                  layer={currLayer}
-                  show={editOpen}
-                  feature={currFeature}
-                  rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
-                  close={() => setEditOpen(false)}
-                />
               </MapContainer>
             </ReactLeafletEditable>
           </Box>
