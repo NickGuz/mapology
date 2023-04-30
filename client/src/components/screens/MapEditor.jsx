@@ -107,6 +107,10 @@ export default function MapEditor() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    store.setCurrentMap(store.currentMap);
+  }, [store.currentMap]);
+
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
     setOpen(true);
@@ -227,7 +231,7 @@ export default function MapEditor() {
       return;
     }
     // try to do features instead of the properties inside of feature
-
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
     const firstGeom = store.selectedFeatures[0];
     // const firstProps = store.selectedFeatures[0].properties;
     // console.log(firstProps)
@@ -261,6 +265,7 @@ export default function MapEditor() {
     // Update the store to rerender
     store.setCurrentMap(store.currentMap);
     store.setSelectedFeatures([]);
+    store.addEditMapTransaction (mapClone, store.currentMap)
   };
 
   const editAttribute = (event) => {
@@ -299,6 +304,7 @@ export default function MapEditor() {
     if (store.selectedFeatures.length < 1) {
       return;
     }
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
 
     let featureIds = [];
     store.selectedFeatures.forEach((f) => featureIds.push(f.id));
@@ -312,6 +318,8 @@ export default function MapEditor() {
     );
     store.setCurrentMap(store.currentMap);
     store.setSelectedFeatures([]);
+    store.addEditMapTransaction (mapClone, store.currentMap)
+
   };
 
   let customdata =
