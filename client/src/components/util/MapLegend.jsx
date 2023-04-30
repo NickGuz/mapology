@@ -11,7 +11,10 @@ const MapLegend = (props) => {
 
         legend.onAdd = () => {
           const div = L.DomUtil.create("div", "info legend");
-          div.innerHTML += 'asdsdd TESTING';
+          for (let color of props.currentFill){
+            div.innerHTML += '<i style="background:' + color + '"></i> ' + color + '<br>';
+          }
+          // div.innerHTML += 'asdsdsdd TESTING';
           return div;
         };
         legend.addTo(map);
