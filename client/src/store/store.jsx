@@ -1,9 +1,9 @@
-import { createContext, useEffect, useState, useContext } from "react";
-import { getMapById, getAllMaps } from "./GlobalStoreHttpRequestApi";
+import { createContext, useEffect, useState, useContext } from 'react';
+import { getMapById, getAllMaps } from './GlobalStoreHttpRequestApi';
 // import { useNavigate } from "react-router-dom";
-import AuthContext from "../auth/AuthContextProvider";
-import EditMap_Transaction from "../transactions/EditMap_Transaction";
-import jsTPS from "../common/jsTPS";
+import AuthContext from '../auth/AuthContextProvider';
+import EditMap_Transaction from '../transactions/EditMap_Transaction';
+import jsTPS from '../common/jsTPS';
 var jsondiffpatch = require('jsondiffpatch');
 var _ = require('lodash');
 
@@ -12,24 +12,23 @@ const tps = new jsTPS();
 export const GlobalStoreContext = createContext({});
 
 export const GlobalStoreActionType = {
-  CHANGE_PAGE_VIEW: "CHANGE_PAGE_VIEW",
-  SET_OPEN_IMPORT_DIALOG: "SET_OPEN_IMPORT_DIALOG",
-  SET_OPEN_SETTINGS_MODAL: "SET_OPEN_SETTINGS_MODAL",
-  CURR_MAP: "CURR_MAP",
-  SET_DISPLAYED_MAPS: "SET_DISPLAYED_MAPS",
-  SET_SELECTED_FEATURES: "SET_SELECTED_FEATURES",
-  SET_SEARCH_TERM: "SET_SEARCH_TERM",
-  SET_SEARCH_TAGS: "SET_SEARCH_TAGS",
-  SET_SORT_TYPE: "SET_SORT_TYPE",
+  CHANGE_PAGE_VIEW: 'CHANGE_PAGE_VIEW',
+  SET_OPEN_IMPORT_DIALOG: 'SET_OPEN_IMPORT_DIALOG',
+  SET_OPEN_SETTINGS_MODAL: 'SET_OPEN_SETTINGS_MODAL',
+  CURR_MAP: 'CURR_MAP',
+  SET_DISPLAYED_MAPS: 'SET_DISPLAYED_MAPS',
+  SET_SELECTED_FEATURES: 'SET_SELECTED_FEATURES',
+  SET_SEARCH_TERM: 'SET_SEARCH_TERM',
+  SET_SEARCH_TAGS: 'SET_SEARCH_TAGS',
+  SET_SORT_TYPE: 'SET_SORT_TYPE',
 };
 
 export const PageViewTypes = {
-  HOME: "HOME",
-  REGISTER: "REGISTER",
+  HOME: 'HOME',
+  REGISTER: 'REGISTER',
 };
 
 function GlobalStoreContextProvider(props) {
-  
   const { auth } = useContext(AuthContext);
   const [store, setStore] = useState({
     pageView: PageViewTypes.HOME,
@@ -43,7 +42,7 @@ function GlobalStoreContextProvider(props) {
     searchTags: [],
     sortType: null,
   });
-  
+
   // const navigate = useNavigate();
 
   const storeReducer = (action) => {
@@ -168,22 +167,20 @@ function GlobalStoreContextProvider(props) {
     });
   };
 
-
   store.addEditMapTransaction = (oldMap, newMap) => {
     let delta = jsondiffpatch.diff(oldMap, newMap);
     let transaction = new EditMap_Transaction(store, delta);
     tps.addTransaction(transaction);
-  
-  }
+  };
 
   store.undo = function () {
     tps.undoTransaction();
     store.setCurrentMap(store.currentMap);
-  }
+  };
   store.redo = function () {
     tps.doTransaction();
     store.setCurrentMap(store.currentMap);
-  }
+  };
 
   store.setSearchTerm = (term) => {
     storeReducer({

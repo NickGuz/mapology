@@ -1,21 +1,21 @@
-import { useState, useContext, useEffect } from "react";
-import { useMap, GeoJSON } from "react-leaflet";
-import GlobalStoreContext from "../../store/store";
-import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
-import * as L from "leaflet";
-import AuthContext from "../../auth/AuthContextProvider";
-import Control from "react-leaflet-custom-control";
-import { Stack } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
-import DeleteIcon from "@mui/icons-material/Delete";
-import MergeIcon from "@mui/icons-material/Merge";
-import EditAttributesIcon from "@mui/icons-material/EditAttributes";
-import AbcIcon from "@mui/icons-material/Abc";
-import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
-import { GeomanControls } from "react-leaflet-geoman-v2";
-import ChangeNameModal from "../modals/ChangeNameModal";
-import * as turf from "@turf/turf";
+import { useState, useContext, useEffect } from 'react';
+import { useMap, GeoJSON } from 'react-leaflet';
+import GlobalStoreContext from '../../store/store';
+import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
+import * as L from 'leaflet';
+import AuthContext from '../../auth/AuthContextProvider';
+import Control from 'react-leaflet-custom-control';
+import { Stack } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import MergeIcon from '@mui/icons-material/Merge';
+import EditAttributesIcon from '@mui/icons-material/EditAttributes';
+import AbcIcon from '@mui/icons-material/Abc';
+import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
+import { GeomanControls } from 'react-leaflet-geoman-v2';
+import ChangeNameModal from '../modals/ChangeNameModal';
+import * as turf from '@turf/turf';
 
 const GeoJSONMap = () => {
   const [feature, setFeature] = useState();
@@ -38,6 +38,11 @@ const GeoJSONMap = () => {
     // });
   }, []);
 
+  useEffect(() => {
+    console.log('storing current map');
+    store.setCurrentMap(store.currentMap);
+  }, [store.currentMap]);
+
   const mapStyle = {
     fillOpacity: 0.5,
     weight: 1.5,
@@ -45,14 +50,17 @@ const GeoJSONMap = () => {
 
   const handleVertexDragEnd = (evt) => {
     // map.editTools.commitDrawing();
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
 
     const newFeature = evt.layer.toGeoJSON();
+
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (f) => f.id !== newFeature.id
     );
     store.currentMap.json.features.push(newFeature);
     store.setCurrentMap(store.currentMap);
     RequestApi.updateFeatureGeometry(newFeature.id, newFeature.geometry);
+    store.addEditMapTransaction(mapClone, store.currentMap);
   };
 
   const handleVertexRawClick = (evt) => {
@@ -73,7 +81,9 @@ const GeoJSONMap = () => {
 
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
-    store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== feature));
+    store.setSelectedFeatures(
+      store.selectedFeatures.filter((x) => x !== feature)
+    );
   };
 
   const renameAll = (feature, oldName, newName) => {
@@ -87,9 +97,11 @@ const GeoJSONMap = () => {
   };
 
   const removeVertex = (evt) => {
-    if (!window.confirm("Are you sure you want to delete this vertex?")) {
+    if (!window.confirm('Are you sure you want to delete this vertex?')) {
       return;
     }
+
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
 
     const vertex = evt.markerEvent.latlng;
     const lat = vertex.lat;
@@ -108,7 +120,7 @@ const GeoJSONMap = () => {
     });
 
     if (toRemove.length >= 3) {
-      window.alert("Cannot delete a vertex shared by more than 2 regions");
+      window.alert('Cannot delete a vertex shared by more than 2 regions');
       return;
     }
 
@@ -121,24 +133,31 @@ const GeoJSONMap = () => {
 
     store.setCurrentMap(store.currentMap);
     toRemove.forEach((f) => {
-      console.log("in here");
+      console.log('in here');
       RequestApi.updateFeatureGeometry(f.id, f.geometry);
     });
+
+    store.addEditMapTransaction(mapClone, store.currentMap);
   };
 
   const handleDeleteFeature = (feature) => {
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
+    console.log('deleting feature: ' + feature.id);
     RequestApi.deleteFeature(feature.id);
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (f) => f.id !== feature.id
     );
     store.setCurrentMap(store.currentMap);
+    store.addEditMapTransaction(mapClone, store.currentMap);
   };
 
   const merge = async () => {
     const firstGeom = store.selectedFeatures[0];
 
-    let name = window.prompt("Input a name for the merged region");
+    let name = window.prompt('Input a name for the merged region');
     if (!name) return;
+
+    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
 
     const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
       return turf.union(merged, region);
@@ -152,7 +171,10 @@ const GeoJSONMap = () => {
     });
 
     // Add new feature to DB first to get back auto-generated ID
-    const res = await RequestApi.insertFeature(store.currentMap.mapInfo.id, mergedFeature);
+    const res = await RequestApi.insertFeature(
+      store.currentMap.mapInfo.id,
+      mergedFeature
+    );
     const newFeature = res.data.data;
 
     // Add new feature to current json data
@@ -166,6 +188,7 @@ const GeoJSONMap = () => {
     // Update the store to rerender
     store.setCurrentMap(store.currentMap);
     store.setSelectedFeatures([]);
+    store.addEditMapTransaction(mapClone, store.currentMap);
   };
 
   const editAttribute = (event) => {
@@ -196,24 +219,29 @@ const GeoJSONMap = () => {
 
   const selectRegion = (event) => {
     if (store.selectedFeatures.includes(event.target.feature)) {
-      store.setSelectedFeatures(store.selectedFeatures.filter((x) => x !== event.target.feature));
+      store.setSelectedFeatures(
+        store.selectedFeatures.filter((x) => x !== event.target.feature)
+      );
       return false;
     } else {
-      store.setSelectedFeatures([...store.selectedFeatures, event.target.feature]);
+      store.setSelectedFeatures([
+        ...store.selectedFeatures,
+        event.target.feature,
+      ]);
       return true;
     }
   };
 
   const onFeature = (feature, layer) => {
     let country = getFeatureName(feature);
-    if (!country) throw new Error("Could not find region name");
+    if (!country) throw new Error('Could not find region name');
 
     layer
       .bindTooltip(country, {
-        className: "countryLabel",
+        className: 'countryLabel',
         permanent: true,
         opacity: 0.7,
-        direction: "center",
+        direction: 'center',
       })
       .openTooltip();
 
@@ -244,13 +272,13 @@ const GeoJSONMap = () => {
         }
         selectRegion(event);
       },
-      "pm:markerdragend": (event) => {
+      'pm:markerdragend': (event) => {
         handleVertexDragEnd(event);
       },
-      "pm:vertexclick": (event) => {
+      'pm:vertexclick': (event) => {
         handleVertexRawClick(event);
       },
-      "pm:remove": (event) => {
+      'pm:remove': (event) => {
         handleDeleteFeature(event.target.feature);
       },
     });
@@ -267,26 +295,26 @@ const GeoJSONMap = () => {
     if (feature.properties.fillColor) {
       layer.setStyle({ fillColor: feature.properties.fillColor });
     } else {
-      layer.setStyle({ fillColor: "blue" });
+      layer.setStyle({ fillColor: 'blue' });
     }
 
     // // Set border color
     if (feature.properties.borderColor) {
       layer.setStyle({ color: feature.properties.borderColor });
     } else {
-      layer.setStyle({ color: "black" });
+      layer.setStyle({ color: 'black' });
     }
 
     const selected = store.selectedFeatures.find((f) => f.id === feature.id);
     if (selected) {
-      layer.setStyle({ fillColor: "green" });
+      layer.setStyle({ fillColor: 'green' });
     }
   };
 
   // TODO
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
-    console.log("new feature", feature);
+    console.log('new feature', feature);
   };
 
   return (
@@ -304,26 +332,35 @@ const GeoJSONMap = () => {
       <Control position="topright">
         <Stack direction="column">
           <Tooltip title="Delete">
-            <Button sx={{ color: "black", backgroundColor: "white" }} onClick={() => {}}>
+            <Button
+              sx={{ color: 'black', backgroundColor: 'white' }}
+              onClick={() => {}}
+            >
               <DeleteIcon />
             </Button>
           </Tooltip>
           <Tooltip title="Merge">
-            <Button sx={{ color: "black", backgroundColor: "white" }} onClick={() => merge()}>
+            <Button
+              sx={{ color: 'black', backgroundColor: 'white' }}
+              onClick={() => merge()}
+            >
               <MergeIcon />
             </Button>
           </Tooltip>
           <Tooltip title="Edit Attributes">
-            <Button onClick={editAttribute} sx={{ color: "black", backgroundColor: "white" }}>
+            <Button
+              onClick={editAttribute}
+              sx={{ color: 'black', backgroundColor: 'white' }}
+            >
               <EditAttributesIcon />
             </Button>
           </Tooltip>
           <Tooltip title="Rename Region">
             <Button
-              sx={{ color: "black", backgroundColor: "white" }}
+              sx={{ color: 'black', backgroundColor: 'white' }}
               onClick={() => {
                 if (store.selectedFeatures.length !== 1) {
-                  window.alert("Cannot rename more than 1 region at a time");
+                  window.alert('Cannot rename more than 1 region at a time');
                   return;
                 }
                 setEditOpen(true);
@@ -334,7 +371,7 @@ const GeoJSONMap = () => {
           </Tooltip>
           <Tooltip title="Edit Vertices">
             <Button
-              sx={{ color: "black", backgroundColor: "white" }}
+              sx={{ color: 'black', backgroundColor: 'white' }}
               // onClick={handleToggleEditVertices}
             >
               <EditLocationAlt />
@@ -351,7 +388,7 @@ const GeoJSONMap = () => {
       />
       <GeomanControls
         options={{
-          position: "topleft",
+          position: 'topleft',
           drawText: true,
           rotateMode: false,
           drawMarker: false,
@@ -370,12 +407,12 @@ const GeoJSONMap = () => {
           // limitMarkersToViewport: true,
         }}
         pathOptions={mapStyle}
-        onVertexClick={(e) => console.log("vertex clicked", e)}
-        onDragEnd={(e) => console.log("drag end", e)}
+        onVertexClick={(e) => console.log('vertex clicked', e)}
+        onDragEnd={(e) => console.log('drag end', e)}
         onCreate={handleCreatePolygon}
-        onChange={(e) => console.log("changed", e)}
-        onEdit={(e) => console.log("edited", e)}
-        onMarkerDragEnd={(e) => console.log("marker drag end")}
+        onChange={(e) => console.log('changed', e)}
+        onEdit={(e) => console.log('edited', e)}
+        onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
     </div>
   );

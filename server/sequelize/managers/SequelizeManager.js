@@ -1,8 +1,23 @@
-const { sequelize, MapInfo, Features, Tags, User, Likes, Dislikes } = require("../sequelize");
+const {
+  sequelize,
+  MapInfo,
+  Features,
+  Tags,
+  User,
+  Likes,
+  Dislikes,
+} = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-exports.createMap = async (duplicatedId, authorId, title, description, tags, json) => {
+exports.createMap = async (
+  duplicatedId,
+  authorId,
+  title,
+  description,
+  tags,
+  json
+) => {
   // Might need to parse json from string first - JSON.parse(json)
   // let mapJson = JSON.parse(json);
 
@@ -125,6 +140,20 @@ exports.updateFeatureGeometry = async (featureId, data) => {
   );
 };
 
+exports.updateFeature = async (featureId, props, geom) => {
+  return await Features.update(
+    {
+      properties: props,
+      geometry: geom,
+    },
+    {
+      where: {
+        id: featureId,
+      },
+    }
+  );
+};
+
 exports.insertFeature = async (mapId, data) => {
   // This is assuming 'data' is json, but might need to parse
   return await Features.create({
@@ -234,4 +263,12 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
 
 exports.getAllTags = async () => {
   return await Tags.findAll();
+};
+
+exports.getFeatureById = async (fid) => {
+  return await Features.findAll({
+    where: {
+      id: fid,
+    },
+  });
 };

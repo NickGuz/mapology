@@ -41,4 +41,7 @@ router.get("/search/map/:term/:tags/:sort", GlobalStoreController.searchMaps);
 
 router.get("/tags", GlobalStoreController.getAllTags);
 
+// Route used for the transactions
+router.put("/feature/all/:mapid", GlobalStoreController.updateAllFeatures);
+
 module.exports = router;
