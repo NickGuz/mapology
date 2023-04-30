@@ -326,6 +326,16 @@ export default function MapEditor() {
       );
   };
 
+  const addProperties = (feature, newProperties) => {
+      const updatedProperties = {
+          ...feature.properties,
+          ...newProperties,
+      };
+
+      updateProperties(feature, updatedProperties);
+  };
+  
+
 
   let customdata =
     store.selectedFeatures.length > 0
@@ -479,6 +489,7 @@ export default function MapEditor() {
               <PropertiesModal 
                 layer={currLayer}
                 updateProperties={updateProperties}
+                addProperties={addProperties}
                 show={propOpen}
                 close={() => setPropOpen(false)}
               />
