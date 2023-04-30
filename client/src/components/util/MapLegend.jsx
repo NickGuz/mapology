@@ -1,26 +1,34 @@
-import {useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { useMap } from "react-leaflet";
-import "./MapLegend.css";
+import { useMap } from 'react-leaflet';
+import './MapLegend.css';
 
 const MapLegend = (props) => {
-    const map = useMap();    
-    useEffect(() => {
-      if (map) {
-        const legend = L.control({ position: "bottomleft" });
+  const map = useMap();
+  const legendRef = useRef(null);
 
-        legend.onAdd = () => {
-          const div = L.DomUtil.create("div", "info legend");
-          for (let color of props.currentFill){
-            div.innerHTML += '<i style="background:' + color + '"></i> ' + color + '<br>';
-          }
-          // div.innerHTML += 'asdsdsdd TESTING';
+  useEffect(() => {
+    if (map) {
+      if (!legendRef.current) {
+        legendRef.current = L.control({ position: 'bottomleft' });
+
+        legendRef.current.onAdd = () => {
+          const div = L.DomUtil.create('div', 'info legend');
           return div;
         };
-        legend.addTo(map);
+
+        legendRef.current.addTo(map);
       }
-    }, [map]);
-    return null;
-  }
+
+      const legendContent = props.currentFill
+        .map((color) => `<i style="background:${color}"></i> ${color}<br>`)
+        .join('');
+
+      legendRef.current.getContainer().innerHTML = legendContent;
+    }
+  }, [map, props.currentFill]);
+
+  return null;
+};
 
 export default MapLegend;
