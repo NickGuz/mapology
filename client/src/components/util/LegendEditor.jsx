@@ -1,7 +1,7 @@
 import React from 'react'
 import { TwitterPicker } from "react-color";
 
-const LegendEditor = () => {
+const LegendEditor = (props) => {
   return (
     <div style={{ paddingBottom: "20px", borderBottom: "1px solid", borderColor: "darkgray" }}>
       <p
@@ -19,7 +19,7 @@ const LegendEditor = () => {
         Legend
       </p>
       <div style={{ display: "flex", justifyContent: "center"}}>
-        <TwitterPicker />
+        <TwitterPicker colors={props.currentFill}/>
       </div>
     </div>
   );

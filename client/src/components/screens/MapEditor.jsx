@@ -88,6 +88,7 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
+  const [currentFill, setCurrentFill] = useState([]);
 
   const routeParams = useParams();
 
@@ -201,10 +202,12 @@ export default function MapEditor() {
       layer.setStyle({ fillColor: "green" });
     } else if (feature.properties.fillColor) {
       layer.setStyle({ fillColor: feature.properties.fillColor });
+      if(!currentFill.includes(feature.properties.fillColor)){
+        setCurrentFill([...currentFill, feature.properties.fillColor]);
+      }
     } else {
       layer.setStyle({ fillColor: "blue" });
     }
-
     // Set border color
     if (feature.properties.borderColor) {
       layer.setStyle({ color: feature.properties.borderColor });
@@ -476,7 +479,9 @@ export default function MapEditor() {
               <div>
                 <TextEditor />
                 <RegionEditor />
-                <LegendEditor />
+                <LegendEditor
+                  currentFill={currentFill}
+                />
               </div>
             )}
           </Box>
