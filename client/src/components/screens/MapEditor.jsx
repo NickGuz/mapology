@@ -45,6 +45,7 @@ import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
 import { useParams } from "react-router-dom";
+import MapLegend from "../util/MapLegend";
 const turf = require("@turf/turf");
 
 const drawerWidth = 350;
@@ -370,6 +371,9 @@ export default function MapEditor() {
               doubleClickZoom={false}
               center={[20, 100]}
             >
+              <MapLegend
+              currentFill={currentFill}
+              />
               <Drawer
                 sx={{
                   width: drawerWidth,
