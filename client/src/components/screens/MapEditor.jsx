@@ -80,10 +80,12 @@ export default function MapEditor() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // await store.getMapById(routeParams.id);
+      console.log('1');
       const res = await RequestApi.getMapById(routeParams.id);
+      console.log('2');
       const map = res.data.data;
       store.setCurrentMap(map);
+      console.log('3', map);
 
       if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
         setAuthorized(true);
@@ -91,7 +93,7 @@ export default function MapEditor() {
       }
     };
 
-    console.log('fetching data');
+    console.log('fetching data', store.currentMap);
     fetchData();
   }, [auth.loggedIn]);
 

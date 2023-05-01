@@ -6,6 +6,7 @@ const {
   User,
   Likes,
   Dislikes,
+  Thumbnails,
 } = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -270,5 +271,21 @@ exports.getFeatureById = async (fid) => {
     where: {
       id: fid,
     },
+  });
+};
+
+exports.getThumbnail = async (mapId) => {
+  return await Thumbnails.findOne({
+    where: {
+      mapId: mapId,
+    },
+  });
+};
+
+exports.insertThumbnail = async (mapId, data) => {
+  console.log("INSERTING", mapId);
+  return await Thumbnails.upsert({
+    mapId: mapId,
+    image: data,
   });
 };

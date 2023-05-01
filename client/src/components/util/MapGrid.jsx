@@ -1,14 +1,18 @@
-import React from "react";
-import Grid from "@mui/material/Grid";
-import MapCard from "./MapCard";
-import api from "../../auth/auth-request-api/AuthRequestApi";
+import React, { useContext, useEffect } from 'react';
+import Grid from '@mui/material/Grid';
+import MapCard from './MapCard';
+import api from '../../auth/auth-request-api/AuthRequestApi';
+import GlobalStoreContext from '../../store/store';
 
 const MapGridType = {
-  BROWSE: "BROWSE",
-  PROFILE: "PROFILE",
+  BROWSE: 'BROWSE',
+  PROFILE: 'PROFILE',
 };
 
 const MapGrid = (props) => {
+  const { store } = useContext(GlobalStoreContext);
+
+  useEffect(() => {}, [store.currentMap]);
   return (
     <div
     // style={{
@@ -17,7 +21,7 @@ const MapGrid = (props) => {
     //   marginBottom: "3%",
     // }}
     >
-      <Grid container spacing={2} style={{ marginTop: "5px" }}>
+      <Grid container spacing={2} style={{ marginTop: '5px' }}>
         {props.mapData.map((data) => (
           <Grid item xs={3} key={data.id}>
             <MapCard

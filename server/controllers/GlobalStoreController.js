@@ -174,13 +174,17 @@ const getMapByIdHelper = async (mapId) => {
 };
 
 exports.getMapById = async (req, res) => {
+  console.log("getMapById controller");
   const map = await getMapByIdHelper(req.params.id);
+  console.log("map", map);
   if (!map) {
     return res.status(500).json({
       errorMessage: "Failed to get map",
     });
   }
 
+  console.log("RETURNING");
+  console.log(map);
   return res.status(200).json({
     data: map,
   });
@@ -360,4 +364,33 @@ exports.updateAllFeatures = async (req, res) => {
   }
 
   return res.status(200).json();
+};
+
+exports.getThumbnail = async (req, res) => {
+  const mapId = req.params.id;
+  const thumbnail = await SequelizeManager.getThumbnail(mapId);
+
+  if (!thumbnail) {
+    // return res.status(404).json({
+    //   errorMessage: "Could not find map thumbnail",
+    // });
+    return res.send();
+  }
+
+  return res.status(200).send(thumbnail.image);
+};
+
+exports.insertThumbnail = async (req, res) => {
+  const mapId = req.params.id;
+  const blob = req.body.data;
+
+  const thumbnail = await SequelizeManager.insertThumbnail(mapId, blob);
+
+  if (!thumbnail) {
+    return res.status(500).json({
+      errorMessage: "Failed to insert thumbnail",
+    });
+  }
+
+  return res.status(201).json(thumbnail);
 };

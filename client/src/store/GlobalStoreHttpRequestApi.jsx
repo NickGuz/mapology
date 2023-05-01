@@ -46,6 +46,7 @@ export const duplicateMap = async (userId, mapId) => {
 };
 
 export const getMapById = async (id) => {
+  console.log('getMapById request api');
   return await api.get(`/api/map/${id}`);
 };
 
@@ -123,4 +124,16 @@ export const searchMaps = async (searchTerm, searchTags, sortType) => {
   }
 
   return await api.get(`/api/search/map/${searchTerm}/${tagsStr}/${sortType}`);
+};
+
+export const getThumbnail = async (mapId) => {
+  return await api.get(`/api/thumbnail/${mapId}`); //, {
+  // responseType: 'blob',
+  // });
+};
+
+export const insertThumbnail = async (mapId, blob) => {
+  return await api.post(`/api/thumbnail/${mapId}`, {
+    data: blob,
+  });
 };

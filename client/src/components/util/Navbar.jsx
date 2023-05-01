@@ -1,37 +1,38 @@
-import React, { useState, useContext } from "react";
-import { styled, alpha } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Container from "@mui/material/Container";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Tooltip from "@mui/material/Tooltip";
-import IconButton from "@mui/material/IconButton";
-import Avatar from "@mui/material/Avatar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import SearchIcon from "@mui/icons-material/Search";
-import { Button, InputBase } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
-import AuthContext from "../../auth/AuthContextProvider";
-import GlobalStoreContext from "../../store/store";
-import LoginModal from "../modals/LoginModal";
-import ImportModal from "../modals/ImportModal";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import SettingsModal from "../modals/SettingsModal";
-import SearchBar from "@mkyy/mui-search-bar";
-import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
+import React, { useState, useContext } from 'react';
+import { styled, alpha } from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Container from '@mui/material/Container';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import SearchIcon from '@mui/icons-material/Search';
+import { Button, InputBase } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import AuthContext from '../../auth/AuthContextProvider';
+import GlobalStoreContext from '../../store/store';
+import LoginModal from '../modals/LoginModal';
+import ImportModal from '../modals/ImportModal';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import SettingsModal from '../modals/SettingsModal';
+import SearchBar from '@mkyy/mui-search-bar';
+import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 
 const Navbar = (props) => {
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
   const location = useLocation();
 
   const handleHome = (event) => {
-    navigate("/");
+    store.setCurrentMap(null);
+    navigate('/');
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -44,17 +45,20 @@ const Navbar = (props) => {
   const handleRegister = () => {
     // close the user menu
     setAnchorElUser(null);
-    navigate("/register/");
+    store.setCurrentMap(null);
+    navigate('/register/');
   };
 
   const handleLogin = () => {
     // close the user menu
     setAnchorElUser(null);
-    navigate("/login/");
+    store.setCurrentMap(null);
+    navigate('/login/');
   };
 
   const handleLogout = () => {
     auth.logoutUser();
+    store.setCurrentMap(null);
     setAnchorElUser(null);
   };
 
@@ -66,13 +70,14 @@ const Navbar = (props) => {
     store.setCurrentMap(null);
     store.setSearchTerm(null);
     // store.setSearchTags([]);
-    console.log("setting search term to null");
-    navigate("/map-listings/");
+    console.log('setting search term to null');
+    navigate('/map-listings/');
   };
 
   const handleProfile = () => {
     setAnchorElUser(null);
-    navigate("/profile/");
+    store.setCurrentMap(null);
+    navigate('/profile/');
   };
 
   const handleSettings = () => {
@@ -81,13 +86,14 @@ const Navbar = (props) => {
   };
 
   const handleSearch = () => {
+    store.setCurrentMap(null);
     store.setDisplayedMaps([]);
-    console.log("setting search term", searchValue);
+    console.log('setting search term', searchValue);
     store.setSearchTerm(searchValue);
     // if (location.pathname !== "/map-listings/") {
     //   store.setSearchTags([]);
     // }
-    navigate("/map-listings/");
+    navigate('/map-listings/');
   };
 
   const handleSearchChange = (value) => {
@@ -98,17 +104,17 @@ const Navbar = (props) => {
   const getGuestButtons = () => {
     return (
       <div>
-        <MenuItem key={"Log In"} onClick={handleLogin}>
+        <MenuItem key={'Log In'} onClick={handleLogin}>
           <Typography textAlign="center">Log In</Typography>
         </MenuItem>
-        <MenuItem key={"Register"} onClick={handleRegister}>
+        <MenuItem key={'Register'} onClick={handleRegister}>
           <Typography textAlign="center">Register</Typography>
         </MenuItem>
         {/* TEMPORARY */}
         <MenuItem key="Profile" onClick={handleProfile}>
           <Typography textAlign="center">Profile</Typography>
         </MenuItem>
-        <MenuItem key={"Settings"} onClick={handleSettings}>
+        <MenuItem key={'Settings'} onClick={handleSettings}>
           <Typography textAlign="center">Settings</Typography>
         </MenuItem>
       </div>
@@ -118,13 +124,13 @@ const Navbar = (props) => {
   const getLoggedInButtons = () => {
     return (
       <div>
-        <MenuItem key={"Profile"} onClick={handleProfile}>
+        <MenuItem key={'Profile'} onClick={handleProfile}>
           <Typography textAlign="center">Profile</Typography>
         </MenuItem>
-        <MenuItem key={"Settings"} onClick={handleSettings}>
+        <MenuItem key={'Settings'} onClick={handleSettings}>
           <Typography textAlign="center">Settings</Typography>
         </MenuItem>
-        <MenuItem key={"Log Out"} onClick={handleLogout}>
+        <MenuItem key={'Log Out'} onClick={handleLogout}>
           <Typography textAlign="center">Log out</Typography>
         </MenuItem>
       </div>
@@ -143,22 +149,22 @@ const Navbar = (props) => {
               onClick={handleHome}
               sx={{
                 mr: 2,
-                display: { xs: "none", md: "flex" },
+                display: { xs: 'none', md: 'flex' },
                 fontWeight: 700,
-                letterSpacing: ".1rem",
-                color: "inherit",
-                textDecoration: "none",
-                cursor: "pointer",
+                letterSpacing: '.1rem',
+                color: 'inherit',
+                textDecoration: 'none',
+                cursor: 'pointer',
               }}
             >
               Mapology
             </Typography>
 
-            <Box sx={{ display: "flex", flexGrow: 0 }}>
+            <Box sx={{ display: 'flex', flexGrow: 0 }}>
               <Button
                 key="Import"
                 onClick={handleImport}
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Import
               </Button>
@@ -166,7 +172,7 @@ const Navbar = (props) => {
               <Button
                 key="Browse"
                 onClick={handleBrowse}
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Browse
               </Button>
@@ -175,25 +181,25 @@ const Navbar = (props) => {
             <Box
               sx={{
                 flexGrow: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 marginRight: 20, // I literally can't figure out how to center it so doing this idk
               }}
             >
               <SearchBar
                 value={searchValue}
-                placeholder={"Search..."}
+                placeholder={'Search...'}
                 style={{
-                  color: "black",
-                  backgroundColor: "#6bb5ff",
+                  color: 'black',
+                  backgroundColor: '#6bb5ff',
                 }}
                 onChange={handleSearchChange}
                 onSearch={handleSearch}
               />
             </Box>
 
-            <Box sx={{ display: "flex", flexGrow: 0, alignItems: "center" }}>
+            <Box sx={{ display: 'flex', flexGrow: 0, alignItems: 'center' }}>
               <DarkModeIcon sx={{ width: 30, height: 30, mr: 1 }} />
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -201,12 +207,12 @@ const Navbar = (props) => {
                 </IconButton>
               </Tooltip>
               <Menu
-                sx={{ mt: "45px" }}
+                sx={{ mt: '45px' }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
