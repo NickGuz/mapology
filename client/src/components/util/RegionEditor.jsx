@@ -44,6 +44,10 @@ const RegionEditor = () => {
 
     // Empty selectedFeatures after the change
     store.setSelectedFeatures([]);
+
+    //Empty Legend
+    store.setCurrentLegend({});
+
     handleClose();
   };
 
