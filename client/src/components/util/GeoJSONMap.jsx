@@ -24,7 +24,6 @@ const GeoJSONMap = () => {
   const [currFeature, setCurrFeature] = useState();
   const [editOpen, setEditOpen] = useState(false);
   const [propOpen, setPropOpen] = useState(false);
-  const [currentLegend, setCurrentLegend] = useState([]);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -363,7 +362,7 @@ const GeoJSONMap = () => {
     RequestApi.updateFeatureProperties(feature.id, feature.properties);
 
     store.setSelectedFeatures(
-      store.selectedFeatures.filter(x => x !== feature)
+      store.selectedFeatures.filter((x) => x !== feature)
     );
   };
 

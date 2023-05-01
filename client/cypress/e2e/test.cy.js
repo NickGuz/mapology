@@ -1,7 +1,20 @@
+/* eslint-disable no-undef */
 describe('template spec', () => {
   const random = Math.trunc(Math.random() * 1000);
 
-  it('Exists', () => {
+  beforeEach(() => {
+    cy.session('login', () => {
+      cy.visit('http://localhost:3000/login/');
+      cy.get('#userInfo').type('asdf');
+      cy.get('#password').type('123');
+      cy.get(
+        '#root > div.MuiBox-root.css-i9gxme > div > div > main > div > form > button'
+      ).click();
+      cy.location('pathname').should('eq', '/');
+    });
+  });
+
+  it('Login', () => {
     cy.visit('http://localhost:3000/');
   });
 
@@ -105,6 +118,35 @@ describe('template spec', () => {
     cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '_shp.zip');
   });
 
+  it('Merge 2 regions', () => {
+    cy.visit('http://localhost:3000/', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'prompt').returns('Test Region');
+      },
+    });
+    cy.get('button').filter(':contains("Open Editor")').first().click();
+    cy.wait(500);
+
+    // Click on Libya
+    cy.get(
+      '#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(17)'
+    ).click();
+
+    // Click on Egypt
+    cy.get(
+      '#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(47)'
+    ).click();
+
+    // It double clicks for some reason, so close rename popup
+    cy.get('#cancel-button').click();
+
+    // Click merge button
+    cy.get('[aria-label="Merge"]').click();
+
+    // Check that the new region exists, might not work
+    cy.contains('Test Region').should('exist');
+  });
+
   it('Delete GeoJSON Map', () => {
     cy.visit('http://localhost:3000/');
     cy.get('.card-details-btn').filter(':contains("Details")').first().click();
@@ -114,17 +156,4 @@ describe('template spec', () => {
     cy.visit('http://localhost:3000/');
     cy.contains('Cypress Map JSON ' + random).should('not.exist');
   });
-
-  //Check all rendered elements have default values
-  // it('Default Rendered Values', () => {
-  //   cy.visit('http://localhost:3000/')
-  //   cy.get('input[name="username"]').should('have.value', '')
-  //   cy.get('input[name="email"]').should('have.value', '')
-  //   cy.get('input[name="password"]').should('have.value', '')
-  //   cy.get('input[name="confirmPassword"]').should('have.value', '')
-  //   cy.get('.PrivateSwitchBase-input').should('not.be.checked')
-  //   cy.get('.MuiFormControlLabel-root > .MuiTypography-root').should('contains.text', 'I agree to the Terms of Service and Privacy Policy')
-  //   cy.get('.MuiButton-root').should('contains.text', 'Create Your Account')
-  //   cy.get('.MuiGrid-root > .MuiTypography-root').should('contains.text', 'Already have an account? Sign in')
-  // })
 });
