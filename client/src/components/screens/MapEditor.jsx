@@ -31,6 +31,7 @@ import RegionEditor from '../util/RegionEditor';
 import LegendEditor from '../util/LegendEditor';
 import { useParams } from 'react-router-dom';
 // const turf = require("@turf/turf");
+import MapLegend from '../util/MapLegend';
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -75,6 +76,7 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
+  const [currentLegend, setCurrentLegend] = useState({});
 
   const routeParams = useParams();
 
@@ -109,6 +111,16 @@ export default function MapEditor() {
   const mapStyle = {
     fillOpacity: 0.5,
     weight: 1,
+  };
+
+  const handleRenameLegend = (color, name) => {
+    if (!authorized) {
+      return;
+    }
+    store.setCurrentLegend({
+      ...store.currentLegend,
+      [color]: [name],
+    });
   };
 
   const editAttribute = (event) => {
@@ -207,6 +219,41 @@ export default function MapEditor() {
                 </Pane> */}
               {/* <Pane name="mapdata" style={{ zIndex: 499 }}> */}
               <GeoJSONMap />
+              {/* <MapLegend currentLegend={currentLegend} /> */}
+              {/* <Drawer
+                sx={{
+                  width: drawerWidth,
+                  boxSizing: "border-box",
+                }}
+                variant="persistent"
+                anchor="left"
+                open={open}
+              >
+                <DrawerHeader>
+                  <IconButton onClick={handleDrawerClose}>
+                    {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                  </IconButton>
+                </DrawerHeader>
+                {DrawerContent}
+              </Drawer>
+              <Pane
+                key={store.selectedFeatures.length + store.mapUpdates}
+                name="markers"
+                style={{ zIndex: 500 }}
+              >
+                {store.selectedFeatures.length === 1 && renderVertices()}
+              </Pane>
+              <Pane name="mapdata" style={{ zIndex: 499 }}>
+                {store.currentMap && (
+                  <GeoJSON
+                    // key={store.mapUpdates}
+                    key={store.selectedFeatures.length + store.mapUpdates}
+                    style={mapStyle}
+                    data={store.currentMap.json.features}
+                    onEachFeature={onFeature}
+                  />
+                )}
+              </Pane> */}
               <ScreenShooter />
               <ZoomControl position="topright" />
             </MapContainer>
@@ -224,7 +271,10 @@ export default function MapEditor() {
               <div>
                 <TextEditor />
                 <RegionEditor />
-                <LegendEditor />
+                <LegendEditor
+                  rename={(color, name) => handleRenameLegend(color, name)}
+                  currentFill={Object.keys(store.currentLegend)}
+                />
               </div>
             )}
           </Box>

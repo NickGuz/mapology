@@ -1,7 +1,17 @@
-import React from 'react'
-import { TwitterPicker } from "react-color";
+import {React, useState} from 'react'
+import { CirclePicker } from "react-color";
+import ChangeLegendModal from "../modals/ChangeLegendModal";
 
-const LegendEditor = () => {
+const LegendEditor = (props) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const [color, setColor] = useState('');
+
+  const handleChange = (hexCode, e) => {
+    setColor(hexCode.hex);
+    setEditOpen(true);
+  };
+
+
   return (
     <div style={{ paddingBottom: "20px", borderBottom: "1px solid", borderColor: "darkgray" }}>
       <p
@@ -19,8 +29,17 @@ const LegendEditor = () => {
         Legend
       </p>
       <div style={{ display: "flex", justifyContent: "center"}}>
-        <TwitterPicker />
+        <CirclePicker
+        colors={props.currentFill}
+        onChangeComplete={handleChange}
+        />
       </div>
+      <ChangeLegendModal
+              rename={(color, name) => props.rename(color, name)}
+              show={editOpen}
+              color={color}
+              close={() => setEditOpen(false)}
+            />
     </div>
   );
 }

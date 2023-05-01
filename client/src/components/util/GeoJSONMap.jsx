@@ -15,12 +15,14 @@ import AbcIcon from '@mui/icons-material/Abc';
 import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
 import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
+import MapLegend from './MapLegend';
 import * as turf from '@turf/turf';
 
 const GeoJSONMap = () => {
   const [currLayer, setCurrLayer] = useState();
   const [currFeature, setCurrFeature] = useState();
   const [editOpen, setEditOpen] = useState(false);
+  const [currentLegend, setCurrentLegend] = useState([]);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -44,7 +46,7 @@ const GeoJSONMap = () => {
       let bounds = new L.LatLngBounds(latlngs);
       map.fitBounds(bounds);
     }
-  }, [store.currentMap]);
+  }, [store.currentMap, store.currentLegend]);
 
   const mapStyle = {
     fillOpacity: 0.5,
@@ -330,6 +332,12 @@ const GeoJSONMap = () => {
     // Set fill color
     if (feature.properties.fillColor) {
       layer.setStyle({ fillColor: feature.properties.fillColor });
+      if (!(feature.properties.fillColor in store.currentLegend)) {
+        store.setCurrentLegend({
+          ...store.currentLegend,
+          [feature.properties.fillColor]: 'temporary place holder',
+        });
+      }
     } else {
       layer.setStyle({ fillColor: 'blue' });
     }
@@ -450,6 +458,7 @@ const GeoJSONMap = () => {
         // onEdit={(e) => console.log('edited', e)}
         // onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
+      <MapLegend currentLegend={store.currentLegend} />
     </div>
   );
 };

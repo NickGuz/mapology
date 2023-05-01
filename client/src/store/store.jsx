@@ -21,6 +21,7 @@ export const GlobalStoreActionType = {
   SET_SEARCH_TERM: 'SET_SEARCH_TERM',
   SET_SEARCH_TAGS: 'SET_SEARCH_TAGS',
   SET_SORT_TYPE: 'SET_SORT_TYPE',
+  SET_CURR_LEGEND: 'SET_CURR_LEGEND',
 };
 
 export const PageViewTypes = {
@@ -41,6 +42,7 @@ function GlobalStoreContextProvider(props) {
     searchTerm: null,
     searchTags: [],
     sortType: null,
+    currentLegend: {},
   });
 
   // const navigate = useNavigate();
@@ -102,6 +104,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           sortType: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_CURR_LEGEND: {
+        return setStore({
+          ...store,
+          currentLegend: payload,
         });
       }
       default: {
@@ -200,6 +208,13 @@ function GlobalStoreContextProvider(props) {
     storeReducer({
       type: GlobalStoreActionType.SET_SORT_TYPE,
       payload: type,
+    });
+  };
+
+  store.setCurrentLegend = (legend) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_CURR_LEGEND,
+      payload: legend,
     });
   };
 
