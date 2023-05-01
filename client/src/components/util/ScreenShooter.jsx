@@ -1,15 +1,13 @@
 import * as L from 'leaflet';
 import { useContext, useEffect, useState } from 'react';
-import FileSaver from 'file-saver';
 import { useMap } from 'react-leaflet';
 import 'leaflet-simple-map-screenshoter';
 import GlobalStoreContext from '../../store/store';
 import { insertThumbnail } from '../../store/GlobalStoreHttpRequestApi';
 // import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 
-const ScreenShooter = (props) => {
+const ScreenShooter = () => {
   const [screenshoter, setScreenshoter] = useState(null);
-  const [rendered, setRendered] = useState(false);
   const map = useMap();
   const { store } = useContext(GlobalStoreContext);
 
@@ -32,10 +30,10 @@ const ScreenShooter = (props) => {
     // callback for manually edit map if have warn: "May be map size very big on that zoom level, we have error"
     // and screenshot not created
     onPixelDataFail: async function ({
-      node,
+      // node,
       plugin,
-      error,
-      mapPane,
+      // error,
+      // mapPane,
       domtoimageOptions,
     }) {
       // Solutions:
@@ -48,26 +46,25 @@ const ScreenShooter = (props) => {
   };
 
   useEffect(() => {
+    const takeScreenshot = async () => {
+      await new Promise((r) => setTimeout(r, 300));
+      let format = 'blob';
+      screenshoter.takeScreen(format).then((blob) => {
+        // convert blob to base64 string
+        let reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          let base64data = reader.result;
+          insertThumbnail(store.currentMap.mapInfo.id, base64data);
+        };
+      });
+    };
+
     if (!screenshoter) {
       let ss = L.simpleMapScreenshoter(pluginOptions).addTo(map);
       setScreenshoter(ss);
     } else if (store.currentMap) {
-      let format = 'blob';
-      screenshoter
-        .takeScreen(format)
-        .then((blob) => {
-          // convert blob to base64 string
-          let reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            let base64data = reader.result;
-            console.log('inserting thumbnail');
-            insertThumbnail(store.currentMap.mapInfo.id, base64data);
-          };
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+      takeScreenshot();
     }
   }, [screenshoter, store.currentMap]);
 

@@ -18,10 +18,8 @@ import ChangeNameModal from '../modals/ChangeNameModal';
 import * as turf from '@turf/turf';
 
 const GeoJSONMap = () => {
-  const [feature, setFeature] = useState();
   const [currLayer, setCurrLayer] = useState();
   const [currFeature, setCurrFeature] = useState();
-  const [layer, setLayer] = useState();
   const [editOpen, setEditOpen] = useState(false);
 
   const { store } = useContext(GlobalStoreContext);
@@ -29,18 +27,23 @@ const GeoJSONMap = () => {
   const map = useMap();
 
   useEffect(() => {
-    // Setup leaflet-editable event handlers
-    // map.on("editable:vertex:dragend", handleVertexDragEnd);
-    // map.on("editable:vertex:rawclick", handleVertexRawClick);
-    // console.log("re-rendeing");
-    // store.selectedFeatures.forEach((l) => {
-    //   l.pm.enable();
-    // });
-  }, []);
-
-  useEffect(() => {
-    console.log('storing current map');
     store.setCurrentMap(store.currentMap);
+
+    if (store.currentMap) {
+      const latlngs = [];
+      store.currentMap.json.features.forEach((f) => {
+        f.geometry.coordinates.forEach((polygon) => {
+          if (f.geometry.type === 'MultiPolygon') {
+            polygon[0].forEach((p) => latlngs.push([p[1], p[0]]));
+          } else {
+            polygon.forEach((p) => latlngs.push([p[1], p[0]]));
+          }
+        });
+      });
+
+      let bounds = new L.LatLngBounds(latlngs);
+      map.fitBounds(bounds);
+    }
   }, [store.currentMap]);
 
   const mapStyle = {
@@ -115,10 +118,25 @@ const GeoJSONMap = () => {
     // // Get the vertices to remove
     let toRemove = [];
     store.currentMap.json.features.forEach((f) => {
-      f.geometry.coordinates[0].forEach((xy) => {
-        if (xy[0] === lng && xy[1] === lat) {
-          // toRemove.push({ feature: f, coords: xy });
-          toRemove.push(f);
+      f.geometry.coordinates.forEach((polygon) => {
+        if (f.geometry.type === 'MultiPolygon') {
+          polygon[0].forEach((coord) => {
+            if (
+              Math.abs(coord[0] - lng) < 0.0001 &&
+              Math.abs(coord[1] - lat) < 0.0001
+            ) {
+              toRemove.push(f);
+            }
+          });
+        } else {
+          polygon.forEach((coord) => {
+            if (
+              Math.abs(coord[0] - lng) < 0.0001 &&
+              Math.abs(coord[1] - lat) < 0.0001
+            ) {
+              toRemove.push(f);
+            }
+          });
         }
       });
     });
@@ -128,16 +146,31 @@ const GeoJSONMap = () => {
       return;
     }
 
-    // // Remove the vertices
+    // Remove the vertices
     toRemove.forEach((f) => {
-      f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-        (coords) => !(coords[0] === lng && coords[1] === lat)
-      );
+      if (f.geometry.type === 'MultiPolygon') {
+        for (let polygon of f.geometry.coordinates) {
+          polygon[0] = polygon[0].filter(
+            (coords) =>
+              !(
+                Math.abs(coords[0] - lng) < 0.0001 &&
+                Math.abs(coords[1] - lat) < 0.0001
+              )
+          );
+        }
+      } else {
+        f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
+          (coords) =>
+            !(
+              Math.abs(coords[0] - lng) < 0.0001 &&
+              Math.abs(coords[1] - lat) < 0.0001
+            )
+        );
+      }
     });
 
     store.setCurrentMap(store.currentMap);
     toRemove.forEach((f) => {
-      console.log('in here');
       RequestApi.updateFeatureGeometry(f.id, f.geometry);
     });
 
@@ -146,7 +179,6 @@ const GeoJSONMap = () => {
 
   const handleDeleteFeature = (feature) => {
     let mapClone = JSON.parse(JSON.stringify(store.currentMap));
-    console.log('deleting feature: ' + feature.id);
     RequestApi.deleteFeature(feature.id);
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (f) => f.id !== feature.id
@@ -195,7 +227,7 @@ const GeoJSONMap = () => {
     store.addEditMapTransaction(mapClone, store.currentMap);
   };
 
-  const editAttribute = (event) => {
+  const editAttribute = () => {
     // setEdit(true);
     // setCustomAttr(false);
     // if (regionProps != null) {
@@ -250,20 +282,20 @@ const GeoJSONMap = () => {
       .openTooltip();
 
     layer.on({
-      dblclick: (event) => {
+      dblclick: () => {
         if (!auth.loggedIn) {
           return;
         }
         handleRenameRegion(feature, layer);
       },
-      mouseover: (event) => {
+      mouseover: () => {
         // if (!store.selectedFeatures.includes(event.target.feature)) {
         //   event.target.setStyle({
         //     fillColor: "purple",
         //   });
         // }
       },
-      mouseout: (event) => {
+      mouseout: () => {
         // if (!store.selectedFeatures.includes(event.target.feature)) {
         //   event.target.setStyle({
         //     fillColor: "blue",
@@ -411,12 +443,12 @@ const GeoJSONMap = () => {
           // limitMarkersToViewport: true,
         }}
         pathOptions={mapStyle}
-        onVertexClick={(e) => console.log('vertex clicked', e)}
-        onDragEnd={(e) => console.log('drag end', e)}
+        // onVertexClick={(e) => console.log('vertex clicked', e)}
+        // onDragEnd={(e) => console.log('drag end', e)}
         onCreate={handleCreatePolygon}
-        onChange={(e) => console.log('changed', e)}
-        onEdit={(e) => console.log('edited', e)}
-        onMarkerDragEnd={(e) => console.log('marker drag end')}
+        // onChange={(e) => console.log('changed', e)}
+        // onEdit={(e) => console.log('edited', e)}
+        // onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
     </div>
   );
