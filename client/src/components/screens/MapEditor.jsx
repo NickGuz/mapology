@@ -16,14 +16,6 @@ import ScreenShooter from '../util/ScreenShooter';
 import TopToolbar from '../util/TopToolbar';
 import AuthContext from '../../auth/AuthContextProvider';
 import 'leaflet-editable';
-import {
-  JsonTree,
-  //ADD_DELTA_TYPE,
-  //REMOVE_DELTA_TYPE,
-  //UPDATE_DELTA_TYPE,
-  //DATA_TYPES,
-  //INPUT_USAGE_TYPES,
-} from 'react-editable-json-tree';
 
 import GeoJSONMap from '../util/GeoJSONMap';
 import TextEditor from '../util/TextEditor';
@@ -76,7 +68,7 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
-  const [currentLegend, setCurrentLegend] = useState({});
+  const [propOpen, setPropOpen] = useState(false);
 
   const routeParams = useParams();
 
@@ -134,45 +126,7 @@ export default function MapEditor() {
       handleDrawerOpen();
     }
   };
-
-  // let customdata =
-  //   store.selectedFeatures.length > 0
-  //     ? { Region: store.selectedFeatures[store.selectedFeatures.length - 1].properties.name }
-  //     : {};
-
-  // let DrawerContent = editingAttr ? (
-  //   <JsonTree data={regionProps} />
-  // ) : customAttr ? (
-  //   <JsonTree data={customdata} />
-  // ) : (
-  //   <Box>other</Box>
-  // );
-
-  // const renderVertices = () => {
-  //   if (store.selectedFeatures[0].geometry.coordinates.length === 1) {
-  //     return store.selectedFeatures[0].geometry.coordinates[0].map((point, i) => (
-  //       <Vertex
-  //         key={i}
-  //         featureId={store.selectedFeatures[0].id}
-  //         center={[point[1], point[0]]}
-  //       ></Vertex>
-  //     ));
-  //   } else {
-  //     // if it's a multipolygon
-  //     let coords = [];
-  //     for (let polygon of store.selectedFeatures[0].geometry.coordinates) {
-  //       polygon[0].forEach((coord) => coords.push(coord));
-  //     }
-
-  //     return coords.map((point, i) => (
-  //       <Vertex
-  //         key={i}
-  //         featureId={store.selectedFeatures[0].id}
-  //         center={[point[1], point[0]]}
-  //       ></Vertex>
-  //     ));
-  //   }
-  // };
+  
 
   return (
     <Box sx={{ flexGrow: 1 }}>

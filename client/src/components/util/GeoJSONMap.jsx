@@ -15,6 +15,7 @@ import AbcIcon from '@mui/icons-material/Abc';
 import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
 import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
+import PropertiesModal from '../modals/RegionPropertyModal';
 import MapLegend from './MapLegend';
 import * as turf from '@turf/turf';
 
@@ -22,6 +23,7 @@ const GeoJSONMap = () => {
   const [currLayer, setCurrLayer] = useState();
   const [currFeature, setCurrFeature] = useState();
   const [editOpen, setEditOpen] = useState(false);
+  const [propOpen, setPropOpen] = useState(false);
   const [currentLegend, setCurrentLegend] = useState([]);
 
   const { store } = useContext(GlobalStoreContext);
@@ -355,6 +357,24 @@ const GeoJSONMap = () => {
     }
   };
 
+  const updateProperties = (feature, properties) => {
+    feature.properties = properties;
+
+    RequestApi.updateFeatureProperties(feature.id, feature.properties);
+
+    store.setSelectedFeatures(
+      store.selectedFeatures.filter(x => x !== feature)
+    );
+  };
+
+  const addProperties = (feature, newProperties) => {
+    const updatedProperties = {
+      ...feature.properties,
+      ...newProperties,
+    };
+    updateProperties(feature, updatedProperties);
+  };
+
   // TODO
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
@@ -393,7 +413,9 @@ const GeoJSONMap = () => {
           </Tooltip>
           <Tooltip title="Edit Attributes">
             <Button
-              onClick={editAttribute}
+              onClick={() => {
+                setPropOpen(true);
+              }}
               sx={{ color: 'black', backgroundColor: 'white' }}
             >
               <EditAttributesIcon />
@@ -429,6 +451,13 @@ const GeoJSONMap = () => {
         feature={currFeature}
         rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
         close={() => setEditOpen(false)}
+      />
+      <PropertiesModal
+        layer={currLayer}
+        updateProperties={updateProperties}
+        addProperties={addProperties}
+        show={propOpen}
+        close={() => setPropOpen(false)}
       />
       <GeomanControls
         options={{
