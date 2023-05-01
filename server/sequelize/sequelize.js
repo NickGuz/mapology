@@ -36,7 +36,11 @@ const Likes = require("./models/Likes")(sequelize, DataTypes);
 const Dislikes = require("./models/Dislikes")(sequelize, DataTypes);
 const Tags = require("./models/Tags")(sequelize, DataTypes);
 const Legends = require("./models/Legends")(sequelize, DataTypes);
-const GraphicTextBoxes = require("./models/GraphicTextBoxes")(sequelize, DataTypes);
+const GraphicTextBoxes = require("./models/GraphicTextBoxes")(
+  sequelize,
+  DataTypes
+);
+const Thumbnails = require("./models/Thumbnails")(sequelize, DataTypes);
 
 // Define associations (foreign keys)
 createAssociations(sequelize.models);
@@ -76,4 +80,5 @@ module.exports = {
   Tags,
   Legends,
   GraphicTextBoxes,
+  Thumbnails,
 };
