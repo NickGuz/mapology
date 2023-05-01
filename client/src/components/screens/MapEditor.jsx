@@ -89,7 +89,7 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
-  const [currentFill, setCurrentFill] = useState([]);
+  const [currentLegend, setCurrentLegend] = useState({});
 
   const routeParams = useParams();
 
@@ -107,7 +107,7 @@ export default function MapEditor() {
 
     console.log("fetching data");
     fetchData();
-  }, []);
+  }, [currentLegend]);
 
   const handleDrawerOpen = () => {
     //store.setCurrentFeature(regionProps)
@@ -203,8 +203,12 @@ export default function MapEditor() {
       layer.setStyle({ fillColor: "green" });
     } else if (feature.properties.fillColor) {
       layer.setStyle({ fillColor: feature.properties.fillColor });
-      if(!currentFill.includes(feature.properties.fillColor)){
-        setCurrentFill([...currentFill, feature.properties.fillColor]);
+
+      if(!(feature.properties.fillColor in currentLegend)){
+        setCurrentLegend({
+          ...currentLegend,
+          [feature.properties.fillColor]: 'temporary place holder'
+        })
       }
     } else {
       layer.setStyle({ fillColor: "blue" });
@@ -225,6 +229,17 @@ export default function MapEditor() {
     setLayer(layer);
     setEditOpen(true);
   };
+
+  const handleRenameLegend = (color, name) => {
+    if (!authorized) {
+      return;
+    }
+    setCurrentLegend({
+      ...currentLegend,
+      [color]: [name]
+    })
+  };
+
 
   const merge = async () => {
     if (!authorized) {
@@ -372,7 +387,7 @@ export default function MapEditor() {
               center={[20, 100]}
             >
               <MapLegend
-              currentFill={currentFill}
+              currentLegend = {currentLegend}
               />
               <Drawer
                 sx={{
@@ -484,7 +499,8 @@ export default function MapEditor() {
                 <TextEditor />
                 <RegionEditor />
                 <LegendEditor
-                  currentFill={currentFill}
+                  rename={(color, name) => handleRenameLegend(color, name)}
+                  currentFill={Object.keys(currentLegend)}
                 />
               </div>
             )}

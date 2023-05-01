@@ -20,13 +20,13 @@ const MapLegend = (props) => {
         legendRef.current.addTo(map);
       }
 
-      const legendContent = props.currentFill
-        .map((color) => `<i style="background:${color}"></i> ${color}<br>`)
-        .join('');
+      const legendContent = Object.entries(props.currentLegend)
+      .map(([color, name]) => `<i style="background:${color}"></i> ${name}<br>`)
+      .join('');
 
       legendRef.current.getContainer().innerHTML = legendContent;
     }
-  }, [map, props.currentFill]);
+  }, [map, props.currentLegend]);
 
   return null;
 };
