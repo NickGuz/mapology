@@ -335,11 +335,17 @@ const GeoJSONMap = () => {
       if (!(feature.properties.fillColor in store.currentLegend)) {
         store.setCurrentLegend({
           ...store.currentLegend,
-          [feature.properties.fillColor]: 'temporary place holder',
+          [feature.properties.fillColor]: feature.properties.fillColor,
         });
       }
     } else {
-      layer.setStyle({ fillColor: 'blue' });
+      layer.setStyle({ fillColor: '#0000ff' });
+      if (!('#0000ff' in store.currentLegend)) {
+        store.setCurrentLegend({
+          ...store.currentLegend,
+          '#0000ff': '#0000ff',
+        });
+      } 
     }
 
     // // Set border color

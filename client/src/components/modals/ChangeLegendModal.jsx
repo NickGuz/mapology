@@ -21,7 +21,11 @@ const ChangeLegendModal = (props) => {
   const [name, setName] = useState(props.name);
 
   function handleChangeName(event) {
-    if (name !== "") {
+    if(name === ""){
+      props.rename(props.color, props.color);
+      setName("");
+    }
+    else{
       props.rename(props.color, name);
       setName("");
     }
