@@ -45,6 +45,7 @@ import EditLocationAlt from "@mui/icons-material/EditLocationAlt";
 import AbcIcon from "@mui/icons-material/Abc";
 import ListItemText from "@mui/material/ListItemText";
 import { useParams } from "react-router-dom";
+import MapLegend from "../util/MapLegend";
 const turf = require("@turf/turf");
 
 const drawerWidth = 350;
@@ -88,6 +89,7 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
+  const [currentLegend, setCurrentLegend] = useState({});
 
   const routeParams = useParams();
 
@@ -105,7 +107,7 @@ export default function MapEditor() {
 
     console.log("fetching data");
     fetchData();
-  }, []);
+  }, [currentLegend]);
 
   useEffect(() => {
     store.setCurrentMap(store.currentMap);
@@ -205,10 +207,16 @@ export default function MapEditor() {
       layer.setStyle({ fillColor: "green" });
     } else if (feature.properties.fillColor) {
       layer.setStyle({ fillColor: feature.properties.fillColor });
+
+      if(!(feature.properties.fillColor in currentLegend)){
+        setCurrentLegend({
+          ...currentLegend,
+          [feature.properties.fillColor]: 'temporary place holder'
+        })
+      }
     } else {
       layer.setStyle({ fillColor: "blue" });
     }
-
     // Set border color
     if (feature.properties.borderColor) {
       layer.setStyle({ color: feature.properties.borderColor });
@@ -225,6 +233,17 @@ export default function MapEditor() {
     setLayer(layer);
     setEditOpen(true);
   };
+
+  const handleRenameLegend = (color, name) => {
+    if (!authorized) {
+      return;
+    }
+    setCurrentLegend({
+      ...currentLegend,
+      [color]: [name]
+    })
+  };
+
 
   const merge = async () => {
     if (!authorized) {
@@ -375,6 +394,9 @@ export default function MapEditor() {
               doubleClickZoom={false}
               center={[20, 100]}
             >
+              <MapLegend
+              currentLegend = {currentLegend}
+              />
               <Drawer
                 sx={{
                   width: drawerWidth,
@@ -484,7 +506,10 @@ export default function MapEditor() {
               <div>
                 <TextEditor />
                 <RegionEditor />
-                <LegendEditor />
+                <LegendEditor
+                  rename={(color, name) => handleRenameLegend(color, name)}
+                  currentFill={Object.keys(currentLegend)}
+                />
               </div>
             )}
           </Box>
