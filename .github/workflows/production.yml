@@ -105,4 +105,4 @@ jobs:
           heroku_email: 'nguzzardo3@gmail.com'
           appdir: "server"
         env:
-          CI: false
+          CI: ""
