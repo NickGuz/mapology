@@ -47,7 +47,7 @@ const ScreenShooter = () => {
 
   useEffect(() => {
     const takeScreenshot = async () => {
-      await new Promise((r) => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 500));
       let format = 'blob';
       screenshoter.takeScreen(format).then((blob) => {
         // convert blob to base64 string
