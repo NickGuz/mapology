@@ -55,7 +55,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export default function MapEditor() {
-  const editRef = React.useRef();
   const [map, setMap] = useState();
   const [editOpen, setEditOpen] = useState(false);
   const [currLayer, setLayer] = useState();
@@ -126,7 +125,6 @@ export default function MapEditor() {
       handleDrawerOpen();
     }
   };
-  
 
   return (
     <Box sx={{ flexGrow: 1 }}>
