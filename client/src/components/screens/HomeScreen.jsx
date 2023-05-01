@@ -14,6 +14,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const getData = async () => {
       const allMaps = await getAllMaps();
+      // console.log('all maps', allMaps);
       store.setDisplayedMaps(allMaps.data.data);
     };
 
