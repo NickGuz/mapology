@@ -174,13 +174,17 @@ const getMapByIdHelper = async (mapId) => {
 };
 
 exports.getMapById = async (req, res) => {
+  console.log("getMapById controller");
   const map = await getMapByIdHelper(req.params.id);
+  console.log("map", map);
   if (!map) {
     return res.status(500).json({
       errorMessage: "Failed to get map",
     });
   }
 
+  console.log("RETURNING");
+  console.log(map);
   return res.status(200).json({
     data: map,
   });
@@ -200,35 +204,50 @@ exports.getTagsByMapId = async (req, res) => {
 };
 
 exports.updateMapTitle = async (req, res) => {
-  const map = await SequelizeManager.updateMapTitle(req.params.id, req.body.title);
+  const map = await SequelizeManager.updateMapTitle(
+    req.params.id,
+    req.body.title
+  );
   return res.status(200).json({
     data: map,
   });
 };
 
 exports.updateMapDescription = async (req, res) => {
-  const map = await SequelizeManager.updateMapDescription(req.params.id, req.body.description);
+  const map = await SequelizeManager.updateMapDescription(
+    req.params.id,
+    req.body.description
+  );
   return res.status(200).json({
     data: map,
   });
 };
 
 exports.updateFeatureProperties = async (req, res) => {
-  const feature = await SequelizeManager.updateFeatureProperties(req.params.id, req.body.data);
+  const feature = await SequelizeManager.updateFeatureProperties(
+    req.params.id,
+    req.body.data
+  );
   return res.status(200).json({
     data: feature,
   });
 };
 
 exports.updateFeatureGeometry = async (req, res) => {
-  const feature = await SequelizeManager.updateFeatureGeometry(req.params.id, req.body.data);
+  const feature = await SequelizeManager.updateFeatureGeometry(
+    req.params.id,
+    req.body.data
+  );
   return res.status(200).json({
     data: feature,
   });
 };
 
 exports.insertFeature = async (req, res) => {
-  const feature = await SequelizeManager.insertFeature(req.body.mapId, req.body.data);
+  const feature = await SequelizeManager.insertFeature(
+    req.body.mapId,
+    req.body.data
+  );
   res.status(201).json({
     data: feature,
   });
@@ -300,7 +319,11 @@ exports.searchMaps = async (req, res) => {
   const searchTags = req.params.tags ? req.params.tags.split("&") : null;
   const sortType = req.params.sort;
 
-  const maps = await SequelizeManager.searchMaps(searchTerm, searchTags, sortType);
+  const maps = await SequelizeManager.searchMaps(
+    searchTerm,
+    searchTags,
+    sortType
+  );
 
   return res.status(200).json(maps);
 };
@@ -308,4 +331,66 @@ exports.searchMaps = async (req, res) => {
 exports.getAllTags = async (req, res) => {
   const tags = await SequelizeManager.getAllTags();
   return res.status(200).json(tags);
+};
+
+exports.updateAllFeatures = async (req, res) => {
+  const features = req.body.data.features;
+  const mapId = req.params.mapid;
+
+  const allFeatures = await SequelizeManager.getFeaturesByMapId(mapId);
+  const exists = {};
+  allFeatures.forEach((f) => (exists[f.id] = true));
+
+  for (let feature of features) {
+    if (exists[feature.id]) {
+      await SequelizeManager.updateFeature(
+        feature.id,
+        feature.properties,
+        feature.geometry
+      );
+    } else {
+      // If the feature doesn't exist in the backend currently, insert it
+      await SequelizeManager.insertFeature(mapId, feature);
+    }
+  }
+
+  // Lastly, delete the features that exist in the backend but not the current map data
+  const inverseExists = {};
+  features.forEach((f) => (inverseExists[f.id] = true));
+  for (let feature of allFeatures) {
+    if (!inverseExists[feature.id]) {
+      await SequelizeManager.deleteFeature(feature.id);
+    }
+  }
+
+  return res.status(200).json();
+};
+
+exports.getThumbnail = async (req, res) => {
+  const mapId = req.params.id;
+  const thumbnail = await SequelizeManager.getThumbnail(mapId);
+
+  if (!thumbnail) {
+    // return res.status(404).json({
+    //   errorMessage: "Could not find map thumbnail",
+    // });
+    return res.send();
+  }
+
+  return res.status(200).send(thumbnail.image);
+};
+
+exports.insertThumbnail = async (req, res) => {
+  const mapId = req.params.id;
+  const blob = req.body.data;
+
+  const thumbnail = await SequelizeManager.insertThumbnail(mapId, blob);
+
+  if (!thumbnail) {
+    return res.status(500).json({
+      errorMessage: "Failed to insert thumbnail",
+    });
+  }
+
+  return res.status(201).json(thumbnail);
 };

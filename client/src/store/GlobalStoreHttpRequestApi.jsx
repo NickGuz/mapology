@@ -1,16 +1,25 @@
-import fileDownload from "js-file-download";
-import axios from "axios";
+import fileDownload from 'js-file-download';
+import axios from 'axios';
 axios.defaults.withCredentials = true;
 
-const dev = "http://localhost:4000";
-const baseURL = window.location.origin.includes(":3000") ? dev : window.location.origin;
+const dev = 'http://localhost:4000';
+const baseURL = window.location.origin.includes(':3000')
+  ? dev
+  : window.location.origin;
 
 const api = axios.create({
   baseURL: baseURL,
 });
 
-export const createMap = async (duplicatedId, authorId, title, description, tags, json) => {
-  return await api.post("/api/map", {
+export const createMap = async (
+  duplicatedId,
+  authorId,
+  title,
+  description,
+  tags,
+  json
+) => {
+  return await api.post('/api/map', {
     duplicatedId: duplicatedId,
     authorId: authorId,
     title: title,
@@ -25,7 +34,7 @@ export const deleteMap = async (mapId) => {
 };
 
 export const getAllMaps = async () => {
-  return await api.get("/api/maps");
+  return await api.get('/api/maps');
 };
 //TEST
 export const getAllMapsByUserId = async (userId) => {
@@ -37,6 +46,7 @@ export const duplicateMap = async (userId, mapId) => {
 };
 
 export const getMapById = async (id) => {
+  console.log('getMapById request api');
   return await api.get(`/api/map/${id}`);
 };
 
@@ -72,6 +82,12 @@ export const updateFeatureGeometry = async (featureId, geoData) => {
   });
 };
 
+export const updateAllFeatures = async (mapId, json) => {
+  return await api.put(`/api/feature/all/${mapId}`, {
+    data: json,
+  });
+};
+
 export const insertFeature = async (mapId, data) => {
   return await api.post(`/api/feature`, {
     mapId: mapId,
@@ -85,7 +101,7 @@ export const deleteFeature = async (featureId) => {
 
 export const downloadMapAsGeoJSON = async (mapId, filename) => {
   let res = await api.get(`/api/downloadgeo/${mapId}`, {
-    responseType: "blob",
+    responseType: 'blob',
   });
 
   fileDownload(res.data, filename);
@@ -93,7 +109,7 @@ export const downloadMapAsGeoJSON = async (mapId, filename) => {
 
 export const downloadMapAsShapefile = async (mapId, filename) => {
   let res = await api.get(`/api/downloadshp/${mapId}`, {
-    responseType: "blob",
+    responseType: 'blob',
   });
 
   fileDownload(res.data, filename);
@@ -102,10 +118,22 @@ export const downloadMapAsShapefile = async (mapId, filename) => {
 export const searchMaps = async (searchTerm, searchTags, sortType) => {
   let tagsStr;
   if (searchTags.length > 0) {
-    tagsStr = searchTags.join("&");
+    tagsStr = searchTags.join('&');
   } else {
-    tagsStr = "";
+    tagsStr = '';
   }
 
   return await api.get(`/api/search/map/${searchTerm}/${tagsStr}/${sortType}`);
+};
+
+export const getThumbnail = async (mapId) => {
+  return await api.get(`/api/thumbnail/${mapId}`); //, {
+  // responseType: 'blob',
+  // });
+};
+
+export const insertThumbnail = async (mapId, blob) => {
+  return await api.post(`/api/thumbnail/${mapId}`, {
+    data: blob,
+  });
 };
