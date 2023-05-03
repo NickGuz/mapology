@@ -416,3 +416,16 @@ exports.upsertLegend = async (req, res) => {
 
   return res.status(201).json(legendInfo);
 };
+
+exports.getAllLegendsByMapId = async (req, res) => {
+  const legends = await SequelizeManager.getAllLegendsByMapId(req.params.id);
+  if (!legends) {
+    return res.status(500).json({
+      errorMessage: "Failed to get legends",
+    });
+  }
+
+  return res.status(200).json({
+    data: legends,
+  });
+};

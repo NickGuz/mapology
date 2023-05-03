@@ -299,10 +299,8 @@ exports.upsertLegend = async (mapId, color, label) => {
     },
   })
   if (existingLegend) {
-    if(color !== label){
-      existingLegend.label = label;
-      await existingLegend.save();
-    }
+    existingLegend.label = label;
+    await existingLegend.save();
     return existingLegend;
   } else {
     return await Legends.create({
@@ -311,4 +309,12 @@ exports.upsertLegend = async (mapId, color, label) => {
       label: label,
     });
   }
+};
+
+exports.getAllLegendsByMapId = async (id) => {
+  return await Legends.findAll({
+    where: {
+      mapId: id,
+    },
+  });
 };

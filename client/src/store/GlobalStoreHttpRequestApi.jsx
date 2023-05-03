@@ -149,3 +149,7 @@ export const upsertLegend = async (
     label: label,
   });
 };
+
+export const getAllLegendsByMapId = async (mapId) => {
+  return await api.get(`/api/legend/${mapId}`);
+};
