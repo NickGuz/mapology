@@ -402,7 +402,6 @@ exports.createLegend = async (req, res) => {
     });
   }
 
-
   const legendInfo = await SequelizeManager.createLegend(
     req.body.mapId,
     req.body.color,

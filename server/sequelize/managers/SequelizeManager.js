@@ -292,9 +292,19 @@ exports.insertThumbnail = async (mapId, data) => {
 };
 
 exports.createLegend = async (mapId, color, label) => {
-  return await Legends.create({
-    mapId: mapId,
-    color: color,
-    label: label,
-  });
+  const existingLegend = await Legends.findOne({
+    where: {
+      mapId: mapId,
+      color: color,
+    },
+  })
+  if (existingLegend) {
+    return existingLegend;
+  } else {
+    return await Legends.create({
+      mapId: mapId,
+      color: color,
+      label: label,
+    });
+  }
 };
