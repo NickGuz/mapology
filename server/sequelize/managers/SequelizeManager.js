@@ -7,6 +7,7 @@ const {
   Likes,
   Dislikes,
   Thumbnails,
+  Legends,
 } = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -287,5 +288,13 @@ exports.insertThumbnail = async (mapId, data) => {
   return await Thumbnails.upsert({
     mapId: mapId,
     image: data,
+  });
+};
+
+exports.createLegend = async (mapId, color, label) => {
+  return await Legends.create({
+    mapId: mapId,
+    color: color,
+    label: label,
   });
 };

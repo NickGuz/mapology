@@ -394,3 +394,27 @@ exports.insertThumbnail = async (req, res) => {
 
   return res.status(201).json(thumbnail);
 };
+
+exports.createLegend = async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({
+      errorMessage: "Improperly formatted request",
+    });
+  }
+
+
+  const legendInfo = await SequelizeManager.createLegend(
+    req.body.mapId,
+    req.body.color,
+    req.body.label,
+  );
+
+  if (!legendInfo) {
+    return res.status(500).json({
+      errorMessage: "Failed to create legend",
+    });
+  }
+
+  return res.status(201).json(legendInfo);
+
+};

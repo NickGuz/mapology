@@ -33,6 +33,8 @@ router.get("/downloadgeo/:id", GlobalStoreController.downloadMapAsGeoJSON);
 
 router.get("/downloadshp/:id", GlobalStoreController.downloadMapAsShapefile);
 
+router.post("/legend", GlobalStoreController.createLegend);
+
 // Kinda band-aid fix for empty tags and empty term
 router.get("/search/map/:term//:sort", GlobalStoreController.searchMaps);
 router.get("/search/map///:sort", GlobalStoreController.searchMaps);

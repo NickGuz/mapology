@@ -270,7 +270,9 @@ export default function MapEditor() {
             {authorized && (
               <div>
                 <TextEditor />
-                <RegionEditor />
+                <RegionEditor 
+                  mapId={routeParams.id}
+                />
                 <LegendEditor
                   rename={(color, name) => handleRenameLegend(color, name)}
                   currentFill={Object.keys(store.currentLegend)}
