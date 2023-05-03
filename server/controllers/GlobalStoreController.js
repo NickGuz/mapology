@@ -395,14 +395,14 @@ exports.insertThumbnail = async (req, res) => {
   return res.status(201).json(thumbnail);
 };
 
-exports.createLegend = async (req, res) => {
+exports.upsertLegend = async (req, res) => {
   if (!req.body) {
     return res.status(400).json({
       errorMessage: "Improperly formatted request",
     });
   }
 
-  const legendInfo = await SequelizeManager.createLegend(
+  const legendInfo = await SequelizeManager.upsertLegend(
     req.body.mapId,
     req.body.color,
     req.body.label,
@@ -415,5 +415,4 @@ exports.createLegend = async (req, res) => {
   }
 
   return res.status(201).json(legendInfo);
-
 };

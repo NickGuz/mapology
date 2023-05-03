@@ -138,7 +138,7 @@ export const insertThumbnail = async (mapId, blob) => {
   });
 };
 
-export const createLegend = async (
+export const upsertLegend = async (
   mapId,
   color,
   label,

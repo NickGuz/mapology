@@ -43,7 +43,7 @@ const RegionEditor = (props) => {
     });
 
     if(fillColorActive){
-      RequestApi.createLegend(props.mapId, event.hex, event.hex);
+      RequestApi.upsertLegend(props.mapId, event.hex, event.hex);
       store.setCurrentLegend({});
     }
 

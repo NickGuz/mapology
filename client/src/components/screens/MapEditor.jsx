@@ -117,6 +117,9 @@ export default function MapEditor() {
     if (!authorized) {
       return;
     }
+
+    RequestApi.upsertLegend(routeParams.id, color, name);
+
     store.setCurrentLegend({
       ...store.currentLegend,
       [color]: [name],
