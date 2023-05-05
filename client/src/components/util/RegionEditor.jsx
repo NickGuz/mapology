@@ -11,7 +11,7 @@ import { Button } from "@mui/material";
 import reactCSS from "reactcss";
 import Popover from "@mui/material/Popover";
 
-const RegionEditor = () => {
+const RegionEditor = (props) => {
   const [value, setValue] = useState(50);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [fillColorActive, setFillColorActive] = useState(null);
@@ -42,8 +42,14 @@ const RegionEditor = () => {
       RequestApi.updateFeatureProperties(feature.id, feature.properties);
     });
 
+    if(fillColorActive){
+      RequestApi.upsertLegend(props.mapId, event.hex, event.hex);
+      store.setCurrentLegend({});
+    }
+
     // Empty selectedFeatures after the change
     store.setSelectedFeatures([]);
+    
     handleClose();
   };
 

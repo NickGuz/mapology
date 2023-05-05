@@ -137,3 +137,19 @@ export const insertThumbnail = async (mapId, blob) => {
     data: blob,
   });
 };
+
+export const upsertLegend = async (
+  mapId,
+  color,
+  label,
+) => {
+  return await api.post('/api/legend', {
+    mapId: mapId,
+    color: color,
+    label: label,
+  });
+};
+
+export const getAllLegendsByMapId = async (mapId) => {
+  return await api.get(`/api/legend/${mapId}`);
+};

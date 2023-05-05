@@ -7,6 +7,7 @@ const {
   Likes,
   Dislikes,
   Thumbnails,
+  Legends,
 } = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -283,5 +284,33 @@ exports.insertThumbnail = async (mapId, data) => {
   return await Thumbnails.upsert({
     mapId: mapId,
     image: data,
+  });
+};
+
+exports.upsertLegend = async (mapId, color, label) => {
+  const existingLegend = await Legends.findOne({
+    where: {
+      mapId: mapId,
+      color: color,
+    },
+  })
+  if (existingLegend) {
+    existingLegend.label = label;
+    await existingLegend.save();
+    return existingLegend;
+  } else {
+    return await Legends.create({
+      mapId: mapId,
+      color: color,
+      label: label,
+    });
+  }
+};
+
+exports.getAllLegendsByMapId = async (id) => {
+  return await Legends.findAll({
+    where: {
+      mapId: id,
+    },
   });
 };
