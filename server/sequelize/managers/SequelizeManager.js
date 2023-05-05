@@ -12,7 +12,14 @@ const {
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-exports.createMap = async (duplicatedId, authorId, title, description, tags, json) => {
+exports.createMap = async (
+  duplicatedId,
+  authorId,
+  title,
+  description,
+  tags,
+  json
+) => {
   // Might need to parse json from string first - JSON.parse(json)
   // let mapJson = JSON.parse(json);
 
@@ -280,7 +287,6 @@ exports.getThumbnail = async (mapId) => {
 };
 
 exports.insertThumbnail = async (mapId, data) => {
-  console.log("INSERTING", mapId);
   return await Thumbnails.upsert({
     mapId: mapId,
     image: data,
