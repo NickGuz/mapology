@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import Comment from "../util/Comment";
 import data from "../../map-data.js";
 import Chip from "@mui/material/Chip";
@@ -21,30 +21,76 @@ import {
   Switch,
 } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
-import { getMapById, deleteMap } from "../../store/GlobalStoreHttpRequestApi";
+import { getMapById, deleteMap, hasLike, addLike, getAllMapLikes, deleteLike } from "../../store/GlobalStoreHttpRequestApi";
+import AuthContext from '../../auth/AuthContextProvider';
+
 
 const MapInfoScreen = (props) => {
   const [mapData, setMapData] = useState(null);
-  const [author, setAuthor] = useState(null);
   const [tags, setTags] = useState([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
+  const [likes, setLikes] = useState({});
+  const [userLike, setUserLike] = useState(false);
+  const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const routeParams = useParams();
+  
 
   useEffect(() => {
     const fetchData = async () => {
       const mapRes = await getMapById(routeParams.id);
       setMapData(mapRes.data.data);
+      const allMapLikes = await getAllMapLikes(routeParams.id);
+      setLikes(allMapLikes.data)
+    
     };
 
     fetchData();
   }, []);
 
-  const handleLike = () => {};
+  useEffect(() => {
+    const helper = async () => {
+      const userLiked = await hasLike(auth.user.id, routeParams.id);
+      console.log(userLiked);
+      if (userLiked.status == "404"){
+        setUserLike(false);
+      }
+      else{
+        setUserLike(true);
+      }
+      
+    }
+    helper();
+    console.log(userLike);
+  }, [likes])
+
+  const handleLike = () => {
+    let liked = null;
+    const helper = async () => {
+      liked = await hasLike(auth.user.id, routeParams.id);
+      if(liked.status == "404"){
+        await addLike(auth.user.id, routeParams.id);
+        let allMapLikes = await getAllMapLikes(routeParams.id);
+        setLikes(allMapLikes.data);
+      }
+      else if(liked.status == "200"){
+        await deleteLike(auth.user.id, routeParams.id);
+        let allMapLikes = await getAllMapLikes(routeParams.id);
+        setLikes(allMapLikes.data);
+      }
+      
+    };
+    helper();
+    console.log(likes)
+   
+    //check if dislike
+      // no dislike then add like
+      // dislike then remove dislike then add like
+  };
 
   const handleDislike = () => {};
 
+  
   const handleTagClick = () => {};
 
   const handleDeleteClose = () => {
@@ -107,10 +153,10 @@ const MapInfoScreen = (props) => {
               {" "}
               {mapData && mapData.mapInfo.description}
             </Typography>
-            <IconButton sx={{ ml: "auto" }} onClick={handleLike}>
-              {" "}
-              <ThumbUpIcon /> 0{" "}
+            <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike}>
+              <ThumbUpIcon />
             </IconButton>
+            <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
             <IconButton onClick={handleDislike}>
               {" "}
               <ThumbDownIcon /> 0

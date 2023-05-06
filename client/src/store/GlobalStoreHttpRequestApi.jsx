@@ -137,3 +137,27 @@ export const insertThumbnail = async (mapId, blob) => {
     data: blob,
   });
 };
+
+export const hasLike = async (userId, mapId) => {
+  return await api.get(`/api/hasLike/${userId}/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const addLike = async (userId, mapId) => {
+  return await api.post(`/api/addLike`, { userId, mapId }).catch((err) => {
+    return err.response;
+  });
+}
+
+export const getAllMapLikes = async (mapId) =>{
+  return await api.get(`/api/getAllMapLikes/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const deleteLike = async (userId, mapId) => {
+  return await api.delete(`/api/deleteLike/${userId}/${mapId}`).catch((err) => {
+    return err.response
+  });
+};

@@ -47,5 +47,9 @@ router.put("/feature/all/:mapid", GlobalStoreController.updateAllFeatures);
 // Routes for the map thumbnails
 router.get("/thumbnail/:id", GlobalStoreController.getThumbnail);
 router.post("/thumbnail/:id", GlobalStoreController.insertThumbnail);
-
+// Routes for like and dislikes
+router.get("/hasLike/:userId/:mapId", GlobalStoreController.hasLike);
+router.post("/addLike", GlobalStoreController.addLike);
+router.get("/getAllMapLikes/:mapId", GlobalStoreController.getAllMapLikes);
+router.delete("/deleteLike/:userId/:mapId", GlobalStoreController.deleteLike);
 module.exports = router;

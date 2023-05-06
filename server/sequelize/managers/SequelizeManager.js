@@ -285,3 +285,44 @@ exports.insertThumbnail = async (mapId, data) => {
     image: data,
   });
 };
+
+exports.hasLike = async (userId, mapId) => {
+  return await Likes.findOne({
+    where: {
+      userId: userId, 
+      mapId, mapId,
+    }
+  });
+};
+
+exports.getAllMapLikes = async (mapId) => {
+  return await Likes.findAll({
+    where: {
+      mapId: mapId,
+    }
+  });
+};
+exports.addLike = async (userId, mapId) => {
+  return await Likes.create({
+    userId: userId,
+    mapId: mapId,
+  });
+};
+
+exports.deleteLike = async (userId, mapId) => {
+  return await Likes.destroy({
+    where: {
+      userId: userId,
+      mapId: mapId,
+    },
+  });
+};
+
+exports.addDislike = async (userId, mapId) => {
+  return await Dislikes.create({
+    userId: userId,
+    mapId: mapId,
+  });
+};
+
+
