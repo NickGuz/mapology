@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import Comment from "../util/Comment";
 import data from "../../map-data.js";
+import CardMedia from '@mui/material/CardMedia';
 import Chip from "@mui/material/Chip";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -21,13 +22,14 @@ import {
   Switch,
 } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
-import { getMapById, deleteMap, hasLike, addLike, getAllMapLikes, deleteLike } from "../../store/GlobalStoreHttpRequestApi";
+import { getMapById, getThumbnail, deleteMap, hasLike, addLike, getAllMapLikes, deleteLike } from "../../store/GlobalStoreHttpRequestApi";
 import {hasDislike, addDislike, getAllMapDislikes, deleteDislike } from "../../store/GlobalStoreHttpRequestApi";
 import AuthContext from '../../auth/AuthContextProvider';
 
 const MapInfoScreen = (props) => {
   const [mapData, setMapData] = useState(null);
   const [tags, setTags] = useState([]);
+  const [image, setImage] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [likes, setLikes] = useState({});
   const [userLike, setUserLike] = useState(false);
@@ -46,9 +48,11 @@ const MapInfoScreen = (props) => {
       setLikes(allMapLikes.data)
       const allMapDislikes = await getAllMapDislikes(routeParams.id)
       setDislikes(allMapDislikes.data)
-    
+      const img = await getThumbnail(routeParams.id);
+      let blob = img.data;
+      blob = blob.slice(0, blob.size, 'image/png');
+      setImage(blob);
     };
-
     fetchData();
   }, []);
 
@@ -150,6 +154,7 @@ const MapInfoScreen = (props) => {
   const handleOpenEditor = () => {
     navigate(`/map-editor/${mapData.mapInfo.id}`);
   };
+  
 
   return (
     <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
@@ -169,7 +174,15 @@ const MapInfoScreen = (props) => {
           by {mapData && mapData.author.username}
         </Typography>
 
-        <img alt="italy" src={""} style={{ maxHeight: "100%" }} />
+        <CardMedia
+          sx={{
+            height: "75%",
+            width: "80%",
+            ml: 2
+          }}
+        image={image}
+        title="map"
+      />
 
         <Box
           border={1}
