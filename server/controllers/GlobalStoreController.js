@@ -469,10 +469,40 @@ exports.addDislike = async (req, res) => {
   if (!dislike) {
     return res.status(500).json({
       errorMessage: "Failed to add dislike",
+
+exports.upsertLegend = async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({
+      errorMessage: "Improperly formatted request",
+    });
+  }
+
+  const legendInfo = await SequelizeManager.upsertLegend(
+    req.body.mapId,
+    req.body.color,
+    req.body.label,
+  );
+
+  if (!legendInfo) {
+    return res.status(500).json({
+      errorMessage: "Failed to create legend",
+    });
+  }
+
+  return res.status(201).json(legendInfo);
+};
+
+exports.getAllLegendsByMapId = async (req, res) => {
+  const legends = await SequelizeManager.getAllLegendsByMapId(req.params.id);
+  if (!legends) {
+    return res.status(500).json({
+      errorMessage: "Failed to get legends",
+
     });
   }
 
   return res.status(200).json({
+
     data: dislike,
   });
 }
@@ -484,3 +514,8 @@ exports.deleteDislike = async (req, res) => {
 
   return res.status(200).json();
 }
+
+    data: legends,
+  });
+};
+

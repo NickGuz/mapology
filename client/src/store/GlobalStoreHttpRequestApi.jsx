@@ -137,6 +137,7 @@ export const insertThumbnail = async (mapId, blob) => {
   });
 };
 
+
 export const hasLike = async (userId, mapId) => {
   return await api.get(`/api/hasLike/${userId}/${mapId}`).catch((err) => {
     return err.response;
@@ -183,4 +184,20 @@ export const deleteDislike = async (userId, mapId) => {
   return await api.delete(`/api/deleteDislike/${userId}/${mapId}`).catch((err) => {
     return err.response
   });
+};
+
+export const upsertLegend = async (
+  mapId,
+  color,
+  label,
+) => {
+  return await api.post('/api/legend', {
+    mapId: mapId,
+    color: color,
+    label: label,
+  });
+};
+
+export const getAllLegendsByMapId = async (mapId) => {
+  return await api.get(`/api/legend/${mapId}`);
 };

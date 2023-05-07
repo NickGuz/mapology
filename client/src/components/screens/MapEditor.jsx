@@ -108,6 +108,9 @@ export default function MapEditor() {
     if (!authorized) {
       return;
     }
+
+    RequestApi.upsertLegend(routeParams.id, color, name);
+
     store.setCurrentLegend({
       ...store.currentLegend,
       [color]: [name],
@@ -222,7 +225,9 @@ export default function MapEditor() {
             {authorized && (
               <div>
                 <TextEditor />
-                <RegionEditor />
+                <RegionEditor 
+                  mapId={routeParams.id}
+                />
                 <LegendEditor
                   rename={(color, name) => handleRenameLegend(color, name)}
                   currentFill={Object.keys(store.currentLegend)}
