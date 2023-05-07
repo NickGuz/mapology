@@ -189,11 +189,11 @@ const MapInfoScreen = (props) => {
               {" "}
               {mapData && mapData.mapInfo.description}
             </Typography>
-            <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike}>
+            <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn}>
               <ThumbUpIcon />
             </IconButton>
             <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
-            <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike}>
+            <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
               <ThumbDownIcon /> 
             </IconButton>
             <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
