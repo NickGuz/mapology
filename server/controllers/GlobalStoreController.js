@@ -435,12 +435,52 @@ exports.addLike = async (req, res) => {
 exports.deleteLike = async (req, res) => {
   const userId = req.params.userId;
   const mapId = req.params.mapId;
-  if (!(userId && mapId)){
-    return res.status(400).json({
-      errorMessage: "Improperly formatted request",
-    });
-  }
   await SequelizeManager.deleteLike(userId, mapId);
-  return res.status(200);
+
+  return res.status(200).json();
 }
 
+exports.hasDislike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  const dislike = await SequelizeManager.hasDislike(userId, mapId);
+  if (!dislike) {
+    return res.status(404).json({
+      errorMessage: "User did not dislike this map",
+    });
+  }
+  return res.status(200).send(true);
+}
+exports.getAllMapDislikes = async (req, res) => {
+  const mapId = req.params.mapId;
+  const dislikes = await SequelizeManager.getAllMapDislikes(mapId);
+  if (!dislikes) {
+    return res.status(404).json({
+      errorMessage: "No dislikes with this map",
+    });
+  }
+  return res.status(200).send(dislikes);
+}
+
+exports.addDislike = async (req, res) => {
+  const userId = req.body.userId;
+  const mapId = req.body.mapId;
+  const dislike = await SequelizeManager.addDislike(userId, mapId);
+  if (!dislike) {
+    return res.status(500).json({
+      errorMessage: "Failed to add dislike",
+    });
+  }
+
+  return res.status(200).json({
+    data: dislike,
+  });
+}
+
+exports.deleteDislike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  await SequelizeManager.deleteDislike(userId, mapId);
+
+  return res.status(200).json();
+}

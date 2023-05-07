@@ -318,6 +318,22 @@ exports.deleteLike = async (userId, mapId) => {
   });
 };
 
+exports.hasDislike = async (userId, mapId) => {
+  return await Dislikes.findOne({
+    where: {
+      userId: userId, 
+      mapId, mapId,
+    }
+  });
+};
+
+exports.getAllMapDislikes = async (mapId) => {
+  return await Dislikes.findAll({
+    where: {
+      mapId: mapId,
+    }
+  });
+};
 exports.addDislike = async (userId, mapId) => {
   return await Dislikes.create({
     userId: userId,
@@ -325,4 +341,12 @@ exports.addDislike = async (userId, mapId) => {
   });
 };
 
+exports.deleteDislike = async (userId, mapId) => {
+  return await Dislikes.destroy({
+    where: {
+      userId: userId,
+      mapId: mapId,
+    },
+  });
+};
 

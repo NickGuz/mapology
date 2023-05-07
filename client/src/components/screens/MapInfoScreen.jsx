@@ -22,8 +22,8 @@ import {
 } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
 import { getMapById, deleteMap, hasLike, addLike, getAllMapLikes, deleteLike } from "../../store/GlobalStoreHttpRequestApi";
+import {hasDislike, addDislike, getAllMapDislikes, deleteDislike } from "../../store/GlobalStoreHttpRequestApi";
 import AuthContext from '../../auth/AuthContextProvider';
-
 
 const MapInfoScreen = (props) => {
   const [mapData, setMapData] = useState(null);
@@ -31,6 +31,8 @@ const MapInfoScreen = (props) => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [likes, setLikes] = useState({});
   const [userLike, setUserLike] = useState(false);
+  const [dislikes, setDislikes] = useState({});
+  const [userDislike, setUserDislike] = useState(false);
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const routeParams = useParams();
@@ -38,10 +40,12 @@ const MapInfoScreen = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const mapRes = await getMapById(routeParams.id);
-      setMapData(mapRes.data.data);
-      const allMapLikes = await getAllMapLikes(routeParams.id);
+      const mapRes = await getMapById(routeParams.id)
+      setMapData(mapRes.data.data)
+      const allMapLikes = await getAllMapLikes(routeParams.id)
       setLikes(allMapLikes.data)
+      const allMapDislikes = await getAllMapDislikes(routeParams.id)
+      setDislikes(allMapDislikes.data)
     
     };
 
@@ -51,24 +55,39 @@ const MapInfoScreen = (props) => {
   useEffect(() => {
     const helper = async () => {
       const userLiked = await hasLike(auth.user.id, routeParams.id);
-      console.log(userLiked);
       if (userLiked.status == "404"){
         setUserLike(false);
       }
       else{
         setUserLike(true);
-      }
-      
+      } 
     }
     helper();
-    console.log(userLike);
-  }, [likes])
+  }, [likes]);
+
+  useEffect(() => {
+    const helper = async () => {
+      const userDisliked = await hasDislike(auth.user.id, routeParams.id);
+      if (userDisliked.status == "404"){
+        setUserDislike(false);
+      }
+      else{
+        setUserDislike(true);
+      }
+    }
+    helper();
+  }, [dislikes]);
 
   const handleLike = () => {
     let liked = null;
     const helper = async () => {
       liked = await hasLike(auth.user.id, routeParams.id);
       if(liked.status == "404"){
+        if (userDislike){
+          await deleteDislike(auth.user.id, routeParams.id);
+          let allMapDislikes = await getAllMapLikes(routeParams.id);
+          setDislikes(allMapDislikes.data);
+        }
         await addLike(auth.user.id, routeParams.id);
         let allMapLikes = await getAllMapLikes(routeParams.id);
         setLikes(allMapLikes.data);
@@ -81,14 +100,31 @@ const MapInfoScreen = (props) => {
       
     };
     helper();
-    console.log(likes)
-   
-    //check if dislike
-      // no dislike then add like
-      // dislike then remove dislike then add like
   };
 
-  const handleDislike = () => {};
+  const handleDislike = () => {
+    let disliked = null;
+    const helper = async () => {
+      disliked = await hasDislike(auth.user.id, routeParams.id);
+      if(disliked.status == "404"){
+        if (userLike){
+          await deleteLike(auth.user.id, routeParams.id);
+          let allMapLikes = await getAllMapLikes(routeParams.id);
+          setLikes(allMapLikes.data);
+        }
+        await addDislike(auth.user.id, routeParams.id);
+        let allMapDislikes = await getAllMapDislikes(routeParams.id);
+        setDislikes(allMapDislikes.data);
+      }
+      else if(disliked.status == "200"){
+        await deleteDislike(auth.user.id, routeParams.id);
+        let allMapDislikes = await getAllMapDislikes(routeParams.id);
+        setDislikes(allMapDislikes.data);
+      }
+      
+    };
+    helper();
+  };
 
   
   const handleTagClick = () => {};
@@ -157,10 +193,10 @@ const MapInfoScreen = (props) => {
               <ThumbUpIcon />
             </IconButton>
             <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
-            <IconButton onClick={handleDislike}>
-              {" "}
-              <ThumbDownIcon /> 0
+            <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike}>
+              <ThumbDownIcon /> 
             </IconButton>
+            <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
           </Box>
 
           <Box display={"flex"}>
