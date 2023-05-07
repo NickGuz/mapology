@@ -371,10 +371,10 @@ exports.getThumbnail = async (req, res) => {
   const thumbnail = await SequelizeManager.getThumbnail(mapId);
 
   if (!thumbnail) {
-    // return res.status(404).json({
-    //   errorMessage: "Could not find map thumbnail",
-    // });
-    return res.send();
+    return res.status(404).json({
+      errorMessage: "Could not find map thumbnail",
+    });
+    
   }
 
   return res.status(200).send(thumbnail.image);
@@ -394,6 +394,81 @@ exports.insertThumbnail = async (req, res) => {
 
   return res.status(201).json(thumbnail);
 };
+
+exports.hasLike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  const like = await SequelizeManager.hasLike(userId, mapId);
+  if (!like) {
+    return res.status(404).json({
+      errorMessage: "User did not like this map",
+    });
+  }
+  return res.status(200).send(true);
+}
+exports.getAllMapLikes = async (req, res) => {
+  const mapId = req.params.mapId;
+  const likes = await SequelizeManager.getAllMapLikes(mapId);
+  if (!likes) {
+    return res.status(404).json({
+      errorMessage: "No likes with this map",
+    });
+  }
+  return res.status(200).send(likes);
+}
+
+exports.addLike = async (req, res) => {
+  const userId = req.body.userId;
+  const mapId = req.body.mapId;
+  const like = await SequelizeManager.addLike(userId, mapId);
+  if (!like) {
+    return res.status(500).json({
+      errorMessage: "Failed to add like",
+    });
+  }
+
+  return res.status(200).json({
+    data: like,
+  });
+}
+
+exports.deleteLike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  await SequelizeManager.deleteLike(userId, mapId);
+
+  return res.status(200).json();
+}
+
+exports.hasDislike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  const dislike = await SequelizeManager.hasDislike(userId, mapId);
+  if (!dislike) {
+    return res.status(404).json({
+      errorMessage: "User did not dislike this map",
+    });
+  }
+  return res.status(200).send(true);
+}
+exports.getAllMapDislikes = async (req, res) => {
+  const mapId = req.params.mapId;
+  const dislikes = await SequelizeManager.getAllMapDislikes(mapId);
+  if (!dislikes) {
+    return res.status(404).json({
+      errorMessage: "No dislikes with this map",
+    });
+  }
+  return res.status(200).send(dislikes);
+}
+
+exports.addDislike = async (req, res) => {
+  const userId = req.body.userId;
+  const mapId = req.body.mapId;
+  const dislike = await SequelizeManager.addDislike(userId, mapId);
+  if (!dislike) {
+    return res.status(500).json({
+      errorMessage: "Failed to add dislike",
 
 exports.upsertLegend = async (req, res) => {
   if (!req.body) {
@@ -422,10 +497,25 @@ exports.getAllLegendsByMapId = async (req, res) => {
   if (!legends) {
     return res.status(500).json({
       errorMessage: "Failed to get legends",
+
     });
   }
 
   return res.status(200).json({
+
+    data: dislike,
+  });
+}
+
+exports.deleteDislike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  await SequelizeManager.deleteDislike(userId, mapId);
+
+  return res.status(200).json();
+}
+
     data: legends,
   });
 };
+

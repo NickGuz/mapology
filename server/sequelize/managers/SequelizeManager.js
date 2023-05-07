@@ -293,6 +293,70 @@ exports.insertThumbnail = async (mapId, data) => {
   });
 };
 
+exports.hasLike = async (userId, mapId) => {
+  return await Likes.findOne({
+    where: {
+      userId: userId, 
+      mapId, mapId,
+    }
+  });
+};
+
+exports.getAllMapLikes = async (mapId) => {
+  return await Likes.findAll({
+    where: {
+      mapId: mapId,
+    }
+  });
+};
+exports.addLike = async (userId, mapId) => {
+  return await Likes.create({
+    userId: userId,
+    mapId: mapId,
+  });
+};
+
+exports.deleteLike = async (userId, mapId) => {
+  return await Likes.destroy({
+    where: {
+      userId: userId,
+      mapId: mapId,
+    },
+  });
+};
+
+exports.hasDislike = async (userId, mapId) => {
+  return await Dislikes.findOne({
+    where: {
+      userId: userId, 
+      mapId, mapId,
+    }
+  });
+};
+
+exports.getAllMapDislikes = async (mapId) => {
+  return await Dislikes.findAll({
+    where: {
+      mapId: mapId,
+    }
+  });
+};
+exports.addDislike = async (userId, mapId) => {
+  return await Dislikes.create({
+    userId: userId,
+    mapId: mapId,
+  });
+};
+
+exports.deleteDislike = async (userId, mapId) => {
+  return await Dislikes.destroy({
+    where: {
+      userId: userId,
+      mapId: mapId,
+    },
+  });
+};
+
 exports.upsertLegend = async (mapId, color, label) => {
   const existingLegend = await Legends.findOne({
     where: {
@@ -320,3 +384,4 @@ exports.getAllLegendsByMapId = async (id) => {
     },
   });
 };
+

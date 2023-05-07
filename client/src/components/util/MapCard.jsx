@@ -6,20 +6,36 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
 import Italy from '../../assets/italy.gif';
-import { Button, CardActions, Typography } from '@mui/material';
+import { Box, Button, CardActions, Typography } from '@mui/material';
 import api from '../../auth/auth-request-api/AuthRequestApi';
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import {
   duplicateMap,
   getTagsByMapId,
-  getThumbnail,
+  getThumbnail, 
+  hasLike, 
+  addLike, 
+  getAllMapLikes, 
+  deleteLike, 
+  hasDislike, 
+  addDislike, 
+  getAllMapDislikes, 
+  deleteDislike 
+
 } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
+import {IconButton} from '@mui/material';
 
 const MapCard = (props) => {
   const [author, setAuthor] = useState(null);
   const [tags, setTags] = useState([]);
   const [image, setImage] = useState(null);
+  const [likes, setLikes] = useState({});
+  const [userLike, setUserLike] = useState(false);
+  const [dislikes, setDislikes] = useState({});
+  const [userDislike, setUserDislike] = useState(false);
   const navigate = useNavigate();
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -42,11 +58,94 @@ const MapCard = (props) => {
       setImage(blob);
     };
 
+    const getMapLikes = async () => {
+      let res = await getAllMapLikes(props.data.id);
+      setLikes(res.data);
+    }
+    const getMapDisikes = async () => {
+      let res = await getAllMapDislikes(props.data.id);
+      setDislikes(res.data);
+    }
+
     getAuthorData();
     getTagsData();
     getThumbnailData();
+    getMapLikes();
+    getMapDisikes();
   }, [store.currentMap]);
 
+  useEffect(() => {
+    const helper = async () => {
+      const userLiked = await hasLike(auth.user.id, props.data.id);
+      if (userLiked.status == "404"){
+        setUserLike(false);
+      }
+      else{
+        setUserLike(true);
+      } 
+    }
+    helper();
+  }, [likes]);
+
+  useEffect(() => {
+    const helper = async () => {
+      const userDisliked = await hasDislike(auth.user.id, props.data.id);
+      if (userDisliked.status == "404"){
+        setUserDislike(false);
+      }
+      else{
+        setUserDislike(true);
+      }
+    }
+    helper();
+  }, [dislikes]);
+  const handleLike = () => {
+    let liked = null;
+    const helper = async () => {
+      liked = await hasLike(auth.user.id, props.data.id);
+      if(liked.status == "404"){
+        if (userDislike){
+          await deleteDislike(auth.user.id, props.data.id);
+          let allMapDislikes = await getAllMapLikes(props.data.id);
+          setDislikes(allMapDislikes.data);
+        }
+        await addLike(auth.user.id, props.data.id);
+        let allMapLikes = await getAllMapLikes(props.data.id);
+        setLikes(allMapLikes.data);
+      }
+      else if(liked.status == "200"){
+        await deleteLike(auth.user.id, props.data.id);
+        let allMapLikes = await getAllMapLikes(props.data.id);
+        setLikes(allMapLikes.data);
+      }
+      
+    };
+    helper();
+  };
+
+  const handleDislike = () => {
+    let disliked = null;
+    const helper = async () => {
+      disliked = await hasDislike(auth.user.id, props.data.id);
+      if(disliked.status == "404"){
+        if (userLike){
+          await deleteLike(auth.user.id, props.data.id);
+          let allMapLikes = await getAllMapLikes(props.data.id);
+          setLikes(allMapLikes.data);
+        }
+        await addDislike(auth.user.id, props.data.id);
+        let allMapDislikes = await getAllMapDislikes(props.data.id);
+        setDislikes(allMapDislikes.data);
+      }
+      else if(disliked.status == "200"){
+        await deleteDislike(auth.user.id, props.data.id);
+        let allMapDislikes = await getAllMapDislikes(props.data.id);
+        setDislikes(allMapDislikes.data);
+      }
+      
+    };
+    helper();
+  };
   const handleTagClick = () => {};
 
   const handleOpenEdit = () => {
@@ -101,15 +200,27 @@ const MapCard = (props) => {
           </Typography>
         )}
       </CardContent>
-      {tags &&
-        tags.map((tag) => (
-          <Chip
-            key={tag.tagName}
-            sx={{ marginTop: '4px', marginRight: '4px', marginLeft: '4px' }}
-            label={tag.tagName}
-            onClick={handleTagClick}
-          />
-        ))}
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        {tags &&
+          tags.map((tag) => (
+            <Chip
+              key={tag.tagName}
+              sx={{ marginTop: '4px', marginRight: '4px', marginLeft: '4px' }}
+              label={tag.tagName}
+              onClick={handleTagClick}
+            />
+          ))}
+          
+          <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike}>
+            <ThumbUpIcon />
+          </IconButton>
+          <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
+          <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike}>
+            <ThumbDownIcon /> 
+          </IconButton>
+          <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
+      </Box>
+        
       <CardActions>
         <Button
           onClick={handleDuplicate}
