@@ -469,6 +469,21 @@ exports.addDislike = async (req, res) => {
   if (!dislike) {
     return res.status(500).json({
       errorMessage: "Failed to add dislike",
+    });
+  }
+
+  return res.status(200).json({
+    data: dislike,
+  });
+}
+
+exports.deleteDislike = async (req, res) => {
+  const userId = req.params.userId;
+  const mapId = req.params.mapId;
+  await SequelizeManager.deleteDislike(userId, mapId);
+
+  return res.status(200).json();
+}
 
 exports.upsertLegend = async (req, res) => {
   if (!req.body) {
@@ -506,16 +521,3 @@ exports.getAllLegendsByMapId = async (req, res) => {
     data: dislike,
   });
 }
-
-exports.deleteDislike = async (req, res) => {
-  const userId = req.params.userId;
-  const mapId = req.params.mapId;
-  await SequelizeManager.deleteDislike(userId, mapId);
-
-  return res.status(200).json();
-}
-
-    data: legends,
-  });
-};
-

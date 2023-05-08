@@ -197,8 +197,8 @@ const MapInfoScreen = (props) => {
             width: "90%",
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Typography variant="subtitle1" sx={{ ml: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
+            <Typography variant="subtitle1" sx={{ ml: 2, mt: 1 }}>
               {" "}
               {mapData && mapData.mapInfo.description}
             </Typography>
@@ -212,7 +212,7 @@ const MapInfoScreen = (props) => {
             <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
           </Box>
 
-          <Box display={"flex"}>
+          <Box display={"flex"} >
             {mapData &&
               mapData.tags.map((tag) => (
                 <Chip
@@ -222,13 +222,11 @@ const MapInfoScreen = (props) => {
                   onClick={handleTagClick}
                 />
               ))}
-            <IconButton onClick={handleDeleteMapDialog} sx={{ ml: "auto", mr: 2 }}>
-              <DeleteIcon id="delete-map-btn" />{" "}
-            </IconButton>
           </Box>
-          <Box display="flex" justifyContent="left" marginTop="20px">
+          <Box display="flex" justifyContent="right">
             <Button>Duplicate</Button>
             <Button onClick={handleOpenEditor}>Open Editor</Button>
+            <Button onClick={handleDeleteMapDialog} sx={{  mr: 1 }}>Delete Map</Button>
           </Box>
         </Box>
       </Box>
