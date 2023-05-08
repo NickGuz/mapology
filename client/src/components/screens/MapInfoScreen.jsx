@@ -43,7 +43,8 @@ const MapInfoScreen = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const mapRes = await getMapById(routeParams.id)
-      setMapData(mapRes.data.data)
+      setMapData(mapRes.data.data);
+      console.log(mapRes);
       const allMapLikes = await getAllMapLikes(routeParams.id)
       setLikes(allMapLikes.data)
       const allMapDislikes = await getAllMapDislikes(routeParams.id)
