@@ -22,7 +22,7 @@ const createAssociations = (models) => {
   models.legends.belongsTo(models.map_info);
 
   models.users.hasMany(models.map_info, { foreignKey: "authorId" });
-  models.map_info.belongsTo(models.users);
+  models.map_info.belongsTo(models.users, { foreignKey: "authorId" });
 
   models.users.hasMany(models.comments);
   models.comments.belongsTo(models.users);

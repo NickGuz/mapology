@@ -65,6 +65,7 @@ exports.deleteMap = async (id) => {
 
 exports.getAllMaps = async () => {
   return await MapInfo.findAll({
+    include: [User, Tags, Likes, Dislikes, Thumbnails],
     limit: 8,
     order: [["createdAt", "DESC"]],
   });
@@ -296,9 +297,10 @@ exports.insertThumbnail = async (mapId, data) => {
 exports.hasLike = async (userId, mapId) => {
   return await Likes.findOne({
     where: {
-      userId: userId, 
-      mapId, mapId,
-    }
+      userId: userId,
+      mapId,
+      mapId,
+    },
   });
 };
 
@@ -306,7 +308,7 @@ exports.getAllMapLikes = async (mapId) => {
   return await Likes.findAll({
     where: {
       mapId: mapId,
-    }
+    },
   });
 };
 exports.addLike = async (userId, mapId) => {
@@ -328,9 +330,10 @@ exports.deleteLike = async (userId, mapId) => {
 exports.hasDislike = async (userId, mapId) => {
   return await Dislikes.findOne({
     where: {
-      userId: userId, 
-      mapId, mapId,
-    }
+      userId: userId,
+      mapId,
+      mapId,
+    },
   });
 };
 
@@ -338,7 +341,7 @@ exports.getAllMapDislikes = async (mapId) => {
   return await Dislikes.findAll({
     where: {
       mapId: mapId,
-    }
+    },
   });
 };
 exports.addDislike = async (userId, mapId) => {
@@ -363,7 +366,7 @@ exports.upsertLegend = async (mapId, color, label) => {
       mapId: mapId,
       color: color,
     },
-  })
+  });
   if (existingLegend) {
     existingLegend.label = label;
     await existingLegend.save();
@@ -384,4 +387,3 @@ exports.getAllLegendsByMapId = async (id) => {
     },
   });
 };
-
