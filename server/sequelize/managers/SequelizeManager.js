@@ -301,8 +301,7 @@ exports.hasLike = async (userId, mapId) => {
   return await Likes.findOne({
     where: {
       userId: userId,
-      mapId,
-      mapId,
+      mapId: mapId,
     },
   });
 };
@@ -334,8 +333,7 @@ exports.hasDislike = async (userId, mapId) => {
   return await Dislikes.findOne({
     where: {
       userId: userId,
-      mapId,
-      mapId,
+      mapId: mapId,
     },
   });
 };
