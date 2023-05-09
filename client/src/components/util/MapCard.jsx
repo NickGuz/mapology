@@ -21,7 +21,8 @@ import {
   hasDislike, 
   addDislike, 
   getAllMapDislikes, 
-  deleteDislike 
+  deleteDislike,
+  getPublished
 
 } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
@@ -36,6 +37,7 @@ const MapCard = (props) => {
   const [userLike, setUserLike] = useState(false);
   const [dislikes, setDislikes] = useState({});
   const [userDislike, setUserDislike] = useState(false);
+  const [publish, setPublish] = useState(false);
   const navigate = useNavigate();
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -66,12 +68,17 @@ const MapCard = (props) => {
       let res = await getAllMapDislikes(props.data.id);
       setDislikes(res.data);
     }
+    const published = async () => {
+      let res = await getPublished(props.data.id);
+      setPublish(res.data.published);
+    }
 
     getAuthorData();
     getTagsData();
     getThumbnailData();
     getMapLikes();
     getMapDisikes();
+    published();
   }, [store.currentMap]);
 
   useEffect(() => {
@@ -169,7 +176,7 @@ const MapCard = (props) => {
   };
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 400 }}>
+    <Card  variant="outlined" sx={{ maxWidth: 400, backgroundImage: publish? "linear-gradient(to bottom, #a1e0eb, #6d77de)":"white" }}>
       <CardMedia
         sx={{ height: 280 }}
         image={image || Italy /*props.data.imgPath*/}
@@ -205,20 +212,22 @@ const MapCard = (props) => {
           tags.map((tag) => (
             <Chip
               key={tag.tagName}
-              sx={{ marginTop: '4px', marginRight: '4px', marginLeft: '4px' }}
+              sx={{ marginTop: '4px', marginRight: 'auto', marginLeft: '4px' }}
               label={tag.tagName}
               onClick={handleTagClick}
             />
           ))}
+          <Box sx={{ visibility: publish? "": "hidden", display: "flex", justifyContent: "flex-end" }}>
+            <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"#3d5afe":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn}>
+              <ThumbUpIcon />
+            </IconButton>
+            <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
+            <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"#3d5afe":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
+              <ThumbDownIcon /> 
+            </IconButton>
+            <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
+          </Box>
           
-          <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn}>
-            <ThumbUpIcon />
-          </IconButton>
-          <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
-          <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
-            <ThumbDownIcon /> 
-          </IconButton>
-          <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
       </Box>
         
       <CardActions>

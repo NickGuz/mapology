@@ -199,6 +199,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             tagName: {
               [Op.in]: searchTags,
             },
+            published: true
           },
         },
         //   Likes,
@@ -214,12 +215,13 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
     return results;
     // If we don't have a search term or tags
   } else if (!searchTerm && (!searchTags || searchTags.length <= 0)) {
-    return await MapInfo.findAll({ order: [["createdAt", "DESC"]] });
+    return await MapInfo.findAll({ where:{published: true}, order: [["createdAt", "DESC"]] });
 
     // If we have a search term, but not tags
   } else if (!searchTags || searchTags.length <= 0) {
     return await MapInfo.findAll({
       where: {
+        published: true,
         [Op.or]: [
           {
             title: {
@@ -249,6 +251,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
         },
       ],
       where: {
+        published: true,
         [Op.or]: [
           {
             title: {
@@ -385,3 +388,17 @@ exports.getAllLegendsByMapId = async (id) => {
   });
 };
 
+exports.changePublish = async(mapId, published) => {
+  return await MapInfo.update(
+    { published: published },
+    {
+      where: {
+        id: mapId,
+      },
+    }
+  );
+};
+
+exports.getPublished = async(mapId) =>{
+  return await MapInfo.findByPk(mapId,{attributes:['published']});
+}

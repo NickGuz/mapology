@@ -201,3 +201,15 @@ export const upsertLegend = async (
 export const getAllLegendsByMapId = async (mapId) => {
   return await api.get(`/api/legend/${mapId}`);
 };
+
+export const changePublish = async (mapId, published) => {
+  return await api.post(`/api/publish`, {mapId: mapId, published: published}).catch((err) => {
+    return err.response
+  });
+}
+
+export const getPublished = async (mapId) => {
+  return await api.get(`/api/getPublished/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
