@@ -60,4 +60,8 @@ router.get("/hasDislike/:userId/:mapId", GlobalStoreController.hasDislike);
 router.post("/addDislike", GlobalStoreController.addDislike);
 router.get("/getAllMapDislikes/:mapId", GlobalStoreController.getAllMapDislikes);
 router.delete("/deleteDislike/:userId/:mapId", GlobalStoreController.deleteDislike);
+
+//handles changing publish
+router.post("/publish", GlobalStoreController.changePublish);
+router.get("/getPublished/:mapId", GlobalStoreController.getPublished);
 module.exports = router;

@@ -11,14 +11,20 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import {
   duplicateMap,
-  hasLike,
-  addLike,
-  getAllMapLikes,
-  deleteLike,
-  hasDislike,
-  addDislike,
-  getAllMapDislikes,
+
+  getTagsByMapId,
+  getThumbnail, 
+  hasLike, 
+  addLike, 
+  getAllMapLikes, 
+  deleteLike, 
+  hasDislike, 
+  addDislike, 
+  getAllMapDislikes, 
   deleteDislike,
+  getPublished
+
+
 } from '../../store/GlobalStoreHttpRequestApi';
 // import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
@@ -29,17 +35,58 @@ const MapCard = (props) => {
   const [userLike, setUserLike] = useState(false);
   const [dislikes, setDislikes] = useState({});
   const [userDislike, setUserDislike] = useState(false);
+  const [publish, setPublish] = useState(false);
   const navigate = useNavigate();
   // const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
+
+    const getAuthorData = async () => {
+      let res = await api.getUserById(props.data.authorId);
+      setAuthor(res.data);
+    };
+
+    const getTagsData = async () => {
+      let res = await getTagsByMapId(props.data.id);
+      setTags(res.data.data);
+    };
+
+    const getThumbnailData = async () => {
+      let res = await getThumbnail(props.data.id);
+      let blob = res.data;
+      blob = blob.slice(0, blob.size, 'image/png');
+      setImage(blob);
+    };
+
+    const getMapLikes = async () => {
+      let res = await getAllMapLikes(props.data.id);
+      setLikes(res.data);
+    }
+    const getMapDisikes = async () => {
+      let res = await getAllMapDislikes(props.data.id);
+      setDislikes(res.data);
+    }
+    const published = async () => {
+      let res = await getPublished(props.data.id);
+      setPublish(res.data.published);
+    }
+
+    getAuthorData();
+    getTagsData();
+    getThumbnailData();
+    getMapLikes();
+    getMapDisikes();
+    published();
+  }, [store.currentMap]);
+
     console.log('data', props.data);
     setUserLike(props.data.likes.some((l) => l.userId === auth.user.id));
     setUserDislike(props.data.dislikes.some((l) => l.userId === auth.user.id));
     setLikes(props.data.likes);
     setDislikes(props.data.dislikes);
   }, []);
+
 
   useEffect(() => {
     const helper = async () => {
@@ -133,7 +180,7 @@ const MapCard = (props) => {
   };
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 400 }}>
+    <Card  variant="outlined" sx={{ maxWidth: 400, backgroundImage: publish? "linear-gradient(to bottom, #a1e0eb, #6d77de)":"white" }}>
       <CardMedia
         sx={{ height: 280 }}
         image={
@@ -175,35 +222,24 @@ const MapCard = (props) => {
           props.data.tags.map((tag) => (
             <Chip
               key={tag.tagName}
-              sx={{ marginTop: '4px', marginRight: '4px', marginLeft: '4px' }}
+              sx={{ marginTop: '4px', marginRight: 'auto', marginLeft: '4px' }}
               label={tag.tagName}
               onClick={handleTagClick}
             />
           ))}
 
-        <IconButton
-          sx={{
-            ml: 'auto',
-            color: !auth.user ? 'grey' : userLike ? 'blue' : 'black',
-          }}
-          onClick={handleLike}
-          disabled={!auth.loggedIn}
-        >
-          <ThumbUpIcon />
-        </IconButton>
-        <Typography sx={{ paddingTop: 0.75, fontSize: 25 }}>
-          {likes.length - dislikes.length}
-        </Typography>
-        <IconButton
-          sx={{ color: !auth.user ? 'grey' : userDislike ? 'blue' : 'black' }}
-          onClick={handleDislike}
-          disabled={!auth.loggedIn}
-        >
-          <ThumbDownIcon />
-        </IconButton>
-        {/* <Typography sx={{ paddingTop: 0.75, fontSize: 25 }}>
-          {dislikes.length}
-        </Typography> */}
+          <Box sx={{ visibility: publish? "": "hidden", display: "flex", justifyContent: "flex-end" }}>
+            <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"#3d5afe":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn}>
+              <ThumbUpIcon />
+            </IconButton>
+            <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
+            <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"#3d5afe":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
+              <ThumbDownIcon /> 
+            </IconButton>
+            <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
+          </Box>
+          
+
       </Box>
 
       <CardActions>

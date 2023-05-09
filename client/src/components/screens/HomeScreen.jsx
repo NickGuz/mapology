@@ -6,20 +6,29 @@ import { Box, Button, Paper } from '@mui/material';
 import {
   getAllMaps,
   getThumbnail,
+  getAllMapsByUserId
 } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
+import AuthContext from '../../auth/AuthContextProvider';
+
+
 
 const HomeScreen = () => {
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
+  const [carouselMaps, setCarouselMaps] = useState([]);
   useEffect(() => {
     const getData = async () => {
+      
+      const userMaps = await getAllMapsByUserId(auth.user.id);
       const allMaps = await getAllMaps();
       // console.log('all maps', allMaps);
-      store.setDisplayedMaps(allMaps.data.data);
+      store.setDisplayedMaps(userMaps.data.data);
+      setCarouselMaps(allMaps.data.data);
     };
 
     getData();
-  }, []);
+  }, [auth.user]);
 
   return (
     <div
@@ -41,7 +50,7 @@ const HomeScreen = () => {
             },
           }}
         >
-          {store.displayedMaps.map((item, i) => (
+          {carouselMaps.map((item, i) => (
             <Item key={i} item={item} />
           ))}
         </Carousel>

@@ -514,10 +514,31 @@ exports.getAllLegendsByMapId = async (req, res) => {
 
     });
   }
-
   return res.status(200).json({
-
     data: legends,
   });
 }
 
+exports.changePublish = async (req, res) =>{
+  let mapId = req.body.mapId;
+  let published = req.body.published;
+  const publishChange = await SequelizeManager.changePublish(mapId, published);
+  if (!publishChange){
+    return res.status(500).json({
+      errorMessage: "Failed to change publish",
+
+    });
+  }
+  return res.status(200).json();
+}
+
+exports.getPublished = async (req, res) => {
+  let mapId = req.params.mapId;
+  const published = await SequelizeManager.getPublished(mapId);
+  if (!published){
+    return res.status(404).json({
+      errorMessage: "published was not found",
+    });
+  }
+  return res.status(200).json(published);
+}

@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
 import { getMapById, getThumbnail, deleteMap, hasLike, addLike, getAllMapLikes, deleteLike } from "../../store/GlobalStoreHttpRequestApi";
-import {hasDislike, addDislike, getAllMapDislikes, deleteDislike } from "../../store/GlobalStoreHttpRequestApi";
+import {hasDislike, addDislike, getAllMapDislikes, deleteDislike, changePublish, getPublished } from "../../store/GlobalStoreHttpRequestApi";
 import AuthContext from '../../auth/AuthContextProvider';
 
 const MapInfoScreen = (props) => {
@@ -35,6 +35,7 @@ const MapInfoScreen = (props) => {
   const [userLike, setUserLike] = useState(false);
   const [dislikes, setDislikes] = useState({});
   const [userDislike, setUserDislike] = useState(false);
+  const [publish, setPublish] = useState(false);
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const routeParams = useParams();
@@ -44,7 +45,6 @@ const MapInfoScreen = (props) => {
     const fetchData = async () => {
       const mapRes = await getMapById(routeParams.id)
       setMapData(mapRes.data.data);
-      console.log(mapRes);
       const allMapLikes = await getAllMapLikes(routeParams.id)
       setLikes(allMapLikes.data)
       const allMapDislikes = await getAllMapDislikes(routeParams.id)
@@ -53,6 +53,8 @@ const MapInfoScreen = (props) => {
       let blob = img.data;
       blob = blob.slice(0, blob.size, 'image/png');
       setImage(blob);
+      const publish = await getPublished(routeParams.id);
+      setPublish(publish.data.published);
     };
     fetchData();
   }, []);
@@ -154,7 +156,18 @@ const MapInfoScreen = (props) => {
 
   const handleOpenEditor = () => {
     navigate(`/map-editor/${mapData.mapInfo.id}`);
+
   };
+
+  const handleChangePublish = () => {
+    const helper = async () =>{
+      await changePublish(routeParams.id, !publish);
+      let change = await getPublished(routeParams.id);
+      console.log(change);
+      setPublish(change.data.published)
+    }
+    helper();
+  }
   
 
   return (
@@ -162,11 +175,10 @@ const MapInfoScreen = (props) => {
       <Box sx={{ flex: "3 0 75%", ml: 5 }}>
         <Box sx={{ display: "flex", mt: 2 }}>
           <Typography variant="h5" sx={{ ml: 2 }}>
-            {" "}
             {mapData && mapData.mapInfo.title}
           </Typography>
           <FormGroup sx={{ marginLeft: 2 }}>
-            <FormControlLabel control={<Switch defaultChecked />} label="Public" />
+            <FormControlLabel control={<Switch checked = {publish} onChange={handleChangePublish}/>} label="Public" />
           </FormGroup>
         </Box>
 
@@ -198,19 +210,21 @@ const MapInfoScreen = (props) => {
             width: "90%",
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
-            <Typography variant="subtitle1" sx={{ ml: 2, mt: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
+            <Typography variant="subtitle1" sx={{ ml: 2, mt: 1 , mr: 'auto'}}>
               {" "}
               {mapData && mapData.mapInfo.description}
             </Typography>
-            <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn}>
-              <ThumbUpIcon />
-            </IconButton>
-            <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
-            <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
-              <ThumbDownIcon /> 
-            </IconButton>
-            <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
+            <Box sx={{ visibility: publish? "": "hidden", display: "flex", justifyContent: "flex-end", mr: 2}}>
+              <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn} >
+                <ThumbUpIcon />
+              </IconButton>
+              <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
+              <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
+                <ThumbDownIcon /> 
+              </IconButton>
+              <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
+            </Box>
           </Box>
 
           <Box display={"flex"} >
