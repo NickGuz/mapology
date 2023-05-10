@@ -510,7 +510,7 @@ const GeoJSONMap = () => {
         // onEdit={(e) => console.log('edited', e)}
         // onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
-      {/* <MapLegend currentLegend={store.currentLegend} /> */}
+      <MapLegend currentLegend={store.currentLegend} />
     </div>
   );
 };
