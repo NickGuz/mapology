@@ -56,7 +56,7 @@ const GeoJSONMap = () => {
       });
     }
     // console.log('useEffect', store.currentMap);
-  }, [store.currentMap /*, store.currentLegend*/]);
+  }, [store.currentMap, store.currentLegend]);
 
   const mapStyle = {
     fillOpacity: 0.5,
