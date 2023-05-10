@@ -218,6 +218,10 @@ function GlobalStoreContextProvider(props) {
     });
   };
 
+  store.getCurrentMap = () => {
+    return store.currentMap;
+  };
+
   return (
     <GlobalStoreContext.Provider
       value={{
