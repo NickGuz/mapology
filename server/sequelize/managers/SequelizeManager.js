@@ -35,6 +35,8 @@ exports.createMap = async (
   // Load in map features
   let features = json.features;
   for (let feature of features) {
+    feature.fillColor = '#0000ff'
+
     await Features.create({
       mapId: mapInfo.id,
       type: feature.type,
@@ -51,6 +53,7 @@ exports.createMap = async (
       tagName: tag,
     });
   }
+  await this.upsertLegend(mapInfo.id,'#0000ff','#0000ff')
 
   return mapInfo;
 };
