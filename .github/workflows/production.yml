@@ -104,3 +104,5 @@ jobs:
           heroku_app_name: 'mapology-1'
           heroku_email: 'nguzzardo3@gmail.com'
           appdir: "server"
+        env:
+          CI: ""

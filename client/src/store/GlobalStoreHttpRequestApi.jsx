@@ -46,7 +46,6 @@ export const duplicateMap = async (userId, mapId) => {
 };
 
 export const getMapById = async (id) => {
-  console.log('getMapById request api');
   return await api.get(`/api/map/${id}`);
 };
 
@@ -138,6 +137,55 @@ export const insertThumbnail = async (mapId, blob) => {
   });
 };
 
+
+export const hasLike = async (userId, mapId) => {
+  return await api.get(`/api/hasLike/${userId}/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const addLike = async (userId, mapId) => {
+  return await api.post(`/api/addLike`, { userId, mapId }).catch((err) => {
+    return err.response;
+  });
+}
+
+export const getAllMapLikes = async (mapId) =>{
+  return await api.get(`/api/getAllMapLikes/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const deleteLike = async (userId, mapId) => {
+  return await api.delete(`/api/deleteLike/${userId}/${mapId}`).catch((err) => {
+    return err.response
+  });
+};
+
+export const hasDislike = async (userId, mapId) => {
+  return await api.get(`/api/hasDislike/${userId}/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const addDislike = async (userId, mapId) => {
+  return await api.post(`/api/addDislike`, { userId, mapId }).catch((err) => {
+    return err.response;
+  });
+}
+
+export const getAllMapDislikes = async (mapId) =>{
+  return await api.get(`/api/getAllMapDislikes/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const deleteDislike = async (userId, mapId) => {
+  return await api.delete(`/api/deleteDislike/${userId}/${mapId}`).catch((err) => {
+    return err.response
+  });
+};
+
 export const upsertLegend = async (
   mapId,
   color,
@@ -153,3 +201,15 @@ export const upsertLegend = async (
 export const getAllLegendsByMapId = async (mapId) => {
   return await api.get(`/api/legend/${mapId}`);
 };
+
+export const changePublish = async (mapId, published) => {
+  return await api.post(`/api/publish`, {mapId: mapId, published: published}).catch((err) => {
+    return err.response
+  });
+}
+
+export const getPublished = async (mapId) => {
+  return await api.get(`/api/getPublished/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}

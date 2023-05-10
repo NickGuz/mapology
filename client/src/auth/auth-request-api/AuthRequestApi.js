@@ -8,7 +8,9 @@ const api = axios.create({
   baseURL: baseURL,
 });
 
-export const getLoggedIn = () => api.get(`/auth/loggedIn/`);
+export const getLoggedIn = async () =>  {
+  return await api.get(`/auth/loggedIn/`);
+}
 
 export const loginUser = (userInfo, password) => {
   return api

@@ -47,16 +47,10 @@ const ScreenShooter = () => {
 
   useEffect(() => {
     const takeScreenshot = async () => {
-      await new Promise((r) => setTimeout(r, 300));
-      let format = 'blob';
-      screenshoter.takeScreen(format).then((blob) => {
-        // convert blob to base64 string
-        let reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          let base64data = reader.result;
-          insertThumbnail(store.currentMap.mapInfo.id, base64data);
-        };
+      await new Promise((r) => setTimeout(r, 500));
+      let format = 'image';
+      screenshoter.takeScreen(format).then((base64) => {
+        insertThumbnail(store.currentMap.mapInfo.id, base64);
       });
     };
 

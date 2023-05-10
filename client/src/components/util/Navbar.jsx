@@ -77,7 +77,7 @@ const Navbar = (props) => {
   const handleProfile = () => {
     setAnchorElUser(null);
     store.setCurrentMap(null);
-    navigate('/profile/');
+    navigate(`/profile/${auth.user.id}`);
   };
 
   const handleSettings = () => {
@@ -162,9 +162,16 @@ const Navbar = (props) => {
 
             <Box sx={{ display: 'flex', flexGrow: 0 }}>
               <Button
+                key="Home"
+                onClick={handleHome}
+                sx={{ mt: 2, color: 'white', display: 'block' }}
+              >
+                Home
+              </Button>
+              <Button
                 key="Import"
                 onClick={handleImport}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ mt: 2, color: 'white', display: 'block' }}
               >
                 Import
               </Button>
@@ -172,7 +179,7 @@ const Navbar = (props) => {
               <Button
                 key="Browse"
                 onClick={handleBrowse}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ mt: 2, color: 'white', display: 'block' }}
               >
                 Browse
               </Button>
