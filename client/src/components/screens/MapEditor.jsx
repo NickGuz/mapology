@@ -31,7 +31,6 @@ import RegionEditor from '../util/RegionEditor';
 import LegendEditor from '../util/LegendEditor';
 import { useParams } from 'react-router-dom';
 // const turf = require("@turf/turf");
-import MapLegend from '../util/MapLegend';
 
 const drawerWidth = 350;
 // const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -76,7 +75,6 @@ export default function MapEditor() {
   const { auth } = useContext(AuthContext);
   const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
-  const [currentLegend, setCurrentLegend] = useState({});
 
   const routeParams = useParams();
 
@@ -116,13 +114,16 @@ export default function MapEditor() {
   const handleRenameLegend = (color, name) => {
     if (!authorized) {
       return;
-    }
-
+    }    
     RequestApi.upsertLegend(routeParams.id, color, name);
 
+    // store.setCurrentLegend({});'
+
+    const temp = store.currentLegend;
+    delete temp[color];
+
     store.setCurrentLegend({
-      ...store.currentLegend,
-      [color]: [name],
+      temp
     });
   };
 
