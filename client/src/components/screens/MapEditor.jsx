@@ -43,13 +43,16 @@ export default function MapEditor() {
   const handleRenameLegend = (color, name) => {
     if (!authorized) {
       return;
-    }
-
+    }    
     RequestApi.upsertLegend(routeParams.id, color, name);
 
+    // store.setCurrentLegend({});'
+
+    const temp = store.currentLegend;
+    delete temp[color];
+
     store.setCurrentLegend({
-      ...store.currentLegend,
-      [color]: [name],
+      temp
     });
   };
 

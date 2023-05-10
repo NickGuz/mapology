@@ -31,9 +31,10 @@ const RegionEditor = (props) => {
     if (store.selectedFeatures.length <= 0) {
       return;
     }
-
+    let oldColor
     // Set fillColor property in each feature.properties and update backend
     store.selectedFeatures.forEach((feature) => {
+      oldColor = feature.properties['fillColor']
       if (fillColorActive) {
         feature.properties["fillColor"] = event.hex;
       } else {
@@ -41,16 +42,22 @@ const RegionEditor = (props) => {
       }
       RequestApi.updateFeatureProperties(feature.id, feature.properties);
     });
-
     if(fillColorActive){
-      RequestApi.upsertLegend(props.mapId, event.hex, event.hex);
-      store.setCurrentLegend({});
+      RequestApi.upsertLegend(props.mapId, event.hex, event.hex)
+
+      //update store
+      const temp = store.currentLegend;
+      delete temp[oldColor];
+  
+      store.setCurrentLegend({
+        temp
+      });
     }
 
     // Empty selectedFeatures after the change
     store.setSelectedFeatures([]);
-    
     handleClose();
+    console.log(store.currentLegend)
   };
 
   const handleFillColorClick = (event) => {
