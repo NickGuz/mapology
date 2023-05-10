@@ -28,7 +28,6 @@ const TopToolbar = (props) => {
     } else {
       setAuthorized(false);
     }
-    console.log('top toolbar re-rendering');
   }, [store.currentMap]);
 
   const handleOpenDownload = (event) => {
