@@ -32,4 +32,7 @@ router.put('/changepass', AuthController.changePassword);
 // TODO
 router.delete('/delete', AuthController.deleteUser);
 
+//Handles sending recovery email
+router.post('/sendRecoveryEmail', AuthController.sendRecoveryEmail);
+
 module.exports = router;

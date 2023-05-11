@@ -2,6 +2,8 @@ const auth = require("../auth");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { User } = require("../sequelize/sequelize");
+const nodemailer = require("nodemailer");
+const config = require("../config/nodemailer.config");
 
 exports.loggedIn = async (req, res) => {
   try {
@@ -150,3 +152,27 @@ exports.changePassword = () => {
 exports.deleteUser = () => {
   // TODO
 };
+
+ exports.sendRecoveryEmail = async(req, res) => {
+  // create reusable transporter object using the default SMTP transport
+  const transporter = nodemailer.createTransport({
+    host: config.HOST,
+    port: config.PORT,
+    secure: config.SECURE,
+    auth: {
+      user: config.USER, // generated ethereal user
+      pass: config.PASS, // generated ethereal password
+    },
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"Mapology 416" <Mapology416@outlook.com>', // sender address
+    to: req.body.email, // list of receivers
+    subject: "IMPORTANT: Reset your Mapology password", // Subject line
+    text: "Hello world?" + Math.random(), // plain text body
+  });
+
+  // console.log("Message sent: %s", info.messageId);
+  // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+}

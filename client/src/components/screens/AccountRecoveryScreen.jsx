@@ -21,6 +21,11 @@ const AccountRecoveryScreen = (props) => {
     navigate("/register/");
   };
 
+  const handleRecoveryEmail = () => {
+    auth.sendRecoveryEmail('kevin.zhou.3@stonybrook.edu');
+  };
+
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
@@ -77,6 +82,7 @@ const AccountRecoveryScreen = (props) => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2, mr: 4 }}
+                        // onclick={auth.handleSendMail()}
                       >
                         SEND PASSWORD
                       </Button>
@@ -91,6 +97,15 @@ const AccountRecoveryScreen = (props) => {
                       </Button>
                     </Box>
                   </Box>
+                  <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2, mr: 4 }}
+                        onClick={() => handleRecoveryEmail()}
+                      >
+                        SEND PASSWORD TEST BUTTON
+                      </Button>
                 </Box>
               </Container>
             </Grid>

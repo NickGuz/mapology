@@ -160,6 +160,11 @@ function AuthContextProvider(props) {
     }
   };
 
+  auth.sendRecoveryEmail = async function (email) {
+    const response = await api.sendRecoveryEmail(email);
+    return response;
+  };
+
   auth.registerUser = async function (
     username,
     email,
