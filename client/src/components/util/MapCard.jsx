@@ -19,16 +19,19 @@ import {
   addDislike,
   getAllMapDislikes,
   deleteDislike,
+  getPublished
 } from '../../store/GlobalStoreHttpRequestApi';
 // import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
 import { IconButton } from '@mui/material';
+
 
 const MapCard = (props) => {
   const [likes, setLikes] = useState({});
   const [userLike, setUserLike] = useState(false);
   const [dislikes, setDislikes] = useState({});
   const [userDislike, setUserDislike] = useState(false);
+  const [published, setPublished] = useState(false);
   const navigate = useNavigate();
   // const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -39,6 +42,7 @@ const MapCard = (props) => {
     setUserDislike(props.data.dislikes.some((l) => l.userId === auth.user.id));
     setLikes(props.data.likes);
     setDislikes(props.data.dislikes);
+    setPublished(props.data.published);
   }, []);
 
   useEffect(() => {
@@ -64,6 +68,14 @@ const MapCard = (props) => {
     };
     helper();
   }, [dislikes]);
+
+  useEffect(() => {
+    const helper = async () => {
+      const publish = await getPublished(props.data.id);
+      setPublished(publish.data.published);
+    };
+    helper();
+  },[published]);
 
   const handleLike = () => {
     let liked = null;
@@ -133,7 +145,7 @@ const MapCard = (props) => {
   };
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 400 }}>
+    <Card  variant="outlined" sx={{ maxWidth: 400, backgroundImage: published? "linear-gradient(to bottom right, white, 80%, #bbdefb)":"white" }}>
       <CardMedia
         sx={{ height: 280 }}
         image={
