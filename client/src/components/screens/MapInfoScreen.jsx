@@ -186,12 +186,14 @@ const MapInfoScreen = (props) => {
           {" "}
           by {mapData && mapData.author.username}
         </Typography>
-
+        
         <CardMedia
           sx={{
             height: "75%",
             width: "80%",
-            ml: 2
+            ml: "5%",
+            mt: 3,
+            
           }}
         image={image}
         title="map"
@@ -204,10 +206,10 @@ const MapInfoScreen = (props) => {
           sx={{
             flexDirection: "column",
             display: "flex",
-            ml: 2,
-            mt: 10,
+            ml: 5,
+            mt: 5,
             height: "14%",
-            width: "90%",
+            width: "85%",
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
@@ -215,7 +217,7 @@ const MapInfoScreen = (props) => {
               {" "}
               {mapData && mapData.mapInfo.description}
             </Typography>
-            <Box sx={{ visibility: publish? "": "hidden", display: "flex", justifyContent: "flex-end", mr: 2}}>
+            <Box sx={{ visibility: publish? "": "hidden", display: "flex", justifyContent: "flex-end", mr: 2, mt: 1}}>
               <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn} >
                 <ThumbUpIcon />
               </IconButton>
@@ -238,14 +240,13 @@ const MapInfoScreen = (props) => {
                 />
               ))}
           </Box>
-          <Box display="flex" justifyContent="right">
+          <Box display="flex" justifyContent="right" sx = {{mt: 'auto'}}>
             <Button>Duplicate</Button>
             <Button onClick={handleOpenEditor}>Open Editor</Button>
             <Button onClick={handleDeleteMapDialog} sx={{  mr: 1 }}>Delete Map</Button>
           </Box>
         </Box>
       </Box>
-      <Comment sx={{ flex: "1 0 25%" }} />
       <Dialog open={deleteOpen} onClose={handleDeleteClose}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
@@ -260,6 +261,9 @@ const MapInfoScreen = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Box sx={{mt: 6}}>
+        <Comment sx={{ flex: "1 0 25%"}} />
+      </Box>
     </div>
   );
 };
