@@ -4,10 +4,15 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import Box from '@mui/material/Box';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import TagsInput from "../util/TagsInput";
 import FileUpload from "react-mui-fileuploader";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import { Alert } from "@mui/material";
 import { createMap } from "../../store/GlobalStoreHttpRequestApi";
 import shp from "shpjs";
@@ -17,6 +22,7 @@ const ImportModal = (props) => {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [compress, setCompress] = useState();
   const [tags, setTags] = useState([]);
 
   const { store } = useContext(GlobalStoreContext);
@@ -55,7 +61,7 @@ const ImportModal = (props) => {
       if (auth.user) {
         userId = auth.user.id;
       }
-      await createMap(null, userId, name, description, tags, data);
+      await createMap(null, userId, name, description, tags, data, compress);
       store.displayAllMaps();
     };
 
@@ -80,7 +86,7 @@ const ImportModal = (props) => {
         if (auth.user) {
           userId = auth.user.id;
         }
-        await createMap(null, userId, name, description, tags, geojson);
+        await createMap(null, userId, name, description, tags, geojson, compress);
         store.displayAllMaps();
       };
     };
@@ -144,7 +150,26 @@ const ImportModal = (props) => {
           }}
           onChange={(event) => setDescription(event.target.value)}
         />
+        
         <TagsInput freeSolo={true} onChange={handleTagsChange} />
+
+        <Box sx={{ minWidth: 120 , mt: 2}}>
+          <FormControl fullWidth>
+            <InputLabel id="compression-label">Map Compression</InputLabel>
+            <Select
+              labelId="compress-label"
+              id="compress-select"
+              value={compress}
+              label="Map Compression"
+              onChange={(event) => setCompress(event.target.value)}
+            >
+              <MenuItem value={1}>Small</MenuItem>
+              <MenuItem value={.01}>Medium</MenuItem>
+              <MenuItem value={.0001}>Large</MenuItem>
+              <MenuItem value={Number.MIN_VALUE}>Full</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </DialogContent>
 
       <DialogActions>

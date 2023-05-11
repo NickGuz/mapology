@@ -17,7 +17,8 @@ export const createMap = async (
   title,
   description,
   tags,
-  json
+  json,
+  compression
 ) => {
   return await api.post('/api/map', {
     duplicatedId: duplicatedId,
@@ -26,6 +27,7 @@ export const createMap = async (
     description: description,
     tags: tags,
     json: json,
+    compression: compression,
   });
 };
 

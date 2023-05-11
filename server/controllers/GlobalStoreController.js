@@ -15,7 +15,7 @@ exports.createMap = async (req, res) => {
 
   // Setting minWeight as undefined should I think just line up the points
   // as mentioned in one of the presentations, not actually lose any data
-  const compressedJson = doCompressMap(req.body.json, undefined);
+  const compressedJson = doCompressMap(req.body.json, req.body.compression);
 
   const mapInfo = await SequelizeManager.createMap(
     req.body.duplicatedId,
