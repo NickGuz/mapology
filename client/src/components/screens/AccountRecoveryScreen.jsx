@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -6,11 +6,14 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import LoginModal from "../modals/LoginModal";
 import AuthContext from "../../auth/AuthContextProvider";
 import { useNavigate } from "react-router-dom";
 
 const AccountRecoveryScreen = (props) => {
+  const [flag, setFlag] = useState(false);
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const handleLogin = () => {
@@ -21,8 +24,18 @@ const AccountRecoveryScreen = (props) => {
     navigate("/register/");
   };
 
-  const handleRecoveryEmail = () => {
-    auth.sendRecoveryEmail('kevin.zhou.3@stonybrook.edu');
+  const handleRecoveryEmail = (event) => {
+    // if temporary password is provided
+    if(flag){
+      console.log('testing')
+    }
+    const formData = new FormData(event.currentTarget);
+    auth.sendRecoveryEmail(formData.get("email"));
+    // auth.sendRecoveryEmail('kevin.zhou.3@stonybrook.edu');
+  };
+
+  const handleFlag = () => {
+    flag ? setFlag(false) : setFlag(true)
   };
 
 
@@ -51,7 +64,7 @@ const AccountRecoveryScreen = (props) => {
                   <Typography component="h1" variant="subtitle2">
                     You will receive a one time password to login.
                   </Typography>
-                  <Box component="form" noValidate sx={{ mt: 3 }}>
+                  <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleRecoveryEmail} >
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
                         <TextField
@@ -63,7 +76,8 @@ const AccountRecoveryScreen = (props) => {
                           autoComplete="email"
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      {flag ? 
+                        <Grid item xs={12}>
                         <TextField
                           required
                           fullWidth
@@ -72,7 +86,18 @@ const AccountRecoveryScreen = (props) => {
                           type="Temporary Password"
                           id="Temporary Password"
                           autoComplete="Temporary Password"
-                          disabled={true}
+                        />
+                        </Grid> : null}
+                      
+                      <Grid item xs={12}>
+                        <FormControlLabel
+                          control={<Checkbox/>}
+                          onChange={handleFlag}
+                          label={
+                            <Typography variant="body2" color="blue">
+                              I already have a Temporary Password
+                            </Typography>
+                          }
                         />
                       </Grid>
                     </Grid>
@@ -81,12 +106,12 @@ const AccountRecoveryScreen = (props) => {
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2, mr: 4 }}
-                        // onclick={auth.handleSendMail()}
+                        sx={{ mt: 3, mb: 2 }}
+                        // sx={{ mt: 3, mb: 2, mr: 4 }}
                       >
-                        SEND PASSWORD
+                        {flag ? 'LOGIN' : 'SEND PASSWORD'}
                       </Button>
-                      <Button
+                      {/* <Button
                         type="submit"
                         fullWidth
                         variant="contained"
@@ -94,10 +119,10 @@ const AccountRecoveryScreen = (props) => {
                         sx={{ mt: 3, mb: 2 }}
                       >
                         Login
-                      </Button>
+                      </Button> */}
                     </Box>
                   </Box>
-                  <Button
+                  {/* <Button
                         type="submit"
                         fullWidth
                         variant="contained"
@@ -105,13 +130,13 @@ const AccountRecoveryScreen = (props) => {
                         onClick={() => handleRecoveryEmail()}
                       >
                         SEND PASSWORD TEST BUTTON
-                      </Button>
+                      </Button> */}
                 </Box>
               </Container>
             </Grid>
           </Grid>
         </Grid>
-        <Grid xs={6}>
+        <Grid item xs={6}>
           <Grid item alignItems="flex-start">
             <Grid container spacing={1}>
               <Grid item xs={8}>
