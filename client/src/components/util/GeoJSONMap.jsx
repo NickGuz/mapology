@@ -39,8 +39,10 @@ const GeoJSONMap = () => {
         f.geometry.coordinates.forEach((polygon) => {
           if (f.geometry.type === 'MultiPolygon') {
             polygon[0].forEach((p) => latlngs.push([p[1], p[0]]));
-          } else {
+          } else if (f.geometry.type === 'Polygon') {
             polygon.forEach((p) => latlngs.push([p[1], p[0]]));
+          } else if (f.geometry.type === 'LineString') {
+            latlngs.push([polygon[1], polygon[0]]);
           }
         });
       });
@@ -392,6 +394,17 @@ const GeoJSONMap = () => {
 
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
+    console.log(feature);
+    if (
+      feature.geometry.type === 'LineString' ||
+      feature.geometry.type === 'MultiLineString'
+    ) {
+      console.log('event', event);
+      map.removeLayer(event.layer);
+      handleSplitRegion(feature);
+      return;
+    }
+
     const name = window.prompt('Enter a name for this feature:');
     feature.properties['name'] = name;
 
@@ -401,6 +414,94 @@ const GeoJSONMap = () => {
 
     // Remove the layer created by geoman
     map.removeLayer(event.layer);
+  };
+
+  const handleSplitRegion = (line) => {
+    if (line.geometry.coordinates.length !== 2) {
+      console.log('Split line does not have 2 points');
+      return;
+    }
+
+    const startPoint = line.geometry.coordinates[0];
+    const endPoint = line.geometry.coordinates[1];
+
+    const featureToSplit = findFeatureWithPoints(startPoint, endPoint);
+    console.log('featureToSplit', featureToSplit);
+
+    const split = splitPolygon(featureToSplit, line);
+    console.log('split', split);
+
+    store.currentMap.json.features = store.currentMap.json.features.filter(
+      (f) => f.id !== featureToSplit.id
+    );
+    store.currentMap.json.features.push(split);
+    store.setCurrentMap(store.currentMap);
+  };
+
+  const splitPolygon = (feature, line) => {
+    const polygon = feature.geometry;
+    const lineString = line.geometry;
+
+    const point1 = lineString.coordinates[0];
+    const point2 = lineString.coordinates[1];
+
+    const poly1Points = [];
+    const poly2Points = [];
+    let foundPoints = 0;
+    polygon.coordinates[0].forEach((p) => {
+      if (foundPoints === 0) {
+        poly1Points.push(p);
+
+        if (pointEquals(p, point1) || pointEquals(p, point2)) {
+          console.log('equals1');
+          poly2Points.push(p);
+          foundPoints++;
+        }
+      } else if (foundPoints === 1) {
+        poly2Points.push(p);
+
+        if (pointEquals(p, point1) || pointEquals(p, point2)) {
+          console.log('equals2');
+          poly1Points.push(p);
+          foundPoints++;
+        }
+      } else {
+        poly1Points.push(p);
+      }
+    });
+
+    const multiPolygon = turf.multiPolygon(
+      [[poly1Points], [poly2Points]],
+      feature.properties
+    );
+
+    return multiPolygon;
+  };
+
+  const pointEquals = (point1, point2) => {
+    return (
+      Math.abs(point1[0] - point2[0]) < 0.001 &&
+      Math.abs(point1[1] - point2[1]) < 0.001
+    );
+  };
+
+  const findFeatureWithPoints = (point1, point2) => {
+    const turfPoint1 = turf.point(point1);
+    const turfPoint2 = turf.point(point2);
+
+    const features = store.currentMap.json.features.filter((f) => {
+      return (
+        turf.booleanIntersects(turfPoint1, f.geometry) &&
+        turf.booleanIntersects(turfPoint2, f.geometry)
+      );
+    });
+
+    if (features.length === 0) {
+      console.log('Did not find any feature to split');
+      return null;
+    }
+
+    return features[0];
   };
 
   return (
@@ -487,7 +588,7 @@ const GeoJSONMap = () => {
           drawText: true,
           rotateMode: false,
           drawMarker: false,
-          drawPolyline: false,
+          drawPolyline: true,
           drawCircle: false,
           drawCircleMarker: false,
           drawRectangle: false,
