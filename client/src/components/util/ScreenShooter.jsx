@@ -46,8 +46,8 @@ const ScreenShooter = () => {
   };
 
   useEffect(() => {
-    const takeScreenshot = async () => {
-      await new Promise((r) => setTimeout(r, 500));
+    const takeScreenshot = () => {
+      // new Promise((r) => setTimeout(r, 500));
       let format = 'image';
       screenshoter.takeScreen(format).then((base64) => {
         insertThumbnail(store.currentMap.mapInfo.id, base64);
@@ -60,7 +60,7 @@ const ScreenShooter = () => {
     } else if (store.currentMap) {
       takeScreenshot();
     }
-  }, [screenshoter, store.currentMap]);
+  }, [screenshoter /*, store.currentMap*/]);
 
   return <></>;
 };

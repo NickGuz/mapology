@@ -31,7 +31,7 @@ const GeoJSONMap = () => {
   const map = useMap();
 
   useEffect(() => {
-    store.setCurrentMap(store.currentMap);
+    // store.setCurrentMap(store.currentMap);
 
     if (store.currentMap && !boundsSet) {
       const latlngs = [];
@@ -59,6 +59,10 @@ const GeoJSONMap = () => {
     }
     // console.log('useEffect', store.currentMap);
   }, [store.currentMap /*, store.currentLegend*/]);
+
+  useEffect(() => {
+    console.log('selected', store.selectedFeatures);
+  }, [store.selectedFeatures]);
 
   const mapStyle = {
     fillOpacity: 0.5,
@@ -428,14 +432,24 @@ const GeoJSONMap = () => {
     const featureToSplit = findFeatureWithPoints(startPoint, endPoint);
     console.log('featureToSplit', featureToSplit);
 
+    const contains = turf.booleanContains(featureToSplit, line);
+    console.log('contains', contains);
+
+    if (!contains) {
+      console.log('Invalid split');
+      return;
+    }
+
     const split = splitPolygon(featureToSplit, line);
     console.log('split', split);
 
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (f) => f.id !== featureToSplit.id
     );
+
     store.currentMap.json.features.push(split);
     store.setCurrentMap(store.currentMap);
+    store.setSelectedFeatures([]);
   };
 
   const splitPolygon = (feature, line) => {
@@ -470,11 +484,20 @@ const GeoJSONMap = () => {
       }
     });
 
+    if (!pointEquals(poly1Points[0], poly1Points[poly1Points.length - 1])) {
+      poly1Points.push(poly1Points[0]);
+    }
+    if (!pointEquals(poly2Points[0], poly2Points[poly2Points.length - 1])) {
+      poly2Points.push(poly2Points[0]);
+    }
+
     const multiPolygon = turf.multiPolygon(
       [[poly1Points], [poly2Points]],
       feature.properties
     );
 
+    console.log('before', feature);
+    console.log('after', multiPolygon);
     return multiPolygon;
   };
 
@@ -488,12 +511,34 @@ const GeoJSONMap = () => {
   const findFeatureWithPoints = (point1, point2) => {
     const turfPoint1 = turf.point(point1);
     const turfPoint2 = turf.point(point2);
+    console.log('turfPoint1', turfPoint1);
+    console.log('turfPoint2', turfPoint2);
 
     const features = store.currentMap.json.features.filter((f) => {
-      return (
-        turf.booleanIntersects(turfPoint1, f.geometry) &&
-        turf.booleanIntersects(turfPoint2, f.geometry)
-      );
+      const polygons = [];
+      if (f.geometry.type === 'MultiPolygon') {
+        const flattened = turf.flatten(f);
+        flattened.features.forEach((feature) => polygons.push(feature));
+      } else {
+        polygons.push(f);
+      }
+
+      let contains = false;
+
+      polygons.forEach((polygon) => {
+        if (contains) return;
+
+        // Failing here
+        const bufferedPolygon = turf.buffer(polygon.geometry, 0.001, {
+          units: 'kilometers',
+        });
+
+        contains =
+          turf.booleanIntersects(turfPoint1, bufferedPolygon) &&
+          turf.booleanIntersects(turfPoint2, bufferedPolygon);
+      });
+
+      return contains;
     });
 
     if (features.length === 0) {
