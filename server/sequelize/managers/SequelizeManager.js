@@ -34,7 +34,15 @@ exports.createMap = async (
 
   // Load in map features
   let features = json.features;
+  let flag = false
   for (let feature of features) {
+
+    //set default fill color of the features to blue
+    if(!feature.properties.fillColor){
+      feature.properties.fillColor = '#0000ff'
+      flag = true
+    }
+
     await Features.create({
       mapId: mapInfo.id,
       type: feature.type,
@@ -51,6 +59,10 @@ exports.createMap = async (
       tagName: tag,
     });
   }
+
+  //insert default legend if needed
+  if(flag)
+    await this.upsertLegend(mapInfo.id,'#0000ff','#0000ff')
 
   return mapInfo;
 };
@@ -75,6 +87,7 @@ exports.getAllMapsByUserId = async (userId) => {
   return await MapInfo.findAll({
     where: { authorId: userId },
     order: [["createdAt", "DESC"]],
+    include: [User, Tags, Likes, Dislikes, Thumbnails],
   });
 };
 
@@ -200,7 +213,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             tagName: {
               [Op.in]: searchTags,
             },
-            published: true
+            published: true,
           },
         },
         //   Likes,
@@ -216,7 +229,10 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
     return results;
     // If we don't have a search term or tags
   } else if (!searchTerm && (!searchTags || searchTags.length <= 0)) {
-    return await MapInfo.findAll({ where:{published: true}, order: [["createdAt", "DESC"]] });
+    return await MapInfo.findAll({
+      where: { published: true },
+      order: [["createdAt", "DESC"]],
+    });
 
     // If we have a search term, but not tags
   } else if (!searchTags || searchTags.length <= 0) {
@@ -389,8 +405,7 @@ exports.getAllLegendsByMapId = async (id) => {
   });
 };
 
-
-exports.changePublish = async(mapId, published) => {
+exports.changePublish = async (mapId, published) => {
   return await MapInfo.update(
     { published: published },
     {
@@ -401,7 +416,6 @@ exports.changePublish = async(mapId, published) => {
   );
 };
 
-exports.getPublished = async(mapId) =>{
-  return await MapInfo.findByPk(mapId,{attributes:['published']});
-}
-
+exports.getPublished = async (mapId) => {
+  return await MapInfo.findByPk(mapId, { attributes: ["published"] });
+};

@@ -77,7 +77,7 @@ const Navbar = (props) => {
   const handleProfile = () => {
     setAnchorElUser(null);
     store.setCurrentMap(null);
-    navigate('/profile/');
+    navigate(`/profile/${auth.user.id}`);
   };
 
   const handleSettings = () => {
@@ -160,8 +160,8 @@ const Navbar = (props) => {
               Mapology
             </Typography>
 
-            <Box sx={{ display: 'flex', flexGrow: 0}}>
-            <Button
+            <Box sx={{ display: 'flex', flexGrow: 0 }}>
+              <Button
                 key="Home"
                 onClick={handleHome}
                 sx={{ mt: 2, color: 'white', display: 'block' }}

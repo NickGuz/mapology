@@ -4,12 +4,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { MapContainer, ZoomControl, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import ChangeNameModal from '../modals/ChangeNameModal';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import { styled, useTheme } from '@mui/material/styles';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTheme } from '@mui/material/styles';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 import ScreenShooter from '../util/ScreenShooter';
@@ -22,111 +17,43 @@ import TextEditor from '../util/TextEditor';
 import RegionEditor from '../util/RegionEditor';
 import LegendEditor from '../util/LegendEditor';
 import { useParams } from 'react-router-dom';
-// const turf = require("@turf/turf");
-import MapLegend from '../util/MapLegend';
-
-const drawerWidth = 350;
-// const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-//     ({ theme, open }) => ({
-//       flexGrow: 1,
-//       padding: theme.spacing(3),
-//       transition: theme.transitions.create('margin', {
-//         easing: theme.transitions.easing.sharp,
-//         duration: theme.transitions.duration.leavingScreen,
-//       }),
-//       marginLeft: `-${drawerWidth}px`,
-//       ...(open && {
-//         transition: theme.transitions.create('margin', {
-//           easing: theme.transitions.easing.easeOut,
-//           duration: theme.transitions.duration.enteringScreen,
-//         }),
-//         marginLeft: 0,
-//       }),
-//     }),
-//   );
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  backgroundColor: '#03a9f4',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
-}));
 
 export default function MapEditor() {
   const [map, setMap] = useState();
-  const [editOpen, setEditOpen] = useState(false);
-  const [currLayer, setLayer] = useState();
-  const [regionProps, setRegionProps] = useState(null);
-  const [editingAttr, setEdit] = useState(false);
-  const theme = useTheme();
-  const [open, setOpen] = useState(false);
-  const [customAttr, setCustomAttr] = useState(false);
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
-  const [currFeature, setFeature] = useState();
   const [authorized, setAuthorized] = useState(false);
-  const [propOpen, setPropOpen] = useState(false);
 
   const routeParams = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('1');
       const res = await RequestApi.getMapById(routeParams.id);
-      console.log('2');
       const map = res.data.data;
       store.setCurrentMap(map);
-      console.log('3', map);
 
       if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
         setAuthorized(true);
-        console.log('authorized');
       }
     };
 
-    console.log('fetching data', store.currentMap);
     fetchData();
   }, [auth.loggedIn]);
-
-  const handleDrawerOpen = () => {
-    //store.setCurrentFeature(regionProps)
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const mapStyle = {
-    fillOpacity: 0.5,
-    weight: 1,
-  };
 
   const handleRenameLegend = (color, name) => {
     if (!authorized) {
       return;
-    }
-
+    }    
     RequestApi.upsertLegend(routeParams.id, color, name);
 
+    // store.setCurrentLegend({});'
+
+    const temp = store.currentLegend;
+    delete temp[color];
+
     store.setCurrentLegend({
-      ...store.currentLegend,
-      [color]: [name],
+      temp
     });
-  };
-
-  const editAttribute = (event) => {
-    if (!authorized) {
-      return;
-    }
-
-    setEdit(true);
-    setCustomAttr(false);
-    if (regionProps != null) {
-      handleDrawerOpen();
-    }
   };
 
   return (
@@ -149,66 +76,7 @@ export default function MapEditor() {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {/* <Drawer
-                  sx={{
-                    width: drawerWidth,
-                    boxSizing: "border-box",
-                  }}
-                  variant="persistent"
-                  anchor="left"
-                  open={open}
-                >
-                  <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                      {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                  </DrawerHeader>
-                  {DrawerContent}
-                </Drawer> */}
-              {/* <Pane
-                  key={store.selectedFeatures.length + store.mapUpdates}
-                  name="markers"
-                  style={{ zIndex: 500 }}
-                >
-                  {store.selectedFeatures.length === 1 && renderVertices()}
-                </Pane> */}
-              {/* <Pane name="mapdata" style={{ zIndex: 499 }}> */}
               <GeoJSONMap />
-              {/* <MapLegend currentLegend={currentLegend} /> */}
-              {/* <Drawer
-                sx={{
-                  width: drawerWidth,
-                  boxSizing: "border-box",
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-              >
-                <DrawerHeader>
-                  <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                  </IconButton>
-                </DrawerHeader>
-                {DrawerContent}
-              </Drawer>
-              <Pane
-                key={store.selectedFeatures.length + store.mapUpdates}
-                name="markers"
-                style={{ zIndex: 500 }}
-              >
-                {store.selectedFeatures.length === 1 && renderVertices()}
-              </Pane>
-              <Pane name="mapdata" style={{ zIndex: 499 }}>
-                {store.currentMap && (
-                  <GeoJSON
-                    // key={store.mapUpdates}
-                    key={store.selectedFeatures.length + store.mapUpdates}
-                    style={mapStyle}
-                    data={store.currentMap.json.features}
-                    onEachFeature={onFeature}
-                  />
-                )}
-              </Pane> */}
               <ScreenShooter />
               <ZoomControl position="topright" />
             </MapContainer>
@@ -225,9 +93,7 @@ export default function MapEditor() {
             {authorized && (
               <div>
                 <TextEditor />
-                <RegionEditor 
-                  mapId={routeParams.id}
-                />
+                <RegionEditor mapId={routeParams.id} />
                 <LegendEditor
                   rename={(color, name) => handleRenameLegend(color, name)}
                   currentFill={Object.keys(store.currentLegend)}

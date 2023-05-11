@@ -24,6 +24,7 @@ const GeoJSONMap = () => {
   const [currFeature, setCurrFeature] = useState();
   const [editOpen, setEditOpen] = useState(false);
   const [propOpen, setPropOpen] = useState(false);
+  const [boundsSet, setBoundsSet] = useState(false);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -32,7 +33,7 @@ const GeoJSONMap = () => {
   useEffect(() => {
     store.setCurrentMap(store.currentMap);
 
-    if (store.currentMap) {
+    if (store.currentMap && !boundsSet) {
       const latlngs = [];
       store.currentMap.json.features.forEach((f) => {
         f.geometry.coordinates.forEach((polygon) => {
@@ -46,7 +47,15 @@ const GeoJSONMap = () => {
 
       let bounds = new L.LatLngBounds(latlngs);
       map.fitBounds(bounds);
+      setBoundsSet(true);
     }
+
+    if (store.currentMap && !map.hasEventListeners('pm:create')) {
+      map.on('pm:create', (event) => {
+        handleCreatePolygon(event);
+      });
+    }
+    // console.log('useEffect', store.currentMap);
   }, [store.currentMap, store.currentLegend]);
 
   const mapStyle = {
@@ -230,13 +239,13 @@ const GeoJSONMap = () => {
     store.addEditMapTransaction(mapClone, store.currentMap);
   };
 
-  const editAttribute = () => {
-    // setEdit(true);
-    // setCustomAttr(false);
-    // if (regionProps != null) {
-    //   handleDrawerOpen();
-    // }
-  };
+  // const editAttribute = () => {
+  //   // setEdit(true);
+  //   // setCustomAttr(false);
+  //   // if (regionProps != null) {
+  //   //   handleDrawerOpen();
+  //   // }
+  // };
 
   const getFeatureName = (feature) => {
     let featureName;
@@ -273,7 +282,8 @@ const GeoJSONMap = () => {
 
   const onFeature = (feature, layer) => {
     let country = getFeatureName(feature);
-    if (!country) throw new Error('Could not find region name');
+    // if (!country) throw new Error('Could not find region name');
+    if (!country) country = '';
 
     layer
       .bindTooltip(country, {
@@ -339,14 +349,6 @@ const GeoJSONMap = () => {
           [feature.properties.fillColor]: feature.properties.fillColor,
         });
       }
-    } else {
-      layer.setStyle({ fillColor: '#0000ff' });
-      if (!('#0000ff' in store.currentLegend)) {
-        store.setCurrentLegend({
-          ...store.currentLegend,
-          '#0000ff': '#0000ff',
-        });
-      } 
     }
 
     // // Set border color
@@ -380,10 +382,17 @@ const GeoJSONMap = () => {
     updateProperties(feature, updatedProperties);
   };
 
-  // TODO
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
-    console.log('new feature', feature);
+    const name = window.prompt('Enter a name for this feature:');
+    feature.properties['name'] = name;
+
+    store.currentMap.json.features.push(feature);
+    store.setCurrentMap(store.currentMap);
+    RequestApi.insertFeature(store.currentMap.mapInfo.id, feature);
+
+    // Remove the layer created by geoman
+    map.removeLayer(event.layer);
   };
 
   return (
@@ -487,7 +496,8 @@ const GeoJSONMap = () => {
         pathOptions={mapStyle}
         // onVertexClick={(e) => console.log('vertex clicked', e)}
         // onDragEnd={(e) => console.log('drag end', e)}
-        onCreate={handleCreatePolygon}
+        // onCreate={handleCreatePolygon}
+        // onCreate={() => console.log('asdfasdf', store.currentMap)}
         // onChange={(e) => console.log('changed', e)}
         // onEdit={(e) => console.log('edited', e)}
         // onMarkerDragEnd={(e) => console.log('marker drag end')}
