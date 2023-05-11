@@ -165,14 +165,21 @@ exports.deleteUser = () => {
     },
   });
 
+  //generate random key
+  let key = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (var i = 0; i < 20; i++) {
+    key += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  
+  const bodyText = 'A request was made through Mapology to reset your password. \n\n Your temporary Password is:  ' + key + '\n\n If you did not request this password reset please ignore this email.'   
+
   // send mail with defined transport object
   let info = await transporter.sendMail({
+    
     from: '"Mapology 416" <Mapology416@outlook.com>', // sender address
     to: req.body.email, // list of receivers
     subject: "IMPORTANT: Reset your Mapology password", // Subject line
-    text: "Hello world?" + Math.random(), // plain text body
+    text: bodyText, // plain text body
   });
-
-  // console.log("Message sent: %s", info.messageId);
-  // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 }
