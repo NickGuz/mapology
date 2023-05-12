@@ -36,6 +36,8 @@ const Likes = require("./models/Likes")(sequelize, DataTypes);
 const Dislikes = require("./models/Dislikes")(sequelize, DataTypes);
 const Tags = require("./models/Tags")(sequelize, DataTypes);
 const Legends = require("./models/Legends")(sequelize, DataTypes);
+const RecoveryPassword = require("./models/RecoveryPassword")(sequelize, DataTypes);
+
 const GraphicTextBoxes = require("./models/GraphicTextBoxes")(
   sequelize,
   DataTypes
@@ -81,4 +83,5 @@ module.exports = {
   Legends,
   GraphicTextBoxes,
   Thumbnails,
+  RecoveryPassword,
 };

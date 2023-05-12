@@ -1,9 +1,10 @@
 const auth = require("../auth");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const { User } = require("../sequelize/sequelize");
+const { User, RecoveryPassword } = require("../sequelize/sequelize");
 const nodemailer = require("nodemailer");
 const config = require("../config/nodemailer.config");
+const { Op } = require("sequelize");
 
 exports.loggedIn = async (req, res) => {
   try {
@@ -101,6 +102,10 @@ exports.register = async (req, res) => {
       errorMessage: "Passwords don't match",
     });
   }
+
+  // const salt = await bcrypt.genSalt(saltRounds);
+  // bcrypt.hash(req.body.password, salt, async function (err, hash) {
+
   bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
     if (err) {
       return res.status(500).json({
@@ -154,14 +159,14 @@ exports.deleteUser = () => {
 };
 
  exports.sendRecoveryEmail = async(req, res) => {
-  // create reusable transporter object using the default SMTP transport
+  // create transporter object using the default SMTP transport
   const transporter = nodemailer.createTransport({
     host: config.HOST,
     port: config.PORT,
     secure: config.SECURE,
     auth: {
-      user: config.USER, // generated ethereal user
-      pass: config.PASS, // generated ethereal password
+      user: config.USER,
+      pass: config.PASS,
     },
   });
 
@@ -171,12 +176,33 @@ exports.deleteUser = () => {
   for (var i = 0; i < 20; i++) {
     key += characters.charAt(Math.floor(Math.random() * characters.length));
   }
-  
   const bodyText = 'A request was made through Mapology to reset your password. \n\n Your temporary Password is:  ' + key + '\n\n If you did not request this password reset please ignore this email.'   
 
+  // //remove expired keys
+  // await RecoveryPassword.destroy({
+  //   where: {
+  //     expires_at: {[Op.lt]: new Date()}
+  //   }
+  // });
+
+  //remove existing recovery passwords
+  await RecoveryPassword.destroy({
+    where: {
+      email: req.body.email
+    }
+  });
+
+  const salt = await bcrypt.genSalt(saltRounds)
+  const token = await bcrypt.hash(key, salt)
+
+  //insert random key as recovery password
+  await RecoveryPassword.create({
+    email: req.body.email,
+    password: token,
+  });
+
   // send mail with defined transport object
-  let info = await transporter.sendMail({
-    
+  await transporter.sendMail({
     from: '"Mapology 416" <Mapology416@outlook.com>', // sender address
     to: req.body.email, // list of receivers
     subject: "IMPORTANT: Reset your Mapology password", // Subject line
