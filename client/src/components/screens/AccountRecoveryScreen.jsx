@@ -11,6 +11,7 @@ import Checkbox from "@mui/material/Checkbox";
 import LoginModal from "../modals/LoginModal";
 import AuthContext from "../../auth/AuthContextProvider";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material";
 
 const AccountRecoveryScreen = (props) => {
   const [flag, setFlag] = useState(false);
@@ -25,13 +26,19 @@ const AccountRecoveryScreen = (props) => {
   };
 
   const handleRecoveryEmail = (event) => {
+    const formData = new FormData(event.currentTarget);
+
     // if temporary password is provided
     if(flag){
-      console.log('testing')
+      auth.changePassword(
+        formData.get("email"),
+        formData.get("otp"),
+        formData.get("password"),
+        formData.get("confirmPassword")
+      );
     }
-    const formData = new FormData(event.currentTarget);
-    auth.sendRecoveryEmail(formData.get("email"));
-    // auth.sendRecoveryEmail('kevin.zhou.3@stonybrook.edu');
+    else
+      auth.sendRecoveryEmail(formData.get("email"));
   };
 
   const handleFlag = () => {
@@ -55,6 +62,19 @@ const AccountRecoveryScreen = (props) => {
                     alignItems: "left",
                   }}
                 >
+                <Box
+                  sx={{
+                    width: "100%",
+                    minWidth: "100%",
+                    marginBottom: 2,
+                  }}
+                >
+                  {auth.registered && <Alert severity="error">Incorrect OTP or Email!</Alert>}
+                  {auth.notSamePass && <Alert severity="error">Passwords must match!</Alert>}
+                  {auth.acctEmpt && <Alert severity="error">Input fields must not be empty!</Alert>}
+                  {/* {auth.invalidEmail && <Alert severity="error">Invalid email!</Alert>}
+                  {auth.user && <Alert severity="info">Account created succesfully!</Alert>} */}
+                </Box>
                   <Typography component="h1" variant="h5">
                     {flag ? 'Change Password ': 'Forgot Password'}
                   </Typography>
@@ -81,9 +101,9 @@ const AccountRecoveryScreen = (props) => {
                         <TextField
                           required
                           fullWidth
-                          name="Temporary Password"
+                          name="otp"
                           label="OTP/One Time Password"
-                          id="Temporary Password"
+                          id="otp"
                         />
                         </Grid> : null}
                       {flag ? 
@@ -91,10 +111,10 @@ const AccountRecoveryScreen = (props) => {
                         <TextField
                           required
                           fullWidth
-                          name="New Password"
+                          name="password"
                           label="New Password"
                           type="password"
-                          id="New Password"
+                          id="password"
                         />
                         </Grid> : null}
                       {flag ? 
@@ -102,10 +122,10 @@ const AccountRecoveryScreen = (props) => {
                         <TextField
                           required
                           fullWidth
-                          name="Confirm New Password"
+                          name="confirmPassword"
                           label="Confirm New Password"
                           type="password"
-                          id="Confirm New Password"
+                          id="confirmPassword"
                         />
                         </Grid> : null}                 
                       <Grid item xs={12}>

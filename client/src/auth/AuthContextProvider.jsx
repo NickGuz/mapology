@@ -52,13 +52,39 @@ function AuthContextProvider(props) {
         return setAuth({
           ...auth,
           user: payload.user,
-          acctEmpt: payload.acctEmpt,
+          emailEmpt: payload.acctEmpt,
           shortPass: payload.shortPass,
           notSamePass: payload.notSamePass,
           registered: payload.registered,
           invalidEmail: payload.invalidEmail,
         });
       }
+
+      case AuthActionType.CHANGE_PASSWORD: {
+        return setAuth({
+          ...auth,
+          user: null,
+          loggedIn: false,
+          emailEmpt: false,
+          shortPass: false,
+          notSamePass: false,
+          registered: false,
+          guest: false,
+        });
+      }
+
+      case AuthActionType.CHANGE_PASSWORD_FAIL: {
+        return setAuth({
+          ...auth,
+          user: null,
+          loggedIn: false,
+          acctEmpt: payload.acctEmpt,
+          shortPass: payload.shortPass,
+          notSamePass: payload.notSamePass,
+          registered: payload.registered,
+        });
+      }
+
       case AuthActionType.LOGIN_USER: {
         return setAuth({
           ...auth,
@@ -247,6 +273,57 @@ function AuthContextProvider(props) {
       console.log('invalid email');
     }
   };
+
+  auth.changePassword = async function (
+    email,
+    otp,
+    password,
+    confirmPassword
+    ) {
+      const response = await api.changePassword(
+        email,
+        otp,
+        password,
+        confirmPassword
+      );
+      if (response.status === 400) {
+        authReducer({
+          type: AuthActionType.CHANGE_PASSWORD_FAIL,
+          payload: {
+            acctEmpt: true,
+            shortPass: false,
+            notSamePass: false,
+            registered: false,
+            invalidEmail: false,
+          },
+        });
+      }
+      if (response.status === 401) {
+        authReducer({
+          type: AuthActionType.CHANGE_PASSWORD_FAIL,
+          payload: {
+            acctEmpt: false,
+            shortPass: false,
+            notSamePass: false,
+            registered: true,
+            invalidEmail: false,
+          },
+        });
+      }
+      else if (response.status === 402) {
+        authReducer({
+          type: AuthActionType.CHANGE_PASSWORD_FAIL,
+          payload: {
+            acctEmpt: false,
+            shortPass: false,
+            notSamePass: true,
+            registered: false,
+            invalidEmail: false,
+          },
+        });
+      }
+      return response;
+  }
 
   return (
     <AuthContext.Provider

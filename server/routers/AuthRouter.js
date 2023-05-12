@@ -26,7 +26,7 @@ router.get('/user/:id', AuthController.getUserById);
 
 // Handles a password change
 // TODO
-router.put('/changepass', AuthController.changePassword);
+router.post('/changePassword', AuthController.changePassword);
 
 // Handles user deleting their account
 // TODO

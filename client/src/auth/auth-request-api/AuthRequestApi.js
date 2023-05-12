@@ -61,6 +61,20 @@ export const sendRecoveryEmail = (email) => {
   });
 };
 
+export const changePassword = (email, otp, password, confirmPassword) => {
+  return api
+    .post(`/auth/changePassword`, {
+      email: email,
+      otp: otp,
+      password: password,
+      confirmPassword: confirmPassword,
+    })
+    .catch(function(error) {
+      return error.response;
+    });
+};
+
+
 const apis = {
   registerUser,
   getAllUsers,
@@ -69,6 +83,7 @@ const apis = {
   logoutUser,
   getLoggedIn,
   sendRecoveryEmail,
+  changePassword,
 };
 
 export default apis;
