@@ -25,6 +25,7 @@ const GeoJSONMap = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [propOpen, setPropOpen] = useState(false);
   const [boundsSet, setBoundsSet] = useState(false);
+  const [drawModeEnabled, setDrawModeEnabled] = useState(false);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -58,7 +59,7 @@ const GeoJSONMap = () => {
       });
     }
     // console.log('useEffect', store.currentMap);
-  }, [store.currentMap /*, store.currentLegend*/]);
+  }, [store.currentMap, drawModeEnabled /*, store.currentLegend*/]);
 
   useEffect(() => {
     console.log('selected', store.selectedFeatures);
@@ -271,7 +272,17 @@ const GeoJSONMap = () => {
   //   else if (feature.properties.name) feature.properties.name = name;
   // };
 
+  const getDrawModeEnabled = () => {
+    return drawModeEnabled;
+  };
+
   const selectRegion = (event) => {
+    console.log('selecting', event);
+    if (getDrawModeEnabled()) {
+      console.log('draw mode enabled');
+      return;
+    }
+
     if (store.selectedFeatures.includes(event.target.feature)) {
       store.setSelectedFeatures(
         store.selectedFeatures.filter((x) => x !== event.target.feature)
@@ -284,6 +295,14 @@ const GeoJSONMap = () => {
       ]);
       return true;
     }
+  };
+
+  const handleLayerClick = (event) => {
+    if (!auth.loggedIn) {
+      return;
+    }
+    console.log('map', map);
+    selectRegion(event);
   };
 
   const onFeature = (feature, layer) => {
@@ -321,12 +340,8 @@ const GeoJSONMap = () => {
         //   });
         // }
       },
-      click: (event) => {
-        if (!auth.loggedIn) {
-          return;
-        }
-        selectRegion(event);
-      },
+      click: (event) => handleLayerClick(event),
+      // click: (event) => {
       'pm:markerdragend': (event) => {
         handleVertexDragEnd(event);
       },
@@ -420,40 +435,126 @@ const GeoJSONMap = () => {
     map.removeLayer(event.layer);
   };
 
-  const handleSplitRegion = (line) => {
+  const handleSplitRegion = async (line) => {
+    store.setSelectedFeatures([]);
     if (line.geometry.coordinates.length !== 2) {
       console.log('Split line does not have 2 points');
       return;
     }
 
+    const mapClone = JSON.parse(JSON.stringify(store.currentMap));
+
     const startPoint = line.geometry.coordinates[0];
     const endPoint = line.geometry.coordinates[1];
 
     const featureToSplit = findFeatureWithPoints(startPoint, endPoint);
+    const isMultiPolygon = featureToSplit.geometry.type === 'MultiPolygon';
     console.log('featureToSplit', featureToSplit);
 
-    const contains = turf.booleanContains(featureToSplit, line);
-    console.log('contains', contains);
+    // const collection = turf.flatten(featureToSplit);
+
+    let contains = false;
+    featureToSplit.geometry.coordinates.forEach((poly) => {
+      if (contains) return;
+
+      console.log('poly', poly[0]);
+      const polygon = isMultiPolygon
+        ? turf.polygon([poly[0]])
+        : turf.polygon([poly]);
+      console.log('polygon', polygon);
+      contains = turf.booleanContains(polygon, line);
+    });
+
+    // const contains = turf.booleanContains(featureToSplit, line);
+    // console.log('contains', contains);
 
     if (!contains) {
       console.log('Invalid split');
       return;
     }
 
-    const split = splitPolygon(featureToSplit, line);
+    const split = isMultiPolygon
+      ? splitMultiPolygon(featureToSplit, line)
+      : splitPolygon(featureToSplit, line);
+
+    // const split = splitPolygon(featureToSplit, line);
     console.log('split', split);
+    if (!split) {
+      console.log('error');
+      return;
+    }
 
     store.currentMap.json.features = store.currentMap.json.features.filter(
       (f) => f.id !== featureToSplit.id
     );
 
+    if (isMultiPolygon) {
+      RequestApi.updateFeatureGeometry(split.id, split.geometry);
+    } else {
+      await RequestApi.deleteFeature(featureToSplit.id);
+      const res = await RequestApi.insertFeature(
+        store.currentMap.mapInfo.id,
+        split
+      );
+
+      const newFeature = res.data.data;
+      store.currentMap.json.features.push(newFeature);
+    }
+
     store.currentMap.json.features.push(split);
     store.setCurrentMap(store.currentMap);
-    store.setSelectedFeatures([]);
+    store.setSelectedFeatures([]); // TODO this not working for some reason
+
+    store.addEditMapTransaction(mapClone, store.currentMap);
+  };
+
+  const splitMultiPolygon = (feature, line) => {
+    console.log('splitting MultiPolygon');
+
+    const startPoint = line.geometry.coordinates[0];
+    const endPoint = line.geometry.coordinates[1];
+
+    // Get the polygon that has the line through it
+    let polygon;
+    feature.geometry.coordinates.forEach((poly) => {
+      let contains = 0;
+
+      poly[0].forEach((coord) => {
+        if (pointEquals(coord, startPoint) || pointEquals(coord, endPoint)) {
+          contains++;
+        }
+      });
+
+      if (contains >= 2) {
+        polygon = poly;
+      }
+    });
+
+    if (!polygon) {
+      console.log('Could not find a polygon to split');
+      return;
+    }
+
+    // Remove the polygon from the feature
+    feature.geometry.coordinates = feature.geometry.coordinates.filter(
+      (poly) => poly !== polygon
+    );
+
+    // Split this polygon
+    const splitPoly = splitPolygon(turf.polygon(polygon), line);
+    console.log('splitPoly', splitPoly);
+
+    // Insert those polygons into the original MultiPolygon
+    splitPoly.geometry.coordinates.forEach((poly) => {
+      feature.geometry.coordinates.push(poly);
+    });
+
+    // Modifying and returning original feature
+    return feature;
   };
 
   const splitPolygon = (feature, line) => {
-    const polygon = feature.geometry;
+    // const polygon = feature.geometry;
     const lineString = line.geometry;
 
     const point1 = lineString.coordinates[0];
@@ -462,7 +563,7 @@ const GeoJSONMap = () => {
     const poly1Points = [];
     const poly2Points = [];
     let foundPoints = 0;
-    polygon.coordinates[0].forEach((p) => {
+    feature.geometry.coordinates[0].forEach((p) => {
       if (foundPoints === 0) {
         poly1Points.push(p);
 
@@ -483,6 +584,10 @@ const GeoJSONMap = () => {
         poly1Points.push(p);
       }
     });
+
+    if (poly1Points.length === 0 || poly2Points.length === 0) {
+      throw new Error('Failed to find any points');
+    }
 
     if (!pointEquals(poly1Points[0], poly1Points[poly1Points.length - 1])) {
       poly1Points.push(poly1Points[0]);
@@ -525,17 +630,24 @@ const GeoJSONMap = () => {
 
       let contains = false;
 
-      polygons.forEach((polygon) => {
+      console.log('polygons', polygons);
+      polygons.forEach((feature) => {
         if (contains) return;
+        console.log('plygon', feature);
 
         // Failing here
-        const bufferedPolygon = turf.buffer(polygon.geometry, 0.001, {
-          units: 'kilometers',
-        });
+        // const bufferedPolygon = turf.buffer(polygon.geometry, 0.001, {
+        //   units: 'kilometers',
+        // });
 
+        // contains =
+        //   turf.booleanIntersects(turfPoint1, feature) &&
+        //   turf.booleanIntersects(turfPoint2, feature);
         contains =
-          turf.booleanIntersects(turfPoint1, bufferedPolygon) &&
-          turf.booleanIntersects(turfPoint2, bufferedPolygon);
+          feature.geometry.coordinates[0].find((xy) =>
+            pointEquals(xy, point1)
+          ) &&
+          feature.geometry.coordinates[0].find((xy) => pointEquals(xy, point2));
       });
 
       return contains;
@@ -546,7 +658,33 @@ const GeoJSONMap = () => {
       return null;
     }
 
+    console.log('returning features', features);
     return features[0];
+  };
+
+  const disableClickHandlers = () => {
+    map.eachLayer((layer) => {
+      layer.off('click');
+    });
+  };
+
+  const enableClickHandlers = () => {
+    map.eachLayer((layer) => {
+      layer.on('click', handleLayerClick);
+    });
+  };
+
+  const handleGlobalDrawModeToggled = (event) => {
+    // store.setSelectedFeatures([]);
+    const enabled = event.enabled;
+    console.log('event', event);
+    // if (enabled) {
+    //   disableClickHandlers();
+    // } else {
+    //   // enableClickHandlers();
+    //   store.setMapUpdates(store.mapUpdates + 1);
+    // }
+    // setDrawModeEnabled(enabled);
   };
 
   return (
@@ -654,6 +792,7 @@ const GeoJSONMap = () => {
         // onCreate={() => console.log('asdfasdf', store.currentMap)}
         // onChange={(e) => console.log('changed', e)}
         // onEdit={(e) => console.log('edited', e)}
+        onGlobalDrawModeToggled={handleGlobalDrawModeToggled}
         // onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
       <MapLegend currentLegend={store.currentLegend} />
