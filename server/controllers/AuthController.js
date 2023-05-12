@@ -150,13 +150,13 @@ exports.getUserById = async (req, res) => {
 
 exports.changePassword = async(req, res) => {
   if (!req.body.email || !req.body.otp || !req.body.password || !req.body.confirmPassword) {
-    return res.status(400).json({
+    return res.status(401).json({
       errorMessage: "Fields must not be empty",
     });
   }
 
   if (req.body.password !== req.body.confirmPassword) {
-    return res.status(402).json({
+    return res.status(403).json({
       errorMessage: "Passwords don't match",
     });
   }
@@ -171,7 +171,7 @@ exports.changePassword = async(req, res) => {
   // finding user with email
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
-    return res.status(401).json({
+    return res.status(402).json({
       errorMessage: "Email not found",
     });
   }
@@ -179,7 +179,7 @@ exports.changePassword = async(req, res) => {
   //finding recovery token
   const recovery = await RecoveryPassword.findOne({ where: { email: req.body.email } });
   if (!recovery) {
-    return res.status(401).json({
+    return res.status(402).json({
       errorMessage: "OTP not requested or Expired",
     });
   }
@@ -187,7 +187,7 @@ exports.changePassword = async(req, res) => {
   //compare otp
   const otpCorrect = await bcrypt.compare(req.body.otp, recovery.password);
   if (!otpCorrect) {
-    return res.status(401).json({
+    return res.status(402).json({
       errorMessage: "Wrong OTP.",
     });
   }

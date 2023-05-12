@@ -15,6 +15,8 @@ import { Alert } from "@mui/material";
 
 const AccountRecoveryScreen = (props) => {
   const [flag, setFlag] = useState(false);
+  const [submittedFlag, setSubmittedFlag] = useState(false);
+
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const handleLogin = () => {
@@ -26,19 +28,25 @@ const AccountRecoveryScreen = (props) => {
   };
 
   const handleRecoveryEmail = (event) => {
+    event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
     // if temporary password is provided
     if(flag){
+      setSubmittedFlag(false)
       auth.changePassword(
         formData.get("email"),
         formData.get("otp"),
         formData.get("password"),
         formData.get("confirmPassword")
       );
+      event.target.reset();
     }
-    else
+    else{
+      setSubmittedFlag(true)
       auth.sendRecoveryEmail(formData.get("email"));
+      setFlag(true)
+    }
   };
 
   const handleFlag = () => {
@@ -72,6 +80,7 @@ const AccountRecoveryScreen = (props) => {
                   {auth.registered && <Alert severity="error">Incorrect OTP or Email!</Alert>}
                   {auth.notSamePass && <Alert severity="error">Passwords must match!</Alert>}
                   {auth.acctEmpt && <Alert severity="error">Input fields must not be empty!</Alert>}
+                  {submittedFlag && <Alert onClose={() => {setSubmittedFlag(false)}} severity="info">OTP has been sent to the email associated with the account if it exists.</Alert>}
                   {/* {auth.invalidEmail && <Alert severity="error">Invalid email!</Alert>}
                   {auth.user && <Alert severity="info">Account created succesfully!</Alert>} */}
                 </Box>
@@ -130,7 +139,7 @@ const AccountRecoveryScreen = (props) => {
                         </Grid> : null}                 
                       <Grid item xs={12}>
                         <FormControlLabel
-                          control={<Checkbox/>}
+                          control={<Checkbox checked={flag}/>}
                           onChange={handleFlag}
                           label={
                             <Typography variant="body2" color="blue">

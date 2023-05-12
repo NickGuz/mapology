@@ -286,7 +286,8 @@ function AuthContextProvider(props) {
         password,
         confirmPassword
       );
-      if (response.status === 400) {
+      if (response.status === 401) {
+        console.log('400 error')
         authReducer({
           type: AuthActionType.CHANGE_PASSWORD_FAIL,
           payload: {
@@ -298,7 +299,7 @@ function AuthContextProvider(props) {
           },
         });
       }
-      if (response.status === 401) {
+      else if (response.status === 402) {
         authReducer({
           type: AuthActionType.CHANGE_PASSWORD_FAIL,
           payload: {
@@ -310,7 +311,7 @@ function AuthContextProvider(props) {
           },
         });
       }
-      else if (response.status === 402) {
+      else if (response.status === 403) {
         authReducer({
           type: AuthActionType.CHANGE_PASSWORD_FAIL,
           payload: {
@@ -322,7 +323,6 @@ function AuthContextProvider(props) {
           },
         });
       }
-      return response;
   }
 
   return (
