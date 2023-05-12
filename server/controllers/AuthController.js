@@ -192,6 +192,9 @@ exports.changePassword = async(req, res) => {
     });
   }
 
+  //delete recovery token
+  await recovery.destroy();
+
   //hash password and update
   const hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
   user.password = hashedPassword;
