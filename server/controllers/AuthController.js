@@ -103,9 +103,6 @@ exports.register = async (req, res) => {
     });
   }
 
-  // const salt = await bcrypt.genSalt(saltRounds);
-  // bcrypt.hash(req.body.password, salt, async function (err, hash) {
-
   bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
     if (err) {
       return res.status(500).json({
@@ -192,8 +189,7 @@ exports.deleteUser = () => {
     }
   });
 
-  const salt = await bcrypt.genSalt(saltRounds)
-  const token = await bcrypt.hash(key, salt)
+  const token = await bcrypt.hash(key, saltRounds)
 
   //insert random key as recovery password
   await RecoveryPassword.create({
