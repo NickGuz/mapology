@@ -183,7 +183,7 @@ const AccountRecoveryScreen = (props) => {
                   <CssBaseline />
                   <Box
                     sx={{
-                      marginTop: 18,
+                      marginTop: 25,
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "left",
