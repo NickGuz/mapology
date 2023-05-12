@@ -116,6 +116,9 @@ exports.getUserById = async (id) => {
 };
 
 exports.updateMapTitle = async (mapId, title) => {
+  console.log(mapId)
+  console.log(title);
+
   return await MapInfo.update(
     { title: title },
     {
