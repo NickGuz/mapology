@@ -173,7 +173,7 @@ exports.deleteUser = () => {
   for (var i = 0; i < 20; i++) {
     key += characters.charAt(Math.floor(Math.random() * characters.length));
   }
-  const bodyText = 'A request was made through Mapology to reset your password. \n\n Your temporary Password is:  ' + key + '\n\n If you did not request this password reset please ignore this email.'   
+  const bodyText = 'A request was made through Mapology to reset your password. \n\n Your OTP/One Time Password is:  ' + key + '\n\n If you did not request this password reset please ignore this email.'   
 
   // //remove expired keys
   // await RecoveryPassword.destroy({

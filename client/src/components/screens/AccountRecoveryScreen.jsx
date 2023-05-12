@@ -56,13 +56,13 @@ const AccountRecoveryScreen = (props) => {
                   }}
                 >
                   <Typography component="h1" variant="h5">
-                    Forgot Password
+                    {flag ? 'Change Password ': 'Forgot Password'}
                   </Typography>
                   <Typography component="h1" variant="subtitle2">
-                    Enter your email in the field below.
+                    {flag ? 'Enter the following details in the fields below': 'Enter your email in the field below.'}
                   </Typography>
                   <Typography component="h1" variant="subtitle2">
-                    You will receive a one time password to login.
+                    {flag ? 'Your password will be changed upon submission.': 'You will receive a one time password to login.'}
                   </Typography>
                   <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleRecoveryEmail} >
                     <Grid container spacing={2}>
@@ -82,20 +82,39 @@ const AccountRecoveryScreen = (props) => {
                           required
                           fullWidth
                           name="Temporary Password"
-                          label="Temporary Password"
-                          type="Temporary Password"
+                          label="OTP/One Time Password"
                           id="Temporary Password"
-                          autoComplete="Temporary Password"
                         />
                         </Grid> : null}
-                      
+                      {flag ? 
+                        <Grid item xs={12}>
+                        <TextField
+                          required
+                          fullWidth
+                          name="New Password"
+                          label="New Password"
+                          type="password"
+                          id="New Password"
+                        />
+                        </Grid> : null}
+                      {flag ? 
+                        <Grid item xs={12}>
+                        <TextField
+                          required
+                          fullWidth
+                          name="Confirm New Password"
+                          label="Confirm New Password"
+                          type="password"
+                          id="Confirm New Password"
+                        />
+                        </Grid> : null}                 
                       <Grid item xs={12}>
                         <FormControlLabel
                           control={<Checkbox/>}
                           onChange={handleFlag}
                           label={
                             <Typography variant="body2" color="blue">
-                              I already have a Temporary Password
+                              I already have a OTP/One Time Password
                             </Typography>
                           }
                         />
@@ -109,17 +128,8 @@ const AccountRecoveryScreen = (props) => {
                         sx={{ mt: 3, mb: 2 }}
                         // sx={{ mt: 3, mb: 2, mr: 4 }}
                       >
-                        {flag ? 'LOGIN' : 'SEND PASSWORD'}
+                        {flag ? 'CHANGE PASSWORD' : 'SEND PASSWORD'}
                       </Button>
-                      {/* <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        disabled={true}
-                        sx={{ mt: 3, mb: 2 }}
-                      >
-                        Login
-                      </Button> */}
                     </Box>
                   </Box>
                   {/* <Button
