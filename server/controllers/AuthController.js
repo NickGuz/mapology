@@ -161,12 +161,12 @@ exports.changePassword = async(req, res) => {
     });
   }
 
-  // //remove expired keys
-  // await RecoveryPassword.destroy({
-  //   where: {
-  //     expires_at: {[Op.lt]: new Date()}
-  //   }
-  // });
+  //remove expired keys
+  await RecoveryPassword.destroy({
+    where: {
+      expires_at: {[Op.lt]: new Date()}
+    }
+  });
 
   // finding user with email
   const user = await User.findOne({ where: { email: req.body.email } });

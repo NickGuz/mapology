@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define("recovery_password", {
     id: {
@@ -15,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     expires_at: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
+      defaultValue: Sequelize.literal('DATE_ADD(NOW(), INTERVAL 1 HOUR)'),
     },
   });
 };
