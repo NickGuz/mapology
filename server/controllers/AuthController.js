@@ -5,7 +5,8 @@ const { User, RecoveryPassword } = require("../sequelize/sequelize");
 const nodemailer = require("nodemailer");
 const config = require("../config/nodemailer.config");
 const { Op } = require("sequelize");
-const crypto = require('crypto');
+const crypto = require("crypto");
+const SequelizeManager = require("../sequelize/managers/SequelizeManager");
 
 exports.loggedIn = async (req, res) => {
   try {
@@ -149,8 +150,13 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
-exports.changePassword = async(req, res) => {
-  if (!req.body.email || !req.body.otp || !req.body.password || !req.body.confirmPassword) {
+exports.changePassword = async (req, res) => {
+  if (
+    !req.body.email ||
+    !req.body.otp ||
+    !req.body.password ||
+    !req.body.confirmPassword
+  ) {
     return res.status(401).json({
       errorMessage: "Fields must not be empty",
     });
@@ -165,8 +171,8 @@ exports.changePassword = async(req, res) => {
   //remove expired keys
   await RecoveryPassword.destroy({
     where: {
-      expires_at: {[Op.lt]: new Date()}
-    }
+      expires_at: { [Op.lt]: new Date() },
+    },
   });
 
   // finding user with email
@@ -178,7 +184,9 @@ exports.changePassword = async(req, res) => {
   }
 
   //finding recovery token
-  const recovery = await RecoveryPassword.findOne({ where: { email: req.body.email } });
+  const recovery = await RecoveryPassword.findOne({
+    where: { email: req.body.email },
+  });
   if (!recovery) {
     return res.status(402).json({
       errorMessage: "OTP not requested or Expired",
@@ -197,10 +205,10 @@ exports.changePassword = async(req, res) => {
   await recovery.destroy();
 
   //hash password and update
-  const hashedPassword = await bcrypt.hash(req.body.password, saltRounds)
+  const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
   user.password = hashedPassword;
   await user.save();
-  
+
   //return 200
   return res.status(200);
 };
@@ -209,7 +217,7 @@ exports.deleteUser = () => {
   // TODO
 };
 
- exports.sendRecoveryEmail = async(req, res) => {
+exports.sendRecoveryEmail = async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
     return res.status(400).json({
@@ -229,18 +237,21 @@ exports.deleteUser = () => {
   });
 
   //generate random key
-  const key = crypto.randomBytes(12).toString('hex')
+  const key = crypto.randomBytes(12).toString("hex");
 
-  const bodyText = 'A request was made through Mapology to reset your password. \n\n Your OTP/One Time Password is:  ' + key + '\n\n If you did not request this password reset please ignore this email.'   
+  const bodyText =
+    "A request was made through Mapology to reset your password. \n\n Your OTP/One Time Password is:  " +
+    key +
+    "\n\n If you did not request this password reset please ignore this email.";
 
   //remove existing recovery passwords
   await RecoveryPassword.destroy({
     where: {
-      email: req.body.email
-    }
+      email: req.body.email,
+    },
   });
 
-  const token = await bcrypt.hash(key, saltRounds)
+  const token = await bcrypt.hash(key, saltRounds);
 
   //insert random key as recovery password
   await RecoveryPassword.create({
@@ -255,4 +266,10 @@ exports.deleteUser = () => {
     subject: "IMPORTANT: Reset your Mapology password", // Subject line
     text: bodyText, // plain text body
   });
-}
+};
+
+exports.searchUsers = async (req, res) => {
+  let searchTerm = req.params.term;
+  const users = await SequelizeManager.searchUsers(searchTerm);
+  return res.status(200).json(users);
+};

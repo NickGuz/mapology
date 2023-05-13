@@ -191,21 +191,43 @@ exports.deleteFeature = async (featureId) => {
   });
 };
 
+exports.searchUsers = async (searchTerm) => {
+  return await User.findAll({
+    where: {
+      username: {
+        [Op.like]: `%${searchTerm}%`,
+      },
+    },
+  });
+};
+
 exports.searchMaps = async (searchTerm, searchTags, sortType) => {
   let orderBy = null;
   if (sortType === "TOP_RATED") {
-    orderBy = [[]];
+    orderBy = [["rating", "DESC"]];
   } else if (sortType === "RECENTLY_UPDATED") {
     orderBy = [["updatedAt", "DESC"]];
+  } else {
+    orderBy = null;
   }
 
   if (searchTerm === "null") {
     searchTerm = null;
   }
 
+  const rating = [
+    Sequelize.literal(
+      "(SELECT COALESCE(COUNT(distinct likes.id), 0) - COALESCE(COUNT(distinct dislikes.id), 0) from likes left join dislikes on likes.mapId = dislikes.mapId where likes.mapId = map_info.id)"
+    ),
+    "rating",
+  ];
+
   // If we don't have a search term, but we have tags
   if (!searchTerm && searchTags) {
     const results = await MapInfo.findAll({
+      attributes: {
+        include: [rating],
+      },
       include: [
         {
           model: Tags,
@@ -216,13 +238,12 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             published: true,
           },
         },
-        //   Likes,
-        //   Dislikes,
-        // ],
-        // attributes: {
-        //   include: [[sequelize.fn("COUNT", sequelize.col("likes.mapId")), "rating"]],
-        // },
+        Likes,
+        Dislikes,
+        Thumbnails,
+        User,
       ],
+      order: orderBy,
     });
 
     console.log("RESULTS", results);
@@ -230,13 +251,20 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
     // If we don't have a search term or tags
   } else if (!searchTerm && (!searchTags || searchTags.length <= 0)) {
     return await MapInfo.findAll({
+      attributes: {
+        include: [rating],
+      },
       where: { published: true },
-      order: [["createdAt", "DESC"]],
+      include: [Tags, Likes, Dislikes, Thumbnails, User],
+      order: orderBy,
     });
 
     // If we have a search term, but not tags
   } else if (!searchTags || searchTags.length <= 0) {
     return await MapInfo.findAll({
+      attributes: {
+        include: [rating],
+      },
       where: {
         published: true,
         [Op.or]: [
@@ -252,11 +280,16 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
           },
         ],
       },
+      include: [Tags, Likes, Dislikes, Thumbnails, User],
+      order: orderBy,
     });
 
     // If we have both a search term and tags
   } else {
     return await MapInfo.findAll({
+      attributes: {
+        include: [rating],
+      },
       include: [
         {
           model: Tags,
@@ -266,6 +299,10 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             },
           },
         },
+        Likes,
+        Dislikes,
+        Thumbnails,
+        User,
       ],
       where: {
         published: true,
@@ -282,6 +319,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
           },
         ],
       },
+      order: orderBy,
     });
   }
 };

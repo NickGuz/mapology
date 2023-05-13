@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { Box, Button, Paper } from '@mui/material';
 import {
   getAllMaps,
-  getThumbnail,
   getAllMapsByUserId,
 } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';

@@ -1,24 +1,26 @@
-import axios from "axios";
+import axios from 'axios';
 axios.defaults.withCredentials = true;
 
-const dev = "http://localhost:4000";
-const baseURL = window.location.origin.includes(":3000") ? dev : window.location.origin;
+const dev = 'http://localhost:4000';
+const baseURL = window.location.origin.includes(':3000')
+  ? dev
+  : window.location.origin;
 
 const api = axios.create({
   baseURL: baseURL,
 });
 
-export const getLoggedIn = async () =>  {
+export const getLoggedIn = async () => {
   return await api.get(`/auth/loggedIn/`);
-}
+};
 
 export const loginUser = (userInfo, password) => {
   return api
-    .post("/auth/login", {
+    .post('/auth/login', {
       userInfo: userInfo,
       password: password,
     })
-    .catch(function(error) {
+    .catch(function (error) {
       return error.response;
     });
 };
@@ -34,13 +36,13 @@ export const registerUser = (username, email, password, confirmPassword) => {
       password: password,
       confirmPassword: confirmPassword,
     })
-    .catch(function(error) {
+    .catch(function (error) {
       return error.response;
     });
 };
 
 export const getAllUsers = () => {
-  return api.get("/auth/users").catch((err) => {
+  return api.get('/auth/users').catch((err) => {
     return err.response;
   });
 };
@@ -53,12 +55,12 @@ export const getUserById = (id) => {
 
 export const sendRecoveryEmail = (email) => {
   return api
-  .post(`/auth/sendRecoveryEmail`, {
-    email: email,
-  })
-  .catch(function(error) {
-    return error.response;
-  });
+    .post(`/auth/sendRecoveryEmail`, {
+      email: email,
+    })
+    .catch(function (error) {
+      return error.response;
+    });
 };
 
 export const changePassword = (email, otp, password, confirmPassword) => {
@@ -69,11 +71,14 @@ export const changePassword = (email, otp, password, confirmPassword) => {
       password: password,
       confirmPassword: confirmPassword,
     })
-    .catch(function(error) {
+    .catch(function (error) {
       return error.response;
     });
 };
 
+export const searchUsers = async (searchTerm) => {
+  return api.get(`/auth/users/${searchTerm}`);
+};
 
 const apis = {
   registerUser,

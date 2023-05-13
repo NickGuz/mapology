@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,27 +9,24 @@ import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import SearchIcon from '@mui/icons-material/Search';
-import { Button, InputBase } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../auth/AuthContextProvider';
-import GlobalStoreContext from '../../store/store';
+import GlobalStoreContext, { SearchByValue } from '../../store/store';
 import LoginModal from '../modals/LoginModal';
 import ImportModal from '../modals/ImportModal';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import SettingsModal from '../modals/SettingsModal';
 import SearchBar from '@mkyy/mui-search-bar';
-import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 
-const Navbar = (props) => {
+const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
-  const location = useLocation();
 
-  const handleHome = (event) => {
+  const handleHome = () => {
     store.setCurrentMap(null);
     navigate('/');
   };
@@ -69,6 +65,8 @@ const Navbar = (props) => {
   const handleBrowse = () => {
     store.setCurrentMap(null);
     store.setSearchTerm(null);
+    store.setSearchByValue(SearchByValue.MAP);
+    auth.setDisplayedUsers([]);
     // store.setSearchTags([]);
     console.log('setting search term to null');
     navigate('/map-listings/');

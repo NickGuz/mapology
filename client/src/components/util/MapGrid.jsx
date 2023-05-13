@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import MapCard from './MapCard';
-import api from '../../auth/auth-request-api/AuthRequestApi';
 import GlobalStoreContext from '../../store/store';
 
 const MapGridType = {

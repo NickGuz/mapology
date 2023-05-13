@@ -12,6 +12,7 @@ const AuthActionType = {
   CLOSE_LOGIN_DIALOG: 'CLOSE_LOGIN_DIALOG',
   LOGIN_USER: 'LOGIN_USER',
   LOGOUT_USER: 'LOGOUT_USER',
+  SET_DISPLAYED_USERS: 'SET_DISPLAYED_USERS',
 };
 
 function AuthContextProvider(props) {
@@ -27,6 +28,7 @@ function AuthContextProvider(props) {
     registered: false,
     loginDialogOpen: false,
     invalidEmail: false,
+    displayedUsers: [],
   });
   const navigate = useNavigate();
 
@@ -117,6 +119,12 @@ function AuthContextProvider(props) {
           ...auth,
           user: payload.user,
           loggedIn: payload.loggedIn,
+        });
+      }
+      case AuthActionType.SET_DISPLAYED_USERS: {
+        return setAuth({
+          ...auth,
+          displayedUsers: payload,
         });
       }
       default:
@@ -274,56 +282,56 @@ function AuthContextProvider(props) {
     }
   };
 
-  auth.changePassword = async function (
-    email,
-    otp,
-    password,
-    confirmPassword
-    ) {
-      const response = await api.changePassword(
-        email,
-        otp,
-        password,
-        confirmPassword
-      );
-      if (response.status === 401) {
-        console.log('400 error')
-        authReducer({
-          type: AuthActionType.CHANGE_PASSWORD_FAIL,
-          payload: {
-            acctEmpt: true,
-            shortPass: false,
-            notSamePass: false,
-            registered: false,
-            invalidEmail: false,
-          },
-        });
-      }
-      else if (response.status === 402) {
-        authReducer({
-          type: AuthActionType.CHANGE_PASSWORD_FAIL,
-          payload: {
-            acctEmpt: false,
-            shortPass: false,
-            notSamePass: false,
-            registered: true,
-            invalidEmail: false,
-          },
-        });
-      }
-      else if (response.status === 403) {
-        authReducer({
-          type: AuthActionType.CHANGE_PASSWORD_FAIL,
-          payload: {
-            acctEmpt: false,
-            shortPass: false,
-            notSamePass: true,
-            registered: false,
-            invalidEmail: false,
-          },
-        });
-      }
-  }
+  auth.changePassword = async function (email, otp, password, confirmPassword) {
+    const response = await api.changePassword(
+      email,
+      otp,
+      password,
+      confirmPassword
+    );
+    if (response.status === 401) {
+      console.log('400 error');
+      authReducer({
+        type: AuthActionType.CHANGE_PASSWORD_FAIL,
+        payload: {
+          acctEmpt: true,
+          shortPass: false,
+          notSamePass: false,
+          registered: false,
+          invalidEmail: false,
+        },
+      });
+    } else if (response.status === 402) {
+      authReducer({
+        type: AuthActionType.CHANGE_PASSWORD_FAIL,
+        payload: {
+          acctEmpt: false,
+          shortPass: false,
+          notSamePass: false,
+          registered: true,
+          invalidEmail: false,
+        },
+      });
+    } else if (response.status === 403) {
+      authReducer({
+        type: AuthActionType.CHANGE_PASSWORD_FAIL,
+        payload: {
+          acctEmpt: false,
+          shortPass: false,
+          notSamePass: true,
+          registered: false,
+          invalidEmail: false,
+        },
+      });
+    }
+  };
+
+  auth.setDisplayedUsers = (users) => {
+    authReducer({
+      type: AuthActionType.SET_DISPLAYED_USERS,
+      payload: users,
+    });
+  };
 
   return (
     <AuthContext.Provider
