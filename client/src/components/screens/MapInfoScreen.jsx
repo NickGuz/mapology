@@ -62,7 +62,7 @@ const MapInfoScreen = (props) => {
   useEffect(() => {
     const helper = async () => {
       const userLiked = await hasLike(auth.user.id, routeParams.id);
-      if (userLiked.status == "404"){
+      if (userLiked.status == "204"){
         setUserLike(false);
       }
       else{
@@ -75,7 +75,7 @@ const MapInfoScreen = (props) => {
   useEffect(() => {
     const helper = async () => {
       const userDisliked = await hasDislike(auth.user.id, routeParams.id);
-      if (userDisliked.status == "404"){
+      if (userDisliked.status == "204"){
         setUserDislike(false);
       }
       else{
@@ -89,7 +89,7 @@ const MapInfoScreen = (props) => {
     let liked = null;
     const helper = async () => {
       liked = await hasLike(auth.user.id, routeParams.id);
-      if(liked.status == "404"){
+      if(liked.status == "204"){
         if (userDislike){
           await deleteDislike(auth.user.id, routeParams.id);
           let allMapDislikes = await getAllMapLikes(routeParams.id);
@@ -113,7 +113,7 @@ const MapInfoScreen = (props) => {
     let disliked = null;
     const helper = async () => {
       disliked = await hasDislike(auth.user.id, routeParams.id);
-      if(disliked.status == "404"){
+      if(disliked.status == "204"){
         if (userLike){
           await deleteLike(auth.user.id, routeParams.id);
           let allMapLikes = await getAllMapLikes(routeParams.id);

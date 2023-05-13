@@ -59,7 +59,7 @@ describe('template spec', () => {
   it('Export most recently created Map (dbf/shp)', () => {
     cy.visit('http://localhost:3000/');
     cy.get('button').filter(':contains("Open Editor")').first().click();
-    cy.wait(500);
+    cy.wait(5000);
     // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
     cy.get('#download-dropdown-btn').click();
     cy.get('.MuiList-root > [tabindex="0"]').click(); //download as geojson

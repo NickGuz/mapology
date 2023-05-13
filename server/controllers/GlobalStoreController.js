@@ -367,7 +367,7 @@ exports.getThumbnail = async (req, res) => {
   const thumbnail = await SequelizeManager.getThumbnail(mapId);
 
   if (!thumbnail) {
-    return res.status(404).json({
+    return res.status(204).json({
       errorMessage: "Could not find map thumbnail",
     });
   }
@@ -395,7 +395,7 @@ exports.hasLike = async (req, res) => {
   const mapId = req.params.mapId;
   const like = await SequelizeManager.hasLike(userId, mapId);
   if (!like) {
-    return res.status(404).json({
+    return res.status(204).json({
       errorMessage: "User did not like this map",
     });
   }
@@ -405,7 +405,7 @@ exports.getAllMapLikes = async (req, res) => {
   const mapId = req.params.mapId;
   const likes = await SequelizeManager.getAllMapLikes(mapId);
   if (!likes) {
-    return res.status(404).json({
+    return res.status(204).json({
       errorMessage: "No likes with this map",
     });
   }
@@ -440,7 +440,7 @@ exports.hasDislike = async (req, res) => {
   const mapId = req.params.mapId;
   const dislike = await SequelizeManager.hasDislike(userId, mapId);
   if (!dislike) {
-    return res.status(404).json({
+    return res.status(204).json({
       errorMessage: "User did not dislike this map",
     });
   }
@@ -450,7 +450,7 @@ exports.getAllMapDislikes = async (req, res) => {
   const mapId = req.params.mapId;
   const dislikes = await SequelizeManager.getAllMapDislikes(mapId);
   if (!dislikes) {
-    return res.status(404).json({
+    return res.status(204).json({
       errorMessage: "No dislikes with this map",
     });
   }
@@ -529,7 +529,7 @@ exports.getPublished = async (req, res) => {
   let mapId = req.params.mapId;
   const published = await SequelizeManager.getPublished(mapId);
   if (!published) {
-    return res.status(404).json({
+    return res.status(204).json({
       errorMessage: "published was not found",
     });
   }
