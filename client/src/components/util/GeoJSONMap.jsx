@@ -87,7 +87,7 @@ const GeoJSONMap = () => {
       });
     }
     // console.log('useEffect', store.currentMap);
-  }, [store.currentMap, drawModeEnabled /*, store.currentLegend*/]);
+  }, [store.currentMap, drawModeEnabled, store.currentLegend]);
 
   useEffect(() => {
     console.log('selected', store.selectedFeatures);
