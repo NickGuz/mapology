@@ -215,3 +215,9 @@ export const getPublished = async (mapId) => {
     return err.response;
   });
 }
+
+export const compress = async (json) => {
+  return await api.post(`/api/compress`, {json: json}).catch((err) => {
+    return err.response
+  });
+}

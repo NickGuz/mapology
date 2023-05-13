@@ -1,4 +1,4 @@
-import { IconButton } from '@mui/material';
+import { Icon, IconButton } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -9,12 +9,16 @@ import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
+import { updateAllFeatures } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
+import CompressIcon from '@mui/icons-material/Compress'
+import CompressModal from '../modals/CompressModal';
 
 const TopToolbar = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [authorized, setAuthorized] = useState(false);
+  const [compressOpen, setCompressOpen] = useState(false);
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
 
@@ -30,13 +34,36 @@ const TopToolbar = (props) => {
     }
   }, [store.currentMap]);
 
+  
+
+
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
   };
 
+
   const handleCloseDownload = (event) => {
     setAnchorEl(null);
   };
+  const handleCompress = () => {
+    const comp = async () => {
+      let compressed = await RequestApi.compress(store.currentMap.json);
+      if(compressed){
+        let json = compressed.data.data
+        store.currentMap.json = json;
+        store.setSelectedFeatures([]);
+        store.setCurrentMap(store.currentMap);
+        updateAllFeatures(
+          store.currentMap.mapInfo.id,
+          store.currentMap.json
+        );
+      }
+    }
+    comp();
+  }
+  const confirmCompress = () => {
+    setCompressOpen(true);
+  }
 
   const handleGeoJSONDownload = () => {
     RequestApi.downloadMapAsGeoJSON(
@@ -98,6 +125,14 @@ const TopToolbar = (props) => {
         </MenuItem>
         <MenuItem>Download as Image</MenuItem>
       </Menu>
+      <IconButton onClick={confirmCompress}>
+        <CompressIcon/>
+      </IconButton>
+      <CompressModal
+        show={compressOpen}
+        close={() => setCompressOpen(false)}
+        confirm = {() => handleCompress()}
+      />
     </Box>
   );
 };

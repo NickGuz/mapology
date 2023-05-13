@@ -64,4 +64,7 @@ router.delete("/deleteDislike/:userId/:mapId", GlobalStoreController.deleteDisli
 //handles changing publish
 router.post("/publish", GlobalStoreController.changePublish);
 router.get("/getPublished/:mapId", GlobalStoreController.getPublished);
+
+//compress
+router.post("/compress", GlobalStoreController.compressMap);
 module.exports = router;
