@@ -1,13 +1,13 @@
-import React, { useEffect, useContext } from "react";
-import Comment from "../util/Comment";
-import data from "../../map-data.js";
+import React, { useEffect, useContext } from 'react';
+import Comment from '../util/Comment';
+import data from '../../map-data.js';
 import CardMedia from '@mui/material/CardMedia';
-import Chip from "@mui/material/Chip";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import Chip from '@mui/material/Chip';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -20,11 +20,28 @@ import {
   IconButton,
   FormControlLabel,
   Switch,
-} from "@mui/material";
-import FormGroup from "@mui/material/FormGroup";
-import { getMapById, getThumbnail, deleteMap, hasLike, addLike, getAllMapLikes, deleteLike } from "../../store/GlobalStoreHttpRequestApi";
-import {hasDislike, addDislike, getAllMapDislikes, deleteDislike, changePublish, getPublished } from "../../store/GlobalStoreHttpRequestApi";
+} from '@mui/material';
+import FormGroup from '@mui/material/FormGroup';
+import {
+  getMapById,
+  getThumbnail,
+  deleteMap,
+  hasLike,
+  addLike,
+  getAllMapLikes,
+  deleteLike,
+} from '../../store/GlobalStoreHttpRequestApi';
+import {
+  hasDislike,
+  addDislike,
+  getAllMapDislikes,
+  deleteDislike,
+  changePublish,
+  getPublished,
+} from '../../store/GlobalStoreHttpRequestApi';
 import AuthContext from '../../auth/AuthContextProvider';
+import useDidMountEffect from '../../util/useDidMountEffect';
+import Italy from '../../assets/italy.gif';
 
 const MapInfoScreen = (props) => {
   const [mapData, setMapData] = useState(null);
@@ -39,72 +56,57 @@ const MapInfoScreen = (props) => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const routeParams = useParams();
-  
 
   useEffect(() => {
     const fetchData = async () => {
-      const mapRes = await getMapById(routeParams.id)
+      const mapRes = await getMapById(routeParams.id);
       setMapData(mapRes.data.data);
-      const allMapLikes = await getAllMapLikes(routeParams.id)
-      setLikes(allMapLikes.data)
-      const allMapDislikes = await getAllMapDislikes(routeParams.id)
-      setDislikes(allMapDislikes.data)
-      const img = await getThumbnail(routeParams.id);
-      let blob = img.data;
+
+      const mapInfo = mapRes.data.data.mapInfo;
+      setLikes(mapInfo.likes);
+      setDislikes(mapInfo.dislikes);
+      setPublish(mapInfo.published);
+      // setUserLike(mapInfo.likes.some((l) => l.userId === auth.user.id));
+      // setUserDislike(mapInfo.dislikes.some((l) => l.userId === auth.user.id));
+
+      if (!mapInfo.thumbnail) return;
+      let blob = mapInfo.thumbnail.image;
       blob = blob.slice(0, blob.size, 'image/png');
       setImage(blob);
-      const publish = await getPublished(routeParams.id);
-      setPublish(publish.data.published);
     };
     fetchData();
   }, []);
 
   useEffect(() => {
-    const helper = async () => {
-      const userLiked = await hasLike(auth.user.id, routeParams.id);
-      if (userLiked.status == "204"){
-        setUserLike(false);
-      }
-      else{
-        setUserLike(true);
-      } 
+    if (mapData && auth.user) {
+      setUserLike(mapData.mapInfo.likes.some((l) => l.userId === auth.user.id));
+      setUserDislike(
+        mapData.mapInfo.dislikes.some((l) => l.userId === auth.user.id)
+      );
     }
-    helper();
-  }, [likes]);
-
-  useEffect(() => {
-    const helper = async () => {
-      const userDisliked = await hasDislike(auth.user.id, routeParams.id);
-      if (userDisliked.status == "204"){
-        setUserDislike(false);
-      }
-      else{
-        setUserDislike(true);
-      }
-    }
-    helper();
-  }, [dislikes]);
+  }, [mapData, auth.user]);
 
   const handleLike = () => {
     let liked = null;
     const helper = async () => {
       liked = await hasLike(auth.user.id, routeParams.id);
-      if(liked.status == "204"){
-        if (userDislike){
+      if (!liked.data) {
+        if (userDislike) {
           await deleteDislike(auth.user.id, routeParams.id);
           let allMapDislikes = await getAllMapLikes(routeParams.id);
           setDislikes(allMapDislikes.data);
+          setUserDislike(false);
         }
         await addLike(auth.user.id, routeParams.id);
         let allMapLikes = await getAllMapLikes(routeParams.id);
         setLikes(allMapLikes.data);
-      }
-      else if(liked.status == "200"){
+        setUserLike(true);
+      } else {
         await deleteLike(auth.user.id, routeParams.id);
         let allMapLikes = await getAllMapLikes(routeParams.id);
         setLikes(allMapLikes.data);
+        setUserLike(false);
       }
-      
     };
     helper();
   };
@@ -113,27 +115,27 @@ const MapInfoScreen = (props) => {
     let disliked = null;
     const helper = async () => {
       disliked = await hasDislike(auth.user.id, routeParams.id);
-      if(disliked.status == "204"){
-        if (userLike){
+      if (!disliked.data) {
+        if (userLike) {
           await deleteLike(auth.user.id, routeParams.id);
           let allMapLikes = await getAllMapLikes(routeParams.id);
           setLikes(allMapLikes.data);
+          setUserLike(false);
         }
         await addDislike(auth.user.id, routeParams.id);
         let allMapDislikes = await getAllMapDislikes(routeParams.id);
         setDislikes(allMapDislikes.data);
-      }
-      else if(disliked.status == "200"){
+        setUserDislike(true);
+      } else {
         await deleteDislike(auth.user.id, routeParams.id);
         let allMapDislikes = await getAllMapDislikes(routeParams.id);
         setDislikes(allMapDislikes.data);
+        setUserDislike(false);
       }
-      
     };
     helper();
   };
 
-  
   const handleTagClick = () => {};
 
   const handleDeleteClose = () => {
@@ -147,7 +149,7 @@ const MapInfoScreen = (props) => {
     }
     deleteMap(mapData.mapInfo.id);
     setDeleteOpen(false);
-    navigate("/");
+    navigate('/');
   };
 
   const handleDeleteMapDialog = () => {
@@ -156,94 +158,131 @@ const MapInfoScreen = (props) => {
 
   const handleOpenEditor = () => {
     navigate(`/map-editor/${mapData.mapInfo.id}`);
-
   };
 
   const handleChangePublish = () => {
-    const helper = async () =>{
+    const helper = async () => {
       await changePublish(routeParams.id, !publish);
       let change = await getPublished(routeParams.id);
       console.log(change);
-      setPublish(change.data.published)
-    }
+      setPublish(change.data.published);
+    };
     helper();
-  }
-  
+  };
 
   return (
-    <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
-      <Box sx={{ flex: "3 0 75%", ml: 5 }}>
-        <Box sx={{ display: "flex", mt: 2 }}>
+    <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+      <Box sx={{ flex: '3 0 75%', ml: 5 }}>
+        <Box sx={{ display: 'flex', mt: 2 }}>
           <Typography variant="h5" sx={{ ml: 2 }}>
             {mapData && mapData.mapInfo.title}
           </Typography>
           <FormGroup sx={{ marginLeft: 2 }}>
-            <FormControlLabel control={<Switch checked = {publish} onChange={handleChangePublish}/>} label="Public" />
+            <FormControlLabel
+              control={
+                <Switch checked={publish} onChange={handleChangePublish} />
+              }
+              label="Public"
+            />
           </FormGroup>
         </Box>
 
         <Typography variant="subtitle1" sx={{ ml: 2 }}>
-          {" "}
+          {' '}
           by {mapData && mapData.author.username}
         </Typography>
-        
+
         <CardMedia
           sx={{
-            height: "75%",
-            width: "80%",
-            ml: "5%",
+            height: '75%',
+            width: '80%',
+            ml: '5%',
             mt: 3,
-            
           }}
-        image={image}
-        title="map"
-      />
+          image={image || Italy}
+          title="map"
+        />
 
         <Box
           border={1}
-          borderColor={"gray"}
-          borderRadius={"10px"}
+          borderColor={'gray'}
+          borderRadius={'10px'}
           sx={{
-            flexDirection: "column",
-            display: "flex",
+            flexDirection: 'column',
+            display: 'flex',
             ml: 5,
             mt: 5,
-            height: "14%",
-            width: "85%",
+            height: '14%',
+            width: '85%',
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end"}}>
-            <Typography variant="subtitle1" sx={{ ml: 2, mt: 1 , mr: 'auto'}}>
-              {" "}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mr: 'auto' }}>
+              {' '}
               {mapData && mapData.mapInfo.description}
             </Typography>
-            <Box sx={{ visibility: publish? "": "hidden", display: "flex", justifyContent: "flex-end", mr: 2, mt: 1}}>
-              <IconButton sx={{ ml: "auto", color: ((!auth.user)?'grey': (userLike?"blue":"black")) }} onClick={handleLike} disabled = {!auth.loggedIn} >
+            <Box
+              sx={{
+                visibility: publish ? '' : 'hidden',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                mr: 2,
+                mt: 1,
+              }}
+            >
+              <IconButton
+                sx={{
+                  ml: 'auto',
+                  color: !auth.user ? 'grey' : userLike ? 'blue' : 'black',
+                }}
+                onClick={handleLike}
+                disabled={!auth.loggedIn}
+              >
                 <ThumbUpIcon />
               </IconButton>
-              <Typography sx={{paddingTop:0.75, fontSize:25}}>{likes.length}</Typography>
-              <IconButton sx={{  color: ((!auth.user)?'grey': (userDislike?"blue":"black")) }} onClick={handleDislike} disabled = {!auth.loggedIn}>
-                <ThumbDownIcon /> 
+              <Typography sx={{ paddingTop: 0.75, fontSize: 25 }}>
+                {likes.length}
+              </Typography>
+              <IconButton
+                sx={{
+                  color: !auth.user ? 'grey' : userDislike ? 'blue' : 'black',
+                }}
+                onClick={handleDislike}
+                disabled={!auth.loggedIn}
+              >
+                <ThumbDownIcon />
               </IconButton>
-              <Typography sx={{paddingTop:0.75, fontSize:25}}>{dislikes.length}</Typography>
+              <Typography sx={{ paddingTop: 0.75, fontSize: 25 }}>
+                {dislikes.length}
+              </Typography>
             </Box>
           </Box>
 
-          <Box display={"flex"} >
+          <Box display={'flex'}>
             {mapData &&
               mapData.tags.map((tag) => (
                 <Chip
                   key={tag.tagName}
-                  sx={{ marginTop: "4px", marginRight: "4px", marginLeft: "4px" }}
+                  sx={{
+                    marginTop: '4px',
+                    marginRight: '4px',
+                    marginLeft: '4px',
+                  }}
                   label={tag.tagName}
                   onClick={handleTagClick}
                 />
               ))}
           </Box>
-          <Box display="flex" justifyContent="right" sx = {{mt: 'auto'}}>
+          <Box display="flex" justifyContent="right" sx={{ mt: 'auto' }}>
             <Button>Duplicate</Button>
             <Button onClick={handleOpenEditor}>Open Editor</Button>
-            <Button onClick={handleDeleteMapDialog} sx={{  mr: 1 }}>Delete Map</Button>
+            <Button
+              id="delete-map-btn"
+              onClick={handleDeleteMapDialog}
+              sx={{ mr: 1 }}
+            >
+              Delete Map
+            </Button>
           </Box>
         </Box>
       </Box>
@@ -261,8 +300,8 @@ const MapInfoScreen = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Box sx={{mt: 6}}>
-        <Comment sx={{ flex: "1 0 25%"}} />
+      <Box sx={{ mt: 6 }}>
+        <Comment sx={{ flex: '1 0 25%' }} />
       </Box>
     </div>
   );

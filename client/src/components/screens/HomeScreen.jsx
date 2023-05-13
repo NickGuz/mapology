@@ -66,8 +66,8 @@ const Item = (props) => {
 
   useEffect(() => {
     const fetchThumbnail = async () => {
-      let res = await getThumbnail(props.item.id);
-      let blob = res.data;
+      if (!props.item.thumbnail) return;
+      let blob = props.item.thumbnail.image;
       blob = blob.slice(0, blob.size, 'image/png');
       setImage(blob);
     };

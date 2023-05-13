@@ -395,9 +395,7 @@ exports.hasLike = async (req, res) => {
   const mapId = req.params.mapId;
   const like = await SequelizeManager.hasLike(userId, mapId);
   if (!like) {
-    return res.status(204).json({
-      errorMessage: "User did not like this map",
-    });
+    return res.status(200).send(false);
   }
   return res.status(200).send(true);
 };
@@ -405,9 +403,7 @@ exports.getAllMapLikes = async (req, res) => {
   const mapId = req.params.mapId;
   const likes = await SequelizeManager.getAllMapLikes(mapId);
   if (!likes) {
-    return res.status(204).json({
-      errorMessage: "No likes with this map",
-    });
+    return res.status(200).send([]);
   }
   return res.status(200).send(likes);
 };
@@ -440,9 +436,7 @@ exports.hasDislike = async (req, res) => {
   const mapId = req.params.mapId;
   const dislike = await SequelizeManager.hasDislike(userId, mapId);
   if (!dislike) {
-    return res.status(204).json({
-      errorMessage: "User did not dislike this map",
-    });
+    return res.status(200).send(false);
   }
   return res.status(200).send(true);
 };
@@ -450,9 +444,7 @@ exports.getAllMapDislikes = async (req, res) => {
   const mapId = req.params.mapId;
   const dislikes = await SequelizeManager.getAllMapDislikes(mapId);
   if (!dislikes) {
-    return res.status(204).json({
-      errorMessage: "No dislikes with this map",
-    });
+    return res.status(200).send([]);
   }
   return res.status(200).send(dislikes);
 };

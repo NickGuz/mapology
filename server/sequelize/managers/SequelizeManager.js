@@ -34,13 +34,12 @@ exports.createMap = async (
 
   // Load in map features
   let features = json.features;
-  let flag = false
+  let flag = false;
   for (let feature of features) {
-
     //set default fill color of the features to blue
-    if(!feature.properties.fillColor){
-      feature.properties.fillColor = '#0000ff'
-      flag = true
+    if (!feature.properties.fillColor) {
+      feature.properties.fillColor = "#0000ff";
+      flag = true;
     }
 
     await Features.create({
@@ -61,8 +60,7 @@ exports.createMap = async (
   }
 
   //insert default legend if needed
-  if(flag)
-    await this.upsertLegend(mapInfo.id,'#0000ff','#0000ff')
+  if (flag) await this.upsertLegend(mapInfo.id, "#0000ff", "#0000ff");
 
   return mapInfo;
 };
@@ -92,7 +90,9 @@ exports.getAllMapsByUserId = async (userId) => {
 };
 
 exports.getMapById = async (id) => {
-  return await MapInfo.findByPk(id);
+  return await MapInfo.findByPk(id, {
+    include: [Likes, Dislikes, Thumbnails],
+  });
 };
 
 exports.getFeaturesByMapId = async (id) => {
