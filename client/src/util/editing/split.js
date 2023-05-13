@@ -49,7 +49,6 @@ const splitRegion = async (line, store) => {
     : splitPolygon(featureToSplit, line);
 
   // const split = splitPolygon(featureToSplit, line);
-  console.log('split', split);
   if (!split) {
     console.log('error');
     return;
@@ -77,6 +76,7 @@ const splitRegion = async (line, store) => {
       store.currentMap.json.features.push(res.data.data);
     }
   } else {
+    console.log('split', split);
     const poly1 = split.geometry.coordinates[0];
     const poly2 = split.geometry.coordinates[1];
 
@@ -243,6 +243,7 @@ const findFeatureWithPoints = (point1, point2, storeFeatures) => {
     console.log('polygons', polygons);
     polygons.forEach((feature) => {
       if (contains) return;
+      if (feature.geometry.type === 'Point') return;
       console.log('plygon', feature);
 
       contains =
@@ -264,8 +265,8 @@ const findFeatureWithPoints = (point1, point2, storeFeatures) => {
 
 const pointEquals = (point1, point2) => {
   return (
-    Math.abs(point1[0] - point2[0]) < 0.001 &&
-    Math.abs(point1[1] - point2[1]) < 0.001
+    Math.abs(point1[0] - point2[0]) < 0.00001 &&
+    Math.abs(point1[1] - point2[1]) < 0.00001
   );
 };
 
