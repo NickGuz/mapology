@@ -23,11 +23,17 @@ export const GlobalStoreActionType = {
   SET_SORT_TYPE: 'SET_SORT_TYPE',
   SET_CURR_LEGEND: 'SET_CURR_LEGEND',
   SET_MAP_UPDATES: 'SET_MAP_UPDATES',
+  SET_SEARCH_BY_VALUE: 'SET_SEARCH_BY_VALUE',
 };
 
 export const PageViewTypes = {
   HOME: 'HOME',
   REGISTER: 'REGISTER',
+};
+
+export const SearchByValue = {
+  MAP: 'MAP',
+  USER: 'USER',
 };
 
 function GlobalStoreContextProvider(props) {
@@ -44,6 +50,7 @@ function GlobalStoreContextProvider(props) {
     searchTags: [],
     sortType: null,
     currentLegend: {},
+    searchByValue: SearchByValue.MAP,
   });
 
   // const navigate = useNavigate();
@@ -117,6 +124,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           mapUpdates: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_SEARCH_BY_VALUE: {
+        return setStore({
+          ...store,
+          searchByValue: payload,
         });
       }
       default: {
@@ -233,6 +246,13 @@ function GlobalStoreContextProvider(props) {
     storeReducer({
       type: GlobalStoreActionType.SET_MAP_UPDATES,
       payload: num,
+    });
+  };
+
+  store.setSearchByValue = (val) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_SEARCH_BY_VALUE,
+      payload: val,
     });
   };
 

@@ -7,7 +7,6 @@ import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
 import Italy from '../../assets/italy.gif';
 import { Box, Button, CardActions, Typography } from '@mui/material';
-import api from '../../auth/auth-request-api/AuthRequestApi';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import {
@@ -20,33 +19,32 @@ import {
   addDislike,
   getAllMapDislikes,
   deleteDislike,
-  getPublished,
 } from '../../store/GlobalStoreHttpRequestApi';
-import GlobalStoreContext from '../../store/store';
+// import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
 import { IconButton } from '@mui/material';
-import useDidMountEffect from '../../util/useDidMountEffect';
 
 const MapCard = (props) => {
   const [author, setAuthor] = useState(null);
   const [tags, setTags] = useState([]);
-  const [image, setImage] = useState(null);
   const [likes, setLikes] = useState({});
   const [userLike, setUserLike] = useState(false);
   const [dislikes, setDislikes] = useState({});
   const [userDislike, setUserDislike] = useState(false);
   const [published, setPublished] = useState(false);
   const navigate = useNavigate();
-  const { store } = useContext(GlobalStoreContext);
+  // const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
-    // console.log('data', props.data);
+    console.log('props.data', props.data);
     setUserLike(props.data.likes.some((l) => l.userId === auth.user.id));
     setUserDislike(props.data.dislikes.some((l) => l.userId === auth.user.id));
     setLikes(props.data.likes);
     setDislikes(props.data.dislikes);
     setPublished(props.data.published);
+    setAuthor(props.data.user);
+    setTags(props.data.tags);
   }, []);
 
   // useDidMountEffect(() => {
@@ -74,13 +72,13 @@ const MapCard = (props) => {
   //   helper();
   // }, [dislikes]);
 
-  useDidMountEffect(() => {
-    const helper = async () => {
-      const publish = await getPublished(props.data.id);
-      setPublished(publish.data.published);
-    };
-    helper();
-  }, [published]);
+  // useDidMountEffect(() => {
+  //   const helper = async () => {
+  //     const publish = await getPublished(props.data.id);
+  //     setPublished(publish.data.published);
+  //   };
+  //   helper();
+  // }, [published]);
 
   const handleLike = () => {
     let liked = null;

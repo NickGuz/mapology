@@ -14,7 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Button, InputBase } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthContext from '../../auth/AuthContextProvider';
-import GlobalStoreContext from '../../store/store';
+import GlobalStoreContext, { SearchByValue } from '../../store/store';
 import LoginModal from '../modals/LoginModal';
 import ImportModal from '../modals/ImportModal';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -69,6 +69,8 @@ const Navbar = (props) => {
   const handleBrowse = () => {
     store.setCurrentMap(null);
     store.setSearchTerm(null);
+    store.setSearchByValue(SearchByValue.MAP);
+    auth.setDisplayedUsers([]);
     // store.setSearchTags([]);
     console.log('setting search term to null');
     navigate('/map-listings/');

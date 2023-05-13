@@ -191,6 +191,16 @@ exports.deleteFeature = async (featureId) => {
   });
 };
 
+exports.searchUsers = async (searchTerm) => {
+  return await User.findAll({
+    where: {
+      username: {
+        [Op.like]: `%${searchTerm}%`,
+      },
+    },
+  });
+};
+
 exports.searchMaps = async (searchTerm, searchTags, sortType) => {
   let orderBy = null;
   if (sortType === "TOP_RATED") {
@@ -216,6 +226,10 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             published: true,
           },
         },
+        Likes,
+        Dislikes,
+        Thumbnails,
+        User,
         //   Likes,
         //   Dislikes,
         // ],
@@ -232,6 +246,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
     return await MapInfo.findAll({
       where: { published: true },
       order: [["createdAt", "DESC"]],
+      include: [Tags, Likes, Dislikes, Thumbnails, User],
     });
 
     // If we have a search term, but not tags
@@ -252,6 +267,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
           },
         ],
       },
+      include: [Tags, Likes, Dislikes, Thumbnails, User],
     });
 
     // If we have both a search term and tags
@@ -266,6 +282,10 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             },
           },
         },
+        Likes,
+        Dislikes,
+        Thumbnails,
+        User,
       ],
       where: {
         published: true,
