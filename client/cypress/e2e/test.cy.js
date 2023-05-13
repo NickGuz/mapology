@@ -138,7 +138,7 @@ describe('template spec', () => {
     ).click();
 
     // It double clicks for some reason, so close rename popup
-    cy.get('#cancel-button').click();
+    // cy.get('#cancel-button').click();
 
     // Click merge button
     cy.get('[aria-label="Merge"]').click();

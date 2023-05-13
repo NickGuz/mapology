@@ -213,12 +213,12 @@ const GeoJSONMap = () => {
       .openTooltip();
 
     layer.on({
-      dblclick: () => {
-        if (!auth.loggedIn) {
-          return;
-        }
-        handleRenameRegion(feature, layer);
-      },
+      // dblclick: () => {
+      //   if (!auth.loggedIn) {
+      //     return;
+      //   }
+      //   handleRenameRegion(feature, layer);
+      // },
       mouseover: () => {
         // if (!store.selectedFeatures.includes(event.target.feature)) {
         //   event.target.setStyle({
