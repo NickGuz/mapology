@@ -8,6 +8,7 @@ import { insertThumbnail } from '../../store/GlobalStoreHttpRequestApi';
 
 const ScreenShooter = () => {
   const [screenshoter, setScreenshoter] = useState(null);
+  const [hasTakenSS, setHasTakenSS] = useState(false);
   const map = useMap();
   const { store } = useContext(GlobalStoreContext);
 
@@ -19,7 +20,7 @@ const ScreenShooter = () => {
     position: 'topleft', // position of take screen icon
     screenName: 'screen', // string or function
     // iconUrl: ICON_SVG_BASE64, // screen btn icon base64 or url
-    hideElementsWithSelectors: ['.leaflet-control-container'], // by default hide map controls All els must be child of _map._container
+    hideElementsWithSelectors: ['.leaflet-control-container', '.countryLabel'], // by default hide map controls All els must be child of _map._container
     mimeType: 'image/png', // used if format == image,
     caption: null, // string or function, added caption to bottom of screen
     captionFontSize: 15,
@@ -46,21 +47,22 @@ const ScreenShooter = () => {
   };
 
   useEffect(() => {
-    const takeScreenshot = () => {
-      // new Promise((r) => setTimeout(r, 500));
+    const takeScreenshot = async () => {
+      await new Promise((r) => setTimeout(r, 500));
       let format = 'image';
       screenshoter.takeScreen(format).then((base64) => {
         insertThumbnail(store.currentMap.mapInfo.id, base64);
       });
+      setHasTakenSS(true);
     };
 
     if (!screenshoter) {
       let ss = L.simpleMapScreenshoter(pluginOptions).addTo(map);
       setScreenshoter(ss);
-    } else if (store.currentMap) {
+    } else if (store.currentMap && !hasTakenSS) {
       takeScreenshot();
     }
-  }, [screenshoter /*, store.currentMap*/]);
+  }, [screenshoter, store.currentMap]);
 
   return <></>;
 };
