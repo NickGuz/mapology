@@ -26,10 +26,13 @@ router.get('/user/:id', AuthController.getUserById);
 
 // Handles a password change
 // TODO
-router.put('/changepass', AuthController.changePassword);
+router.post('/changePassword', AuthController.changePassword);
 
 // Handles user deleting their account
 // TODO
 router.delete('/delete', AuthController.deleteUser);
+
+//Handles sending recovery email
+router.post('/sendRecoveryEmail', AuthController.sendRecoveryEmail);
 
 module.exports = router;

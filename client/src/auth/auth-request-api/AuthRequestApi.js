@@ -51,6 +51,30 @@ export const getUserById = (id) => {
   });
 };
 
+export const sendRecoveryEmail = (email) => {
+  return api
+  .post(`/auth/sendRecoveryEmail`, {
+    email: email,
+  })
+  .catch(function(error) {
+    return error.response;
+  });
+};
+
+export const changePassword = (email, otp, password, confirmPassword) => {
+  return api
+    .post(`/auth/changePassword`, {
+      email: email,
+      otp: otp,
+      password: password,
+      confirmPassword: confirmPassword,
+    })
+    .catch(function(error) {
+      return error.response;
+    });
+};
+
+
 const apis = {
   registerUser,
   getAllUsers,
@@ -58,6 +82,8 @@ const apis = {
   loginUser,
   logoutUser,
   getLoggedIn,
+  sendRecoveryEmail,
+  changePassword,
 };
 
 export default apis;
