@@ -30,6 +30,7 @@ export default function MapEditor() {
     const fetchData = async () => {
       const res = await RequestApi.getMapById(routeParams.id);
       const map = res.data.data;
+      // store.setCurrentMapId(map.mapInfo.id);
       store.setCurrentMap(map);
 
       if (auth.loggedIn && auth.user.id === map.mapInfo.authorId) {
@@ -43,7 +44,7 @@ export default function MapEditor() {
   const handleRenameLegend = (color, name) => {
     if (!authorized) {
       return;
-    }    
+    }
     RequestApi.upsertLegend(routeParams.id, color, name);
 
     // store.setCurrentLegend({});'
@@ -52,7 +53,7 @@ export default function MapEditor() {
     delete temp[color];
 
     store.setCurrentLegend({
-      temp
+      temp,
     });
   };
 

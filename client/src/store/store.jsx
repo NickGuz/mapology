@@ -23,6 +23,7 @@ export const GlobalStoreActionType = {
   SET_MAP_UPDATES: 'SET_MAP_UPDATES',
   SET_SEARCH_BY_VALUE: 'SET_SEARCH_BY_VALUE',
   SET_SORT_BY_VALUE: 'SET_SORT_BY_VALUE',
+  SET_CURR_MAP_ID: 'SET_CURR_MAP_ID',
 };
 
 export const PageViewTypes = {
@@ -49,6 +50,7 @@ function GlobalStoreContextProvider(props) {
     importDialogOpen: false,
     settingsModalOpen: false,
     currentMap: null,
+    currentMapId: null,
     displayedMaps: [],
     selectedFeatures: [],
     mapUpdates: 0,
@@ -143,6 +145,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           sortByValue: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_CURR_MAP_ID: {
+        return setStore({
+          ...store,
+          currentMapId: payload,
         });
       }
       default: {
@@ -273,6 +281,13 @@ function GlobalStoreContextProvider(props) {
     storeReducer({
       type: GlobalStoreActionType.SET_SORT_BY_VALUE,
       payload: val,
+    });
+  };
+
+  store.setCurrentMapId = (id) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_CURR_MAP_ID,
+      payload: id,
     });
   };
 

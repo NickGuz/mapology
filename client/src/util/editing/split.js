@@ -80,6 +80,9 @@ const splitRegion = async (line, store) => {
     const poly1 = split.geometry.coordinates[0];
     const poly2 = split.geometry.coordinates[1];
 
+    console.log('poly1', poly1);
+    console.log('poly2', poly2);
+
     const feature1 = turf.feature(
       turf.polygon(poly1).geometry,
       featureToSplit.properties
