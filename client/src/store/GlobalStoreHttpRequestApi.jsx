@@ -17,7 +17,8 @@ export const createMap = async (
   title,
   description,
   tags,
-  json
+  json,
+  compression
 ) => {
   return await api.post('/api/map', {
     duplicatedId: duplicatedId,
@@ -26,6 +27,7 @@ export const createMap = async (
     description: description,
     tags: tags,
     json: json,
+    compression: compression,
   });
 };
 
@@ -211,5 +213,11 @@ export const changePublish = async (mapId, published) => {
 export const getPublished = async (mapId) => {
   return await api.get(`/api/getPublished/${mapId}`).catch((err) => {
     return err.response;
+  });
+}
+
+export const compress = async (json) => {
+  return await api.post(`/api/compress`, {json: json}).catch((err) => {
+    return err.response
   });
 }
