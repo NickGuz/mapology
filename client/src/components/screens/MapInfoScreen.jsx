@@ -1,11 +1,9 @@
 import React, { useEffect, useContext } from 'react';
 import Comment from '../util/Comment';
-import data from '../../map-data.js';
 import CardMedia from '@mui/material/CardMedia';
 import Chip from '@mui/material/Chip';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -20,11 +18,11 @@ import {
   IconButton,
   FormControlLabel,
   Switch,
+  Paper,
 } from '@mui/material';
 import FormGroup from '@mui/material/FormGroup';
 import {
   getMapById,
-  getThumbnail,
   deleteMap,
   hasLike,
   addLike,
@@ -40,12 +38,10 @@ import {
   getPublished,
 } from '../../store/GlobalStoreHttpRequestApi';
 import AuthContext from '../../auth/AuthContextProvider';
-import useDidMountEffect from '../../util/useDidMountEffect';
 import Italy from '../../assets/italy.gif';
 
-const MapInfoScreen = (props) => {
+const MapInfoScreen = () => {
   const [mapData, setMapData] = useState(null);
-  const [tags, setTags] = useState([]);
   const [image, setImage] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [likes, setLikes] = useState({});
@@ -172,7 +168,7 @@ const MapInfoScreen = (props) => {
 
   return (
     <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-      <Box sx={{ flex: '3 0 75%', ml: 5 }}>
+      <Paper sx={{ flex: '3 0 75%', margin: 2 }} variant="outlined">
         <Box sx={{ display: 'flex', mt: 2 }}>
           <Typography variant="h5" sx={{ ml: 2 }}>
             {mapData && mapData.mapInfo.title}
@@ -203,19 +199,7 @@ const MapInfoScreen = (props) => {
           title="map"
         />
 
-        <Box
-          border={1}
-          borderColor={'gray'}
-          borderRadius={'10px'}
-          sx={{
-            flexDirection: 'column',
-            display: 'flex',
-            ml: 5,
-            mt: 5,
-            height: '14%',
-            width: '85%',
-          }}
-        >
+        <Paper sx={{ margin: 2 }} elevation={1}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mr: 'auto' }}>
               {' '}
@@ -284,8 +268,9 @@ const MapInfoScreen = (props) => {
               Delete Map
             </Button>
           </Box>
-        </Box>
-      </Box>
+        </Paper>
+      </Paper>
+
       <Dialog open={deleteOpen} onClose={handleDeleteClose}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
@@ -300,9 +285,8 @@ const MapInfoScreen = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Box sx={{ mt: 6 }}>
-        <Comment sx={{ flex: '1 0 25%' }} />
-      </Box>
+
+      <Comment sx={{ flex: '1 0 25%' }} />
     </div>
   );
 };
