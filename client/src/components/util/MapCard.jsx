@@ -37,7 +37,6 @@ const MapCard = (props) => {
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log('props.data', props.data);
     setUserLike(props.data.likes.some((l) => l.userId === auth.user.id));
     setUserDislike(props.data.dislikes.some((l) => l.userId === auth.user.id));
     setLikes(props.data.likes);

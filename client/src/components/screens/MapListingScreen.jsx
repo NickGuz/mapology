@@ -1,23 +1,17 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import MapGrid, { MapGridType } from '../util/MapGrid';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import TagsInput from '../util/TagsInput';
-import GlobalStoreContext, { SearchByValue } from '../../store/store';
+import GlobalStoreContext, {
+  SearchByValue,
+  SortByValue,
+} from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 import UserList from '../util/UserList';
 import { searchUsers } from '../../auth/auth-request-api/AuthRequestApi';
 import AuthContext from '../../auth/AuthContextProvider';
 
-export const SortByValue = {
-  RELEVANCE: 'RELEVANCE',
-  // FEATURED: "FEATURED",
-  TOP_RATED: 'TOP_RATED',
-  RECENTLY_UPDATED: 'RECENTLY_UPDATED',
-};
-
 const MapListingScreen = () => {
-  const [sortBy, setSortBy] = useState(SortByValue.RELEVANCE);
-  // const [searchBy, setSearchBy] = useState(SearchByValue.MAP);
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
 
@@ -26,7 +20,7 @@ const MapListingScreen = () => {
       const res = await RequestApi.searchMaps(
         store.searchTerm,
         store.searchTags,
-        sortBy
+        store.sortByValue
       );
       console.log('displayedMaps', res.data);
       store.setDisplayedMaps(res.data);
@@ -46,10 +40,15 @@ const MapListingScreen = () => {
     } else {
       fetchUserSearchData();
     }
-  }, [store.searchByValue, store.searchTerm, store.searchTags]);
+  }, [
+    store.searchByValue,
+    store.searchTerm,
+    store.searchTags,
+    store.sortByValue,
+  ]);
 
   const handleSortByChange = (event) => {
-    setSortBy(event.target.value);
+    store.setSortByValue(event.target.value);
   };
 
   const handleSearchByChange = (event) => {
@@ -65,7 +64,7 @@ const MapListingScreen = () => {
             <Select
               labelId="sort-by-label"
               id="sort-by-select"
-              value={sortBy}
+              value={store.sortByValue}
               label="Sort By"
               onChange={handleSortByChange}
               sx={{ maxWidth: '300px' }}

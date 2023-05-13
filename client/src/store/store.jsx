@@ -1,11 +1,9 @@
-import { createContext, useEffect, useState, useContext } from 'react';
+import { createContext, useState } from 'react';
 import { getMapById, getAllMaps } from './GlobalStoreHttpRequestApi';
 // import { useNavigate } from "react-router-dom";
-import AuthContext from '../auth/AuthContextProvider';
 import EditMap_Transaction from '../transactions/EditMap_Transaction';
 import jsTPS from '../common/jsTPS';
 var jsondiffpatch = require('jsondiffpatch');
-var _ = require('lodash');
 
 const tps = new jsTPS();
 
@@ -24,6 +22,7 @@ export const GlobalStoreActionType = {
   SET_CURR_LEGEND: 'SET_CURR_LEGEND',
   SET_MAP_UPDATES: 'SET_MAP_UPDATES',
   SET_SEARCH_BY_VALUE: 'SET_SEARCH_BY_VALUE',
+  SET_SORT_BY_VALUE: 'SET_SORT_BY_VALUE',
 };
 
 export const PageViewTypes = {
@@ -36,8 +35,15 @@ export const SearchByValue = {
   USER: 'USER',
 };
 
+export const SortByValue = {
+  RELEVANCE: 'RELEVANCE',
+  // FEATURED: "FEATURED",
+  TOP_RATED: 'TOP_RATED',
+  RECENTLY_UPDATED: 'RECENTLY_UPDATED',
+};
+
 function GlobalStoreContextProvider(props) {
-  const { auth } = useContext(AuthContext);
+  // const { auth } = useContext(AuthContext);
   const [store, setStore] = useState({
     pageView: PageViewTypes.HOME,
     importDialogOpen: false,
@@ -51,6 +57,7 @@ function GlobalStoreContextProvider(props) {
     sortType: null,
     currentLegend: {},
     searchByValue: SearchByValue.MAP,
+    sortByValue: SortByValue.RELEVANCE,
   });
 
   // const navigate = useNavigate();
@@ -130,6 +137,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           searchByValue: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_SORT_BY_VALUE: {
+        return setStore({
+          ...store,
+          sortByValue: payload,
         });
       }
       default: {
@@ -252,6 +265,13 @@ function GlobalStoreContextProvider(props) {
   store.setSearchByValue = (val) => {
     storeReducer({
       type: GlobalStoreActionType.SET_SEARCH_BY_VALUE,
+      payload: val,
+    });
+  };
+
+  store.setSortByValue = (val) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_SORT_BY_VALUE,
       payload: val,
     });
   };
