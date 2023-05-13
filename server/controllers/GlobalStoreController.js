@@ -174,17 +174,13 @@ const getMapByIdHelper = async (mapId) => {
 };
 
 exports.getMapById = async (req, res) => {
-  console.log("getMapById controller");
   const map = await getMapByIdHelper(req.params.id);
-  console.log("map", map);
   if (!map) {
     return res.status(500).json({
       errorMessage: "Failed to get map",
     });
   }
 
-  console.log("RETURNING");
-  console.log(map);
   return res.status(200).json({
     data: map,
   });
@@ -374,7 +370,6 @@ exports.getThumbnail = async (req, res) => {
     return res.status(404).json({
       errorMessage: "Could not find map thumbnail",
     });
-    
   }
 
   return res.status(200).send(thumbnail.image);
@@ -405,7 +400,7 @@ exports.hasLike = async (req, res) => {
     });
   }
   return res.status(200).send(true);
-}
+};
 exports.getAllMapLikes = async (req, res) => {
   const mapId = req.params.mapId;
   const likes = await SequelizeManager.getAllMapLikes(mapId);
@@ -415,7 +410,7 @@ exports.getAllMapLikes = async (req, res) => {
     });
   }
   return res.status(200).send(likes);
-}
+};
 
 exports.addLike = async (req, res) => {
   const userId = req.body.userId;
@@ -430,7 +425,7 @@ exports.addLike = async (req, res) => {
   return res.status(200).json({
     data: like,
   });
-}
+};
 
 exports.deleteLike = async (req, res) => {
   const userId = req.params.userId;
@@ -438,7 +433,7 @@ exports.deleteLike = async (req, res) => {
   await SequelizeManager.deleteLike(userId, mapId);
 
   return res.status(200).json();
-}
+};
 
 exports.hasDislike = async (req, res) => {
   const userId = req.params.userId;
@@ -450,7 +445,7 @@ exports.hasDislike = async (req, res) => {
     });
   }
   return res.status(200).send(true);
-}
+};
 exports.getAllMapDislikes = async (req, res) => {
   const mapId = req.params.mapId;
   const dislikes = await SequelizeManager.getAllMapDislikes(mapId);
@@ -460,7 +455,7 @@ exports.getAllMapDislikes = async (req, res) => {
     });
   }
   return res.status(200).send(dislikes);
-}
+};
 
 exports.addDislike = async (req, res) => {
   const userId = req.body.userId;
@@ -475,7 +470,7 @@ exports.addDislike = async (req, res) => {
   return res.status(200).json({
     data: dislike,
   });
-}
+};
 exports.deleteDislike = async (req, res) => {
   const userId = req.params.userId;
   const mapId = req.params.mapId;
@@ -494,7 +489,7 @@ exports.upsertLegend = async (req, res) => {
   const legendInfo = await SequelizeManager.upsertLegend(
     req.body.mapId,
     req.body.color,
-    req.body.label,
+    req.body.label
   );
 
   if (!legendInfo) {
@@ -511,34 +506,32 @@ exports.getAllLegendsByMapId = async (req, res) => {
   if (!legends) {
     return res.status(500).json({
       errorMessage: "Failed to get legends",
-
     });
   }
   return res.status(200).json({
     data: legends,
   });
-}
+};
 
-exports.changePublish = async (req, res) =>{
+exports.changePublish = async (req, res) => {
   let mapId = req.body.mapId;
   let published = req.body.published;
   const publishChange = await SequelizeManager.changePublish(mapId, published);
-  if (!publishChange){
+  if (!publishChange) {
     return res.status(500).json({
       errorMessage: "Failed to change publish",
-
     });
   }
   return res.status(200).json();
-}
+};
 
 exports.getPublished = async (req, res) => {
   let mapId = req.params.mapId;
   const published = await SequelizeManager.getPublished(mapId);
-  if (!published){
+  if (!published) {
     return res.status(404).json({
       errorMessage: "published was not found",
     });
   }
   return res.status(200).json(published);
-}
+};

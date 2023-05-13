@@ -3,6 +3,8 @@ import { useMap, GeoJSON } from 'react-leaflet';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 import * as L from 'leaflet';
+import '@geoman-io/leaflet-geoman-free';
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import AuthContext from '../../auth/AuthContextProvider';
 import Control from 'react-leaflet-custom-control';
 import { Stack } from '@mui/material';
@@ -13,7 +15,7 @@ import MergeIcon from '@mui/icons-material/Merge';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import AbcIcon from '@mui/icons-material/Abc';
 import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
-import { GeomanControls } from 'react-leaflet-geoman-v2';
+// import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
 import PropertiesModal from '../modals/RegionPropertyModal';
 import MapLegend from './MapLegend';
@@ -22,6 +24,7 @@ import { splitRegion } from '../../util/editing/split';
 import { removeVertex, deleteFeature } from '../../util/editing/delete';
 import { moveVertex } from '../../util/editing/move';
 import { merge } from '../../util/editing/merge';
+import GeomanControl from './GeomanControl';
 
 const GeoJSONMap = () => {
   const [currLayer, setCurrLayer] = useState();
@@ -34,6 +37,27 @@ const GeoJSONMap = () => {
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const map = useMap();
+
+  useEffect(() => {
+    // map.pm.addControls({
+    //   position: 'topleft',
+    //   drawCircle: false,
+    //   drawText: true,
+    //   rotateMode: false,
+    //   drawMarker: false,
+    //   drawPolyline: false,
+    //   drawCircleMarker: false,
+    //   drawRectangle: false,
+    //   cutPolygon: false,
+    // });
+    // if (!map.pm.Toolbar.options.Split) {
+    //   map.pm.Toolbar.copyDrawControl('Polyline', {
+    //     name: 'Split',
+    //     block: 'draw',
+    //     title: 'Split',
+    //   });
+    // }
+  }, []);
 
   useEffect(() => {
     store.setCurrentMap(store.currentMap);
@@ -230,6 +254,11 @@ const GeoJSONMap = () => {
 
     // console.log("calling on each feature");
 
+    // Points fail when trying to setStyle, so just return early if it's a point
+    if (feature.geometry.type === 'Point') {
+      return;
+    }
+
     // Set fill color
     if (feature.properties.fillColor) {
       layer.setStyle({ fillColor: feature.properties.fillColor });
@@ -283,6 +312,12 @@ const GeoJSONMap = () => {
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
     console.log(feature);
+
+    // TODO Handle create text box here
+    if (feature.geometry.type === 'Point') {
+      return;
+    }
+
     if (
       feature.geometry.type === 'LineString' ||
       feature.geometry.type === 'MultiLineString'
@@ -411,7 +446,8 @@ const GeoJSONMap = () => {
         show={propOpen}
         close={() => setPropOpen(false)}
       />
-      <GeomanControls
+      <GeomanControl />
+      {/* <GeomanControls
         options={{
           position: 'topleft',
           drawText: true,
@@ -441,6 +477,7 @@ const GeoJSONMap = () => {
         onGlobalDrawModeToggled={handleGlobalDrawModeToggled}
         // onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
+      <GeomanControl /> */}
       <MapLegend currentLegend={store.currentLegend} />
     </div>
   );

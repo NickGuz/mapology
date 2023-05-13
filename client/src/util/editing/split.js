@@ -5,7 +5,7 @@ const splitRegion = async (line, store) => {
   store.setSelectedFeatures([]);
 
   if (line.geometry.coordinates.length !== 2) {
-    console.log('Split line does not have 2 points');
+    window.alert('Split line must have 2 points');
     return;
   }
 
