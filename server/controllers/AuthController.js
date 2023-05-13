@@ -18,8 +18,6 @@ exports.loggedIn = async (req, res) => {
     }
 
     const loggedInUser = await User.findByPk(userId);
-    console.log("loggedInUser: " + loggedInUser);
-
     return res.status(200).json({
       loggedIn: true,
       user: loggedInUser,
@@ -31,14 +29,14 @@ exports.loggedIn = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  console.log("login user");
-
   try {
     const userInfo = req.body.userInfo;
     const password = req.body.password;
     //check if password field is empty
     if (!userInfo || !password) {
-      return res.status(400).json({ errorMessage: "Please enter all required fields." });
+      return res
+        .status(400)
+        .json({ errorMessage: "Please enter all required fields." });
     }
     // logging in with username
     const user = await User.findOne({ where: { username: userInfo } });
@@ -51,14 +49,12 @@ exports.login = async (req, res) => {
 
     const passwordCorrect = await bcrypt.compare(password, user.password);
     if (!passwordCorrect) {
-      console.log("Incorrect password");
       return res.status(401).json({
         errorMessage: "Wrong password provided.",
       });
     }
 
     const token = auth.signToken(user.id);
-    console.log(token);
 
     res
       .cookie("token", token, {
@@ -86,7 +82,12 @@ exports.logout = (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  if (!req.body.username || !req.body.email || !req.body.password || !req.body.confirmPassword) {
+  if (
+    !req.body.username ||
+    !req.body.email ||
+    !req.body.password ||
+    !req.body.confirmPassword
+  ) {
     return res.status(400).json({
       errorMessage: "Fields must not be empty",
     });

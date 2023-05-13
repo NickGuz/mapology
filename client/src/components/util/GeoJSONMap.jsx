@@ -3,6 +3,8 @@ import { useMap, GeoJSON } from 'react-leaflet';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 import * as L from 'leaflet';
+import '@geoman-io/leaflet-geoman-free';
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import AuthContext from '../../auth/AuthContextProvider';
 import Control from 'react-leaflet-custom-control';
 import { Stack } from '@mui/material';
@@ -13,11 +15,16 @@ import MergeIcon from '@mui/icons-material/Merge';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import AbcIcon from '@mui/icons-material/Abc';
 import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
-import { GeomanControls } from 'react-leaflet-geoman-v2';
+// import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
 import PropertiesModal from '../modals/RegionPropertyModal';
 import MapLegend from './MapLegend';
 import * as turf from '@turf/turf';
+import { splitRegion } from '../../util/editing/split';
+import { removeVertex, deleteFeature } from '../../util/editing/delete';
+import { moveVertex } from '../../util/editing/move';
+import { merge } from '../../util/editing/merge';
+import GeomanControl from './GeomanControl';
 
 const GeoJSONMap = () => {
   const [currLayer, setCurrLayer] = useState();
@@ -25,10 +32,32 @@ const GeoJSONMap = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [propOpen, setPropOpen] = useState(false);
   const [boundsSet, setBoundsSet] = useState(false);
+  const [drawModeEnabled, setDrawModeEnabled] = useState(false);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const map = useMap();
+
+  useEffect(() => {
+    // map.pm.addControls({
+    //   position: 'topleft',
+    //   drawCircle: false,
+    //   drawText: true,
+    //   rotateMode: false,
+    //   drawMarker: false,
+    //   drawPolyline: false,
+    //   drawCircleMarker: false,
+    //   drawRectangle: false,
+    //   cutPolygon: false,
+    // });
+    // if (!map.pm.Toolbar.options.Split) {
+    //   map.pm.Toolbar.copyDrawControl('Polyline', {
+    //     name: 'Split',
+    //     block: 'draw',
+    //     title: 'Split',
+    //   });
+    // }
+  }, []);
 
   useEffect(() => {
     store.setCurrentMap(store.currentMap);
@@ -39,8 +68,10 @@ const GeoJSONMap = () => {
         f.geometry.coordinates.forEach((polygon) => {
           if (f.geometry.type === 'MultiPolygon') {
             polygon[0].forEach((p) => latlngs.push([p[1], p[0]]));
-          } else {
+          } else if (f.geometry.type === 'Polygon') {
             polygon.forEach((p) => latlngs.push([p[1], p[0]]));
+          } else if (f.geometry.type === 'LineString') {
+            latlngs.push([polygon[1], polygon[0]]);
           }
         });
       });
@@ -56,7 +87,11 @@ const GeoJSONMap = () => {
       });
     }
     // console.log('useEffect', store.currentMap);
-  }, [store.currentMap, store.currentLegend]);
+  }, [store.currentMap, drawModeEnabled, store.currentLegend]);
+
+  useEffect(() => {
+    console.log('selected', store.selectedFeatures);
+  }, [store.selectedFeatures]);
 
   const mapStyle = {
     fillOpacity: 0.5,
@@ -64,23 +99,12 @@ const GeoJSONMap = () => {
   };
 
   const handleVertexDragEnd = (evt) => {
-    // map.editTools.commitDrawing();
-    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
-
-    const newFeature = evt.layer.toGeoJSON();
-
-    store.currentMap.json.features = store.currentMap.json.features.filter(
-      (f) => f.id !== newFeature.id
-    );
-    store.currentMap.json.features.push(newFeature);
-    store.setCurrentMap(store.currentMap);
-    RequestApi.updateFeatureGeometry(newFeature.id, newFeature.geometry);
-    store.addEditMapTransaction(mapClone, store.currentMap);
+    moveVertex(evt, store);
   };
 
   const handleVertexRawClick = (evt) => {
     // removeVertex(evt.vertex.latlng);
-    removeVertex(evt);
+    removeVertex(evt, store);
   };
 
   const handleRenameRegion = (feature, layer) => {
@@ -115,137 +139,13 @@ const GeoJSONMap = () => {
     }
   };
 
-  const removeVertex = (evt) => {
-    if (!window.confirm('Are you sure you want to delete this vertex?')) {
-      return;
-    }
-
-    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
-
-    const vertex = evt.markerEvent.latlng;
-    const lat = vertex.lat;
-    const lng = vertex.lng;
-    // console.log("to delete", vertex);
-
-    // // Get the vertices to remove
-    let toRemove = [];
-    store.currentMap.json.features.forEach((f) => {
-      f.geometry.coordinates.forEach((polygon) => {
-        if (f.geometry.type === 'MultiPolygon') {
-          polygon[0].forEach((coord) => {
-            if (
-              Math.abs(coord[0] - lng) < 0.0001 &&
-              Math.abs(coord[1] - lat) < 0.0001
-            ) {
-              toRemove.push(f);
-            }
-          });
-        } else {
-          polygon.forEach((coord) => {
-            if (
-              Math.abs(coord[0] - lng) < 0.0001 &&
-              Math.abs(coord[1] - lat) < 0.0001
-            ) {
-              toRemove.push(f);
-            }
-          });
-        }
-      });
-    });
-
-    if (toRemove.length >= 3) {
-      window.alert('Cannot delete a vertex shared by more than 2 regions');
-      return;
-    }
-
-    // Remove the vertices
-    toRemove.forEach((f) => {
-      if (f.geometry.type === 'MultiPolygon') {
-        for (let polygon of f.geometry.coordinates) {
-          polygon[0] = polygon[0].filter(
-            (coords) =>
-              !(
-                Math.abs(coords[0] - lng) < 0.0001 &&
-                Math.abs(coords[1] - lat) < 0.0001
-              )
-          );
-        }
-      } else {
-        f.geometry.coordinates[0] = f.geometry.coordinates[0].filter(
-          (coords) =>
-            !(
-              Math.abs(coords[0] - lng) < 0.0001 &&
-              Math.abs(coords[1] - lat) < 0.0001
-            )
-        );
-      }
-    });
-
-    store.setCurrentMap(store.currentMap);
-    toRemove.forEach((f) => {
-      RequestApi.updateFeatureGeometry(f.id, f.geometry);
-    });
-
-    store.addEditMapTransaction(mapClone, store.currentMap);
-  };
-
   const handleDeleteFeature = (feature) => {
-    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
-    RequestApi.deleteFeature(feature.id);
-    store.currentMap.json.features = store.currentMap.json.features.filter(
-      (f) => f.id !== feature.id
-    );
-    store.setCurrentMap(store.currentMap);
-    store.addEditMapTransaction(mapClone, store.currentMap);
+    deleteFeature(feature, store);
   };
 
-  const merge = async () => {
-    const firstGeom = store.selectedFeatures[0];
-
-    let name = window.prompt('Input a name for the merged region');
-    if (!name) return;
-
-    let mapClone = JSON.parse(JSON.stringify(store.currentMap));
-
-    const mergedFeature = store.selectedFeatures.reduce((merged, region) => {
-      return turf.union(merged, region);
-    }, firstGeom);
-
-    mergedFeature.properties.NAME_0 = name;
-
-    // Delete features from DB
-    store.selectedFeatures.forEach((f) => {
-      RequestApi.deleteFeature(f.id);
-    });
-
-    // Add new feature to DB first to get back auto-generated ID
-    const res = await RequestApi.insertFeature(
-      store.currentMap.mapInfo.id,
-      mergedFeature
-    );
-    const newFeature = res.data.data;
-
-    // Add new feature to current json data
-    store.currentMap.json.features.push(newFeature);
-
-    // Delete merged regions
-    store.currentMap.json.features = store.currentMap.json.features.filter(
-      (region) => !store.selectedFeatures.includes(region)
-    );
-
-    // Update the store to rerender
-    store.setCurrentMap(store.currentMap);
-    store.setSelectedFeatures([]);
-    store.addEditMapTransaction(mapClone, store.currentMap);
+  const handleMerge = () => {
+    merge(store);
   };
-
-  // const editAttribute = () => {
-  //   // setEdit(true);
-  //   // setCustomAttr(false);
-  //   // if (regionProps != null) {
-  //   //   handleDrawerOpen();
-  //   // }
-  // };
 
   const getFeatureName = (feature) => {
     let featureName;
@@ -265,7 +165,17 @@ const GeoJSONMap = () => {
   //   else if (feature.properties.name) feature.properties.name = name;
   // };
 
+  const getDrawModeEnabled = () => {
+    return drawModeEnabled;
+  };
+
   const selectRegion = (event) => {
+    console.log('selecting', event);
+    if (getDrawModeEnabled()) {
+      console.log('draw mode enabled');
+      return;
+    }
+
     if (store.selectedFeatures.includes(event.target.feature)) {
       store.setSelectedFeatures(
         store.selectedFeatures.filter((x) => x !== event.target.feature)
@@ -278,6 +188,14 @@ const GeoJSONMap = () => {
       ]);
       return true;
     }
+  };
+
+  const handleLayerClick = (event) => {
+    if (!auth.loggedIn) {
+      return;
+    }
+    console.log('map', map);
+    selectRegion(event);
   };
 
   const onFeature = (feature, layer) => {
@@ -315,12 +233,8 @@ const GeoJSONMap = () => {
         //   });
         // }
       },
-      click: (event) => {
-        if (!auth.loggedIn) {
-          return;
-        }
-        selectRegion(event);
-      },
+      click: (event) => handleLayerClick(event),
+      // click: (event) => {
       'pm:markerdragend': (event) => {
         handleVertexDragEnd(event);
       },
@@ -339,6 +253,11 @@ const GeoJSONMap = () => {
     // }
 
     // console.log("calling on each feature");
+
+    // Points fail when trying to setStyle, so just return early if it's a point
+    if (feature.geometry.type === 'Point') {
+      return;
+    }
 
     // Set fill color
     if (feature.properties.fillColor) {
@@ -384,6 +303,23 @@ const GeoJSONMap = () => {
 
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
+    console.log(feature);
+
+    // TODO Handle create text box here
+    if (feature.geometry.type === 'Point') {
+      return;
+    }
+
+    if (
+      feature.geometry.type === 'LineString' ||
+      feature.geometry.type === 'MultiLineString'
+    ) {
+      console.log('event', event);
+      map.removeLayer(event.layer);
+      handleSplitRegion(feature);
+      return;
+    }
+
     const name = window.prompt('Enter a name for this feature:');
     feature.properties['name'] = name;
 
@@ -393,6 +329,35 @@ const GeoJSONMap = () => {
 
     // Remove the layer created by geoman
     map.removeLayer(event.layer);
+  };
+
+  const handleSplitRegion = async (line) => {
+    splitRegion(line, store);
+  };
+
+  const disableClickHandlers = () => {
+    map.eachLayer((layer) => {
+      layer.off('click');
+    });
+  };
+
+  const enableClickHandlers = () => {
+    map.eachLayer((layer) => {
+      layer.on('click', handleLayerClick);
+    });
+  };
+
+  const handleGlobalDrawModeToggled = (event) => {
+    // store.setSelectedFeatures([]);
+    const enabled = event.enabled;
+    console.log('event', event);
+    // if (enabled) {
+    //   disableClickHandlers();
+    // } else {
+    //   // enableClickHandlers();
+    //   store.setMapUpdates(store.mapUpdates + 1);
+    // }
+    // setDrawModeEnabled(enabled);
   };
 
   return (
@@ -420,7 +385,7 @@ const GeoJSONMap = () => {
           <Tooltip title="Merge">
             <Button
               sx={{ color: 'black', backgroundColor: 'white' }}
-              onClick={() => merge()}
+              onClick={handleMerge}
             >
               <MergeIcon />
             </Button>
@@ -473,13 +438,14 @@ const GeoJSONMap = () => {
         show={propOpen}
         close={() => setPropOpen(false)}
       />
-      <GeomanControls
+      <GeomanControl />
+      {/* <GeomanControls
         options={{
           position: 'topleft',
           drawText: true,
           rotateMode: false,
           drawMarker: false,
-          drawPolyline: false,
+          drawPolyline: true,
           drawCircle: false,
           drawCircleMarker: false,
           drawRectangle: false,
@@ -500,8 +466,10 @@ const GeoJSONMap = () => {
         // onCreate={() => console.log('asdfasdf', store.currentMap)}
         // onChange={(e) => console.log('changed', e)}
         // onEdit={(e) => console.log('edited', e)}
+        onGlobalDrawModeToggled={handleGlobalDrawModeToggled}
         // onMarkerDragEnd={(e) => console.log('marker drag end')}
       />
+      <GeomanControl /> */}
       <MapLegend currentLegend={store.currentLegend} />
     </div>
   );

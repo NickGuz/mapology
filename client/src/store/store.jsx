@@ -22,6 +22,7 @@ export const GlobalStoreActionType = {
   SET_SEARCH_TAGS: 'SET_SEARCH_TAGS',
   SET_SORT_TYPE: 'SET_SORT_TYPE',
   SET_CURR_LEGEND: 'SET_CURR_LEGEND',
+  SET_MAP_UPDATES: 'SET_MAP_UPDATES',
 };
 
 export const PageViewTypes = {
@@ -110,6 +111,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           currentLegend: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_MAP_UPDATES: {
+        return setStore({
+          ...store,
+          mapUpdates: payload,
         });
       }
       default: {
@@ -220,6 +227,13 @@ function GlobalStoreContextProvider(props) {
 
   store.getCurrentMap = () => {
     return store.currentMap;
+  };
+
+  store.setMapUpdates = (num) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_MAP_UPDATES,
+      payload: num,
+    });
   };
 
   return (
