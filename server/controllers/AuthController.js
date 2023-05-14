@@ -247,7 +247,8 @@ exports.sendRecoveryEmail = async (req, res) => {
   const bodyText =
     "A request was made through Mapology to reset your password. \n\n Your OTP/One Time Password is:  " +
     key +
-    "\n\n If you did not request this password reset please ignore this email.";
+    "\n\n This OTP/One Time Password is only valid for 1 hour.\n\n If you did not request this password reset please ignore this email.";
+
 
   //remove existing recovery passwords
   await RecoveryPassword.destroy({
