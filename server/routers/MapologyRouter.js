@@ -67,4 +67,10 @@ router.get("/getPublished/:mapId", GlobalStoreController.getPublished);
 
 //compress
 router.post("/compress", GlobalStoreController.compressMap);
+
+//comment
+router.post("/addComment", GlobalStoreController.addComment);
+router.get("/getComments/:mapId", GlobalStoreController.getComments);
+router.delete("/deleteComment/:id", GlobalStoreController.deleteComment);
+
 module.exports = router;

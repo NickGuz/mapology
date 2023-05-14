@@ -527,3 +527,31 @@ exports.getPublished = async (req, res) => {
   }
   return res.status(200).json(published);
 };
+
+exports.addComment = async (req, res) => {
+  let mapId = req.body.mapId;
+  let userId = req.body.userId;
+  let comment = req.body.comment;
+  const addedComment = await SequelizeManager.addComment(mapId, userId, comment);
+  if (!addedComment) {
+    return res.status(500).json({
+      errorMessage: "comment failed",
+    });
+  }
+  return res.status(200).json(addedComment);
+}
+
+exports.getComments = async (req, res) => {
+  const gotComments = await SequelizeManager.getComments(req.params.mapId);
+  if (!gotComments){
+    return res.status(204).json({
+      errorMessage: "comments was not found",
+    });
+  }
+  return res.status(200).json(gotComments);
+}
+
+exports.deleteComment = async (req, res) => {
+  await SequelizeManager.deleteComment(req.params.id);
+  return res.status(200).json();
+}
