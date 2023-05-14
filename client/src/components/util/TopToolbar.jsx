@@ -16,7 +16,6 @@ import CompressIcon from '@mui/icons-material/Compress';
 import CompressModal from '../modals/CompressModal';
 import EditIcon from '@mui/icons-material/Edit';
 
-
 const TopToolbar = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [authorized, setAuthorized] = useState(false);
@@ -99,9 +98,20 @@ const TopToolbar = (props) => {
   const handleUndo = () => {
     store.undo();
   };
+
   const handleRedo = () => {
     store.redo();
   };
+
+  const handleDuplicate = () => {
+    if (!auth.user) {
+      window.alert('You must be signed in to duplicate a map');
+      return;
+    }
+
+    RequestApi.duplicateMap(auth.user.id, store.currentMap.mapInfo.id);
+  };
+
   return (
     <Box display="flex" alignItems="center">
       {authorized && (
@@ -114,7 +124,7 @@ const TopToolbar = (props) => {
           </IconButton>
         </>
       )}
-      <IconButton>
+      <IconButton onClick={handleDuplicate}>
         <ContentCopyIcon />
       </IconButton>
       {authorized && (

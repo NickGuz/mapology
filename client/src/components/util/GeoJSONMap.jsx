@@ -325,12 +325,12 @@ const GeoJSONMap = (props) => {
   };
 
   const addMapProperties = async (map, newProperties) => {
-      // const map = await RequestApi.getMap(mapId)
-      const updatedProperties = {
-        ...map.properties,
-        ...newProperties,
-      };
-      updateMapProperties(map, updatedProperties);
+    // const map = await RequestApi.getMap(mapId)
+    const updatedProperties = {
+      ...map.properties,
+      ...newProperties,
+    };
+    updateMapProperties(map, updatedProperties);
   };
 
   const handleCreatePolygon = (event) => {
@@ -343,7 +343,10 @@ const GeoJSONMap = (props) => {
       if (!layer.hasEventListeners('pm:textblur')) {
         console.log('created');
         layer.on('pm:textblur', (event) => {
-          console.log(event);
+          const text = event.layer.options.text;
+          const textBox = event.layer.toGeoJSON();
+          textBox.properties['textValue'] = text;
+          RequestApi.insertFeature(store.currentMap.mapInfo.id, textBox);
         });
       }
       return;

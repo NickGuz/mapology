@@ -342,7 +342,10 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
 };
 
 exports.getAllTags = async () => {
-  return await Tags.findAll();
+  return await Tags.findAll({
+    attributes: ["tagName"],
+    distinct: true,
+  });
 };
 
 exports.getFeatureById = async (fid) => {
