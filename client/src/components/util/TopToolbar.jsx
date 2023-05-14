@@ -12,7 +12,7 @@ import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 import { updateAllFeatures } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
-import CompressIcon from '@mui/icons-material/Compress'
+import CompressIcon from '@mui/icons-material/Compress';
 import CompressModal from '../modals/CompressModal';
 
 const TopToolbar = (props) => {
@@ -34,13 +34,9 @@ const TopToolbar = (props) => {
     }
   }, [store.currentMap]);
 
-  
-
-
   const handleOpenDownload = (event) => {
     setAnchorEl(event.target);
   };
-
 
   const handleCloseDownload = (event) => {
     setAnchorEl(null);
@@ -48,22 +44,19 @@ const TopToolbar = (props) => {
   const handleCompress = () => {
     const comp = async () => {
       let compressed = await RequestApi.compress(store.currentMap.json);
-      if(compressed){
-        let json = compressed.data.data
+      if (compressed) {
+        let json = compressed.data.data;
         store.currentMap.json = json;
         store.setSelectedFeatures([]);
         store.setCurrentMap(store.currentMap);
-        updateAllFeatures(
-          store.currentMap.mapInfo.id,
-          store.currentMap.json
-        );
+        updateAllFeatures(store.currentMap.mapInfo.id, store.currentMap.json);
       }
-    }
+    };
     comp();
-  }
+  };
   const confirmCompress = () => {
     setCompressOpen(true);
-  }
+  };
 
   const handleGeoJSONDownload = () => {
     RequestApi.downloadMapAsGeoJSON(
@@ -123,15 +116,17 @@ const TopToolbar = (props) => {
         <MenuItem onClick={handleShapefileDownload}>
           Download as Shapefile
         </MenuItem>
-        <MenuItem>Download as Image</MenuItem>
+        {/* <MenuItem>Download as Image</MenuItem> */}
       </Menu>
-      <IconButton onClick={confirmCompress}>
-        <CompressIcon/>
-      </IconButton>
+      {authorized && (
+        <IconButton onClick={confirmCompress}>
+          <CompressIcon />
+        </IconButton>
+      )}
       <CompressModal
         show={compressOpen}
         close={() => setCompressOpen(false)}
-        confirm = {() => handleCompress()}
+        confirm={() => handleCompress()}
       />
     </Box>
   );

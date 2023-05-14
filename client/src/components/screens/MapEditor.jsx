@@ -60,7 +60,7 @@ export default function MapEditor() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
-        <Grid item xs={10}>
+        <Grid item xs={authorized ? 10 : 12}>
           <TopToolbar />
           <Box>
             <MapContainer
@@ -77,32 +77,30 @@ export default function MapEditor() {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <GeoJSONMap />
+              <GeoJSONMap authorized={authorized} />
               <ScreenShooter />
               <ZoomControl position="topright" />
             </MapContainer>
           </Box>
         </Grid>
-        <Grid item xs={2}>
-          <Box
-            sx={{
-              borderLeft: '1px solid',
-              borderRight: '1px solid',
-              borderColor: 'darkgray',
-            }}
-          >
-            {authorized && (
-              <div>
-                <TextEditor />
-                <RegionEditor mapId={routeParams.id} />
-                <LegendEditor
-                  rename={(color, name) => handleRenameLegend(color, name)}
-                  currentFill={Object.keys(store.currentLegend)}
-                />
-              </div>
-            )}
-          </Box>
-        </Grid>
+        {authorized && (
+          <Grid item xs={2}>
+            <Box
+              sx={{
+                borderLeft: '1px solid',
+                borderRight: '1px solid',
+                borderColor: 'darkgray',
+              }}
+            >
+              <TextEditor />
+              <RegionEditor mapId={routeParams.id} />
+              <LegendEditor
+                rename={(color, name) => handleRenameLegend(color, name)}
+                currentFill={Object.keys(store.currentLegend)}
+              />
+            </Box>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );
