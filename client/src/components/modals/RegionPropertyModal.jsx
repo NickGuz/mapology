@@ -36,8 +36,22 @@ const PropertiesModal = (props) => {
       key,
       value,
     }));
-    setEditedProperties(propertiesArray);
-  }, [properties]);
+
+    // Only update the state if the properties have changed
+    if (!arraysEqual(editedProperties, propertiesArray)) {
+      setEditedProperties(propertiesArray);
+    }
+  }, [selectedFeature, properties]);
+
+  function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i].key !== arr2[i].key || arr1[i].value !== arr2[i].value) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   const handleConfirm = () => {
     if (store.selectedFeatures.length !== 1) {
