@@ -20,7 +20,6 @@ import {
   getAllMapDislikes,
   deleteDislike,
 } from '../../store/GlobalStoreHttpRequestApi';
-// import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
 import { IconButton } from '@mui/material';
 
@@ -33,51 +32,21 @@ const MapCard = (props) => {
   const [userDislike, setUserDislike] = useState(false);
   const [published, setPublished] = useState(false);
   const navigate = useNavigate();
-  // const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
-    setUserLike(props.data.likes.some((l) => l.userId === auth.user.id));
-    setUserDislike(props.data.dislikes.some((l) => l.userId === auth.user.id));
+    if (auth.user) {
+      setUserLike(props.data.likes.some((l) => l.userId === auth.user.id));
+      setUserDislike(
+        props.data.dislikes.some((l) => l.userId === auth.user.id)
+      );
+    }
     setLikes(props.data.likes);
     setDislikes(props.data.dislikes);
     setPublished(props.data.published);
     setAuthor(props.data.user);
     setTags(props.data.tags);
   }, []);
-
-  // useDidMountEffect(() => {
-  //   const helper = async () => {
-  //     const userLiked = await hasLike(auth.user.id, props.data.id);
-  //     // if (userLiked.status == "204"){
-  //     setUserLike(userLiked);
-  //     // }
-  //     // else{
-  //     // setUserLike(true);
-  //     // }
-  //   };
-  //   helper();
-  // }, [likes]);
-
-  // useDidMountEffect(() => {
-  //   const helper = async () => {
-  //     const userDisliked = await hasDislike(auth.user.id, props.data.id);
-  //     // if (userDisliked.status == '204') {
-  //     setUserDislike(userDisliked);
-  //     // } else {
-  //     // setUserDislike(true);
-  //     // }
-  //   };
-  //   helper();
-  // }, [dislikes]);
-
-  // useDidMountEffect(() => {
-  //   const helper = async () => {
-  //     const publish = await getPublished(props.data.id);
-  //     setPublished(publish.data.published);
-  //   };
-  //   helper();
-  // }, [published]);
 
   const handleLike = () => {
     let liked = null;
@@ -198,8 +167,8 @@ const MapCard = (props) => {
           </Typography>
         )}
       </CardContent>
-      <Box sx = {{display: "flex"}}>
-        <Box sx={{ justifyContent: 'flex-start'}}>
+      <Box sx={{ display: 'flex' }}>
+        <Box sx={{ justifyContent: 'flex-start' }}>
           {tags &&
             tags.map((tag) => (
               <Chip
@@ -213,9 +182,9 @@ const MapCard = (props) => {
         <Box
           sx={{
             visibility: published ? '' : 'hidden',
-            ml: "auto",
+            ml: 'auto',
             mr: 1,
-            display: "flex"
+            display: 'flex',
           }}
         >
           <IconButton
@@ -244,9 +213,7 @@ const MapCard = (props) => {
             {dislikes.length}
           </Typography>
         </Box>
-      
       </Box>
-      
 
       <CardActions>
         <Button

@@ -8,7 +8,9 @@ import {
   getAllMapsByUserId,
 } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
+import { duplicateMap } from '../../store/GlobalStoreHttpRequestApi';
 import AuthContext from '../../auth/AuthContextProvider';
+import { useNavigate } from 'react-router-dom';
 
 const HomeScreen = () => {
   const { store } = useContext(GlobalStoreContext);
@@ -16,19 +18,22 @@ const HomeScreen = () => {
   const [carouselMaps, setCarouselMaps] = useState([]);
   useEffect(() => {
     const getData = async () => {
-      if (!auth.user) {
-        return;
+      if (auth.user) {
+        const userMaps = await getAllMapsByUserId(auth.user.id);
+        store.setDisplayedMaps(userMaps.data.data);
       }
+    };
+    getData();
+  }, [auth.user]);
 
-      const userMaps = await getAllMapsByUserId(auth.user.id);
+  useEffect(() => {
+    const getData = async () => {
       const allMaps = await getAllMaps();
-      // console.log('all maps', allMaps);
-      store.setDisplayedMaps(userMaps.data.data);
       setCarouselMaps(allMaps.data.data);
     };
 
     getData();
-  }, [auth.user]);
+  }, []);
 
   return (
     <div
@@ -62,6 +67,8 @@ const HomeScreen = () => {
 
 const Item = (props) => {
   const [image, setImage] = useState(null);
+  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchThumbnail = async () => {
@@ -73,6 +80,18 @@ const Item = (props) => {
 
     fetchThumbnail();
   }, []);
+
+  const handleDuplicate = () => {
+    if (!auth.user) {
+      window.alert('You must sign in to duplicate a map');
+      return;
+    }
+    duplicateMap(auth.user.id, props.item.id);
+  };
+
+  const handleDetails = () => {
+    navigate(`/map-info/${props.item.id}`);
+  };
 
   return (
     <Paper
@@ -92,8 +111,12 @@ const Item = (props) => {
       <Typography variant="h5">{props.item.title}</Typography>
       <Typography variant="body2">{props.item.description}</Typography>
       <Box>
-        <Button className="CheckButton">Duplicate</Button>
-        <Button className="CheckButton">Details</Button>
+        <Button className="CheckButton" onClick={handleDuplicate}>
+          Duplicate
+        </Button>
+        <Button className="CheckButton" onClick={handleDetails}>
+          Details
+        </Button>
       </Box>
     </Paper>
   );

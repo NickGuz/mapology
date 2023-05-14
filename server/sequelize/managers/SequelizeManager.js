@@ -8,7 +8,7 @@ const {
   Dislikes,
   Thumbnails,
   Legends,
-  Comments
+  Comments,
 } = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -76,6 +76,9 @@ exports.deleteMap = async (id) => {
 
 exports.getAllMaps = async () => {
   return await MapInfo.findAll({
+    where: {
+      published: true,
+    },
     include: [User, Tags, Likes, Dislikes, Thumbnails],
     limit: 8,
     order: [["createdAt", "DESC"]],
@@ -139,14 +142,14 @@ exports.updateMapDescription = async (mapId, desc) => {
 };
 
 exports.updateMapProperty = async (mapId, data) => {
-    return await MapInfo.update(
-        { properties: data },
-        {
-            where: {
-                id: mapId,
-            },
-        }
-    );
+  return await MapInfo.update(
+    { properties: data },
+    {
+      where: {
+        id: mapId,
+      },
+    }
+  );
 };
 
 exports.updateFeatureProperties = async (featureId, data) => {
@@ -476,23 +479,23 @@ exports.addComment = async (mapId, userId, comment) => {
   return await Comments.create({
     userId: userId,
     mapId: mapId,
-    text : comment,
+    text: comment,
   });
 };
 
 exports.getComments = async (mapId) => {
   return await Comments.findAll({
-    where:{
-      mapId : mapId
+    where: {
+      mapId: mapId,
     },
-    include: [User]
+    include: [User],
   });
 };
 
 exports.deleteComment = async (id) => {
   return await Comments.destroy({
     where: {
-      id:id
+      id: id,
     },
   });
 };
