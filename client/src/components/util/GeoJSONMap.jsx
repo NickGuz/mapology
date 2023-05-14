@@ -81,10 +81,19 @@ const GeoJSONMap = () => {
       setBoundsSet(true);
     }
 
-    if (store.currentMap && !map.hasEventListeners('pm:create')) {
-      map.on('pm:create', (event) => {
-        handleCreatePolygon(event);
-      });
+    if (store.currentMap) {
+      if (!map.hasEventListeners('pm:create')) {
+        map.on('pm:create', (event) => {
+          handleCreatePolygon(event);
+        });
+      }
+
+      if (!map.hasEventListeners('pm:globaldragmodetoggled')) {
+        map.on('pm:globaldragmodetoggled', (event) => {
+          const enabled = event.enabled;
+          store.setCanSelectFeatures(!enabled);
+        });
+      }
     }
     // console.log('useEffect', store.currentMap);
   }, [store.currentMap, drawModeEnabled, store.currentLegend]);
@@ -170,9 +179,12 @@ const GeoJSONMap = () => {
   };
 
   const selectRegion = (event) => {
-    console.log('selecting', event);
     if (getDrawModeEnabled()) {
       console.log('draw mode enabled');
+      return;
+    }
+
+    if (!store.canSelectFeatures) {
       return;
     }
 
@@ -194,7 +206,6 @@ const GeoJSONMap = () => {
     if (!auth.loggedIn) {
       return;
     }
-    console.log('map', map);
     selectRegion(event);
   };
 
@@ -212,29 +223,12 @@ const GeoJSONMap = () => {
       })
       .openTooltip();
 
+    // layer.pm.setOptions({
+    //   limitMarkersToCount: 10,
+    // });
+
     layer.on({
-      // dblclick: () => {
-      //   if (!auth.loggedIn) {
-      //     return;
-      //   }
-      //   handleRenameRegion(feature, layer);
-      // },
-      mouseover: () => {
-        // if (!store.selectedFeatures.includes(event.target.feature)) {
-        //   event.target.setStyle({
-        //     fillColor: "purple",
-        //   });
-        // }
-      },
-      mouseout: () => {
-        // if (!store.selectedFeatures.includes(event.target.feature)) {
-        //   event.target.setStyle({
-        //     fillColor: "blue",
-        //   });
-        // }
-      },
       click: (event) => handleLayerClick(event),
-      // click: (event) => {
       'pm:markerdragend': (event) => {
         handleVertexDragEnd(event);
       },
@@ -243,6 +237,9 @@ const GeoJSONMap = () => {
       },
       'pm:remove': (event) => {
         handleDeleteFeature(event.target.feature);
+      },
+      'pm:dragend': (event) => {
+        handleDragEnd(event);
       },
     });
 
@@ -283,6 +280,26 @@ const GeoJSONMap = () => {
     }
   };
 
+  const handleDragEnd = (event) => {
+    const mapClone = JSON.parse(JSON.stringify(store.currentMap));
+
+    const updatedFeature = event.target.toGeoJSON();
+    RequestApi.updateFeatureGeometry(
+      updatedFeature.id,
+      updatedFeature.geometry
+    );
+
+    const currFeature = store.currentMap.json.features.find(
+      (f) => f.id === updatedFeature.id
+    );
+
+    currFeature.geometry = updatedFeature.geometry;
+    // store.setSelectedFeatures([]);
+    store.setMapUpdates(store.mapUpdates + 1);
+    // store.setCurrentMap(store.currentMap);
+    store.addEditMapTransaction(mapClone, store.currentMap);
+  };
+
   const updateProperties = (feature, properties) => {
     feature.properties = properties;
 
@@ -303,10 +320,17 @@ const GeoJSONMap = () => {
 
   const handleCreatePolygon = (event) => {
     const feature = event.layer.toGeoJSON();
+    const layer = event.layer;
     console.log(feature);
 
     // TODO Handle create text box here
     if (feature.geometry.type === 'Point') {
+      if (!layer.hasEventListeners('pm:textblur')) {
+        console.log('created');
+        layer.on('pm:textblur', (event) => {
+          console.log(event);
+        });
+      }
       return;
     }
 
@@ -320,12 +344,16 @@ const GeoJSONMap = () => {
       return;
     }
 
+    const mapClone = JSON.parse(JSON.stringify(store.currentMap));
+
     const name = window.prompt('Enter a name for this feature:');
     feature.properties['name'] = name;
 
     store.currentMap.json.features.push(feature);
-    store.setCurrentMap(store.currentMap);
+    // store.setCurrentMap(store.currentMap);
+    store.setMapUpdates(store.mapUpdates + 1);
     RequestApi.insertFeature(store.currentMap.mapInfo.id, feature);
+    store.addEditMapTransaction(mapClone, store.currentMap);
 
     // Remove the layer created by geoman
     map.removeLayer(event.layer);

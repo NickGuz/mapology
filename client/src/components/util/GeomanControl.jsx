@@ -17,7 +17,7 @@ const GeomanControl = () => {
       drawCircleMarker: false,
       drawRectangle: false,
       cutPolygon: false,
-      dragMode: false,
+      dragMode: true,
     });
 
     if (!map.pm.Toolbar.options.Split) {
@@ -29,8 +29,12 @@ const GeomanControl = () => {
     }
 
     map.pm.setGlobalOptions({
-      limitMarkersToCount: 10,
+      // limitMarkersToCount: 10,
       hideMiddleMarkers: false,
+    });
+
+    map.pm.setPathOptions({
+      fillColor: 'blue',
     });
   }, []);
 
