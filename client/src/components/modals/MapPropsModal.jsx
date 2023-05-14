@@ -34,22 +34,16 @@ const MapPropertiesModal = (props) => {
   );
 
   function handleConfirm() {
-    // Convert the propertyList back to an object
     const updatedProperties = propertyList.reduce((result, property) => {
       result[property.key] = property.value;
       return result;
     }, {});
-    console.log(store.currentMap.mapInfo.properties);
-    console.log(store.currentMap.mapInfo);
-    console.log(Object.keys(store.currentMap.mapInfo.properties).length);
-    // Update the map properties
     props.updateMapProperties(store.currentMap.mapInfo, updatedProperties);
     // Close the modal
     props.close();
   }
 
   useEffect(() => {
-    // Update the propertyList when the properties in store change
     setPropertyList(
       Object.entries(store.currentMap.mapInfo.properties || {}).map(
         ([key, value]) => ({

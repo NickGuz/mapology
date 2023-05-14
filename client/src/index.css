@@ -23,3 +23,7 @@ code {
 .rename-region-button {
   background-image: url('assets/rename-icon.png')
 }
+
+.map-prop-button {
+  background-image: url('assets/map-props-icon.jpeg');
+}

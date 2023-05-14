@@ -88,6 +88,17 @@ const GeomanControl = (props) => {
       });
     }
 
+    if (!map.pm.Toolbar.options.editMapProps) {
+      map.pm.Toolbar.createCustomControl({
+        name: 'editMapProps',
+        block: 'edit',
+        title: 'Edit Map Props',
+        className: 'map-prop-button',
+        toggle: false,
+        onClick: () => props.setMapPropOpen(true),
+      });
+    }
+
     if (!map.pm.Toolbar.options.renameRegion) {
       map.pm.Toolbar.createCustomControl({
         name: 'renameRegion',
@@ -118,6 +129,7 @@ const GeomanControl = (props) => {
       'removalMode',
       'renameRegion',
       'editAttributes',
+      'editMapProps',
       'drawText',
     ]);
   }, []);
