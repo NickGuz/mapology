@@ -158,7 +158,7 @@ const PropertiesModal = (props) => {
                       size="small"
                       fullWidth
                       label="New Key"
-                      value={newKeyValuePair.key}
+                      value={newKeyValuePair.key || ''}
                       onChange={(event) =>
                         setNewKeyValuePair({
                           ...newKeyValuePair,
@@ -173,7 +173,7 @@ const PropertiesModal = (props) => {
                       size="small"
                       fullWidth
                       label="New Value"
-                      value={newKeyValuePair.value}
+                      value={newKeyValuePair.value || ''}
                       onChange={(event) =>
                         setNewKeyValuePair({
                           ...newKeyValuePair,

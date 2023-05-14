@@ -27,8 +27,10 @@ const UserCard = (props) => {
                   width: 50,
                 }}
                 alt="User Profile Image"
-                src={require('../../assets/sample_avatar.png')}
-              />
+                // src={require('../../assets/sample_avatar.png')}
+              >
+                {props.user.username[0].toUpperCase()}
+              </Avatar>
             </Grid>
 
             <Grid

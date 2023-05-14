@@ -63,7 +63,8 @@ const ImportModal = (props) => {
         userId = auth.user.id;
       }
       await createMap(null, userId, name, description, tags, data, compress);
-      getAllMapsByUserId(auth.user.id);
+      // getAllMapsByUserId(auth.user.id);
+      store.displayAllUserMaps(auth.user.id);
     };
 
     fileReader.readAsText(file);
@@ -88,7 +89,8 @@ const ImportModal = (props) => {
           userId = auth.user.id;
         }
         await createMap(null, userId, name, description, tags, geojson, compress);
-        getAllMapsByUserId(auth.user.id);
+        // getAllMapsByUserId(auth.user.id);
+        store.displayAllUserMaps(auth.user.id);
       };
     };
   };
