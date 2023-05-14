@@ -138,15 +138,17 @@ const Comment = (props) => {
               <Typography sx={{ flex: 1, marginLeft: 1 }}>
                 {comment.text}
               </Typography>
+              {auth.user && auth.user.id == comment.userId && 
               <IconButton
                 onClick={() => handleCommentDeleteClick(comment.id)}
                 sx={{
                   marginLeft: 'auto',
-                  visibility: auth.user.id == comment.userId ? '' : 'hidden',
                 }}
               >
                 <DeleteIcon />
               </IconButton>
+              }
+              
             </Box>
           ))
         ) : (
