@@ -200,7 +200,7 @@ const MapInfoScreen = () => {
         />
 
         <Paper sx={{ margin: 2 }} elevation={1}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: "60%"}}>
             <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mr: 'auto' }}>
               {' '}
               {mapData && mapData.mapInfo.description}
@@ -242,7 +242,7 @@ const MapInfoScreen = () => {
             </Box>
           </Box>
 
-          <Box display={'flex'}>
+          <Box display={'flex'} >
             {mapData &&
               mapData.tags.map((tag) => (
                 <Chip

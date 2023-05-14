@@ -37,7 +37,7 @@ const CompressModal = (props) => {
             Warning!
           </Typography>
           <Typography variant = "p2" >
-            This will permanently compress the map to size small. We recomend downloading the map file and reuploading with different size option. 
+            This will permanently compress the map to size MEDIUM. We recomend downloading the map file and reuploading with different size option. 
           </Typography>
           <Box id="confirm-cancel-container" sx={{alignSelf: "flex-end"}}>
             <Button id="change-name-button" className="modal-button" onClick={handleCompress}>
