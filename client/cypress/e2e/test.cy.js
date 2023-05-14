@@ -194,6 +194,14 @@ describe('template spec', () => {
     cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
     cy.get('#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(50)').click();
     cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
+
+    //Undo Delete 
+    cy.get('.css-70qvj9 > :nth-child(1)').click() // undo click
+    cy.contains('Test Region').should('exist');
+
+    //Redo Delete
+    cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
+    cy.contains('Test Region').should('not.exist');
   });
 
 
