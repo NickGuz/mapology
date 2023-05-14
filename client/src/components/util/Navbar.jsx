@@ -208,7 +208,9 @@ const Navbar = () => {
               <DarkModeIcon sx={{ width: 30, height: 30, mr: 1 }} />
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Avatar" src="" />
+                  <Avatar alt="Avatar" src="">
+                    {auth.user && auth.user.username[0].toUpperCase()}
+                  </Avatar>
                 </IconButton>
               </Tooltip>
               <Menu

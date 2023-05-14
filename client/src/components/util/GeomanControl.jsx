@@ -12,8 +12,24 @@ const GeomanControl = (props) => {
   // A bit of a hacky workaround for store being stuck in a closure, but oh well
   useEffect(() => {
     const mergeButton = document.querySelector('.merge-button');
-    if (!mergeButton) return;
-    mergeButton.onclick = () => merge(store);
+    if (mergeButton) {
+      mergeButton.onclick = () => merge(store);
+    }
+
+    const renameButton = document.querySelector('.rename-region-button');
+    if (renameButton) {
+      renameButton.onclick = () => {
+        if (store.selectedFeatures.length > 1) {
+          window.alert('Cannot rename more than 1 region at a time');
+          return;
+        }
+        if (store.selectedFeatures.length === 0) {
+          window.alert('Must select a region to rename first');
+          return;
+        }
+        props.setEditOpen(true);
+      };
+    }
   }, [store]);
 
   useEffect(() => {
@@ -72,6 +88,27 @@ const GeomanControl = (props) => {
       });
     }
 
+    if (!map.pm.Toolbar.options.renameRegion) {
+      map.pm.Toolbar.createCustomControl({
+        name: 'renameRegion',
+        block: 'edit',
+        title: 'Rename Region',
+        className: 'rename-region-button',
+        toggle: false,
+        // onClick: () => {
+        //   if (store.selectedFeatures.length > 1) {
+        //     window.alert('Cannot rename more than 1 region at a time');
+        //     return;
+        //   }
+        //   if (store.selectedFeatures.length === 0) {
+        //     window.alert('Must select a region to rename first');
+        //     return;
+        //   }
+        //   props.setEditOpen(true);
+        // },
+      });
+    }
+
     map.pm.Toolbar.changeControlOrder([
       'drawPolygon',
       'split',
@@ -79,6 +116,7 @@ const GeomanControl = (props) => {
       'merge',
       'dragMode',
       'removalMode',
+      'renameRegion',
       'editAttributes',
       'drawText',
     ]);

@@ -480,7 +480,11 @@ const GeoJSONMap = (props) => {
             addMapProperties={addMapProperties}
             close={() => setMapPropOpen(false)}
           />
-          <GeomanControl />
+          <GeomanControl
+            setPropOpen={setPropOpen}
+            setMapPropOpen={setMapPropOpen}
+            setEditOpen={setEditOpen}
+          />
         </div>
       )}
       {/* <GeomanControls
