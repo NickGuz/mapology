@@ -3,6 +3,7 @@ import { getMapById, getAllMaps } from './GlobalStoreHttpRequestApi';
 // import { useNavigate } from "react-router-dom";
 import EditMap_Transaction from '../transactions/EditMap_Transaction';
 import jsTPS from '../common/jsTPS';
+import { getAllMapsByUserId } from './GlobalStoreHttpRequestApi';
 var jsondiffpatch = require('jsondiffpatch');
 
 const tps = new jsTPS();
@@ -204,6 +205,14 @@ function GlobalStoreContextProvider(props) {
 
   store.displayAllMaps = async () => {
     const allMaps = await getAllMaps();
+    storeReducer({
+      type: GlobalStoreActionType.SET_DISPLAYED_MAPS,
+      payload: allMaps.data.data,
+    });
+  };
+
+  store.displayAllUserMaps = async (userid) => {
+    const allMaps = await getAllMapsByUserId(userid);
     storeReducer({
       type: GlobalStoreActionType.SET_DISPLAYED_MAPS,
       payload: allMaps.data.data,

@@ -145,7 +145,8 @@ describe('template spec', () => {
     // cy.get('#cancel-button').click();
 
     // Click merge button
-    cy.get('[aria-label="Merge"]').click();
+    // cy.get('[aria-label="Merge"]').click();
+    cy.get('.merge-button').click();
 
     // Check that the new region exists, might not work
     cy.contains('Test Region').should('exist');
