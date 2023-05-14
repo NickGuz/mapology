@@ -471,7 +471,7 @@ const GeoJSONMap = (props) => {
             updateMapProperties={updateMapProperties}
             close={() => setMapPropOpen(false)}
           />
-          <GeomanControl />
+          <GeomanControl setPropOpen={setPropOpen} setMapPropOpen={setMapPropOpen} />
         </div>
       )}
       {/* <GeomanControls
