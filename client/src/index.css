@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.merge-button {
+  background-image: url('assets/merge-icon.png')
+}
+
+.edit-attributes-button {
+  background-image: url('assets/edit-attributes-icon1.png');
+}
