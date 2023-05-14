@@ -26,13 +26,12 @@ import { moveVertex } from '../../util/editing/move';
 import { merge } from '../../util/editing/merge';
 import GeomanControl from './GeomanControl';
 
-const GeoJSONMap = () => {
+const GeoJSONMap = (props) => {
   const [currLayer, setCurrLayer] = useState();
   const [currFeature, setCurrFeature] = useState();
   const [editOpen, setEditOpen] = useState(false);
   const [propOpen, setPropOpen] = useState(false);
   const [boundsSet, setBoundsSet] = useState(false);
-  const [drawModeEnabled, setDrawModeEnabled] = useState(false);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -96,7 +95,7 @@ const GeoJSONMap = () => {
       }
     }
     // console.log('useEffect', store.currentMap);
-  }, [store.currentMap, drawModeEnabled, store.currentLegend]);
+  }, [store.currentMap, store.currentLegend]);
 
   useEffect(() => {
     console.log('selected', store.selectedFeatures);
@@ -174,16 +173,7 @@ const GeoJSONMap = () => {
   //   else if (feature.properties.name) feature.properties.name = name;
   // };
 
-  const getDrawModeEnabled = () => {
-    return drawModeEnabled;
-  };
-
   const selectRegion = (event) => {
-    if (getDrawModeEnabled()) {
-      console.log('draw mode enabled');
-      return;
-    }
-
     if (!store.canSelectFeatures) {
       return;
     }
@@ -400,73 +390,81 @@ const GeoJSONMap = () => {
           onEachFeature={onFeature}
         />
       )}
-      <Control position="topright">
-        <Stack direction="column">
-          <Tooltip title="Delete">
-            <Button
-              sx={{ color: 'black', backgroundColor: 'white' }}
-              onClick={() => {}}
-            >
-              <DeleteIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title="Merge">
-            <Button
-              sx={{ color: 'black', backgroundColor: 'white' }}
-              onClick={handleMerge}
-            >
-              <MergeIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title="Edit Attributes">
-            <Button
-              onClick={() => {
-                setPropOpen(true);
-              }}
-              sx={{ color: 'black', backgroundColor: 'white' }}
-            >
-              <EditAttributesIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title="Rename Region">
-            <Button
-              sx={{ color: 'black', backgroundColor: 'white' }}
-              onClick={() => {
-                if (store.selectedFeatures.length !== 1) {
-                  window.alert('Cannot rename more than 1 region at a time');
-                  return;
-                }
-                setEditOpen(true);
-              }}
-            >
-              <AbcIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title="Edit Vertices">
-            <Button
-              sx={{ color: 'black', backgroundColor: 'white' }}
-              // onClick={handleToggleEditVertices}
-            >
-              <EditLocationAlt />
-            </Button>
-          </Tooltip>
-        </Stack>
-      </Control>
-      <ChangeNameModal
-        layer={currLayer}
-        show={editOpen}
-        feature={currFeature}
-        rename={(currFeature, name, layer) => rename(currFeature, name, layer)}
-        close={() => setEditOpen(false)}
-      />
-      <PropertiesModal
-        layer={currLayer}
-        updateProperties={updateProperties}
-        addProperties={addProperties}
-        show={propOpen}
-        close={() => setPropOpen(false)}
-      />
-      <GeomanControl />
+      {props.authorized && (
+        <div>
+          <Control position="topright">
+            <Stack direction="column">
+              <Tooltip title="Delete">
+                <Button
+                  sx={{ color: 'black', backgroundColor: 'white' }}
+                  onClick={() => {}}
+                >
+                  <DeleteIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Merge">
+                <Button
+                  sx={{ color: 'black', backgroundColor: 'white' }}
+                  onClick={handleMerge}
+                >
+                  <MergeIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Edit Attributes">
+                <Button
+                  onClick={() => {
+                    setPropOpen(true);
+                  }}
+                  sx={{ color: 'black', backgroundColor: 'white' }}
+                >
+                  <EditAttributesIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Rename Region">
+                <Button
+                  sx={{ color: 'black', backgroundColor: 'white' }}
+                  onClick={() => {
+                    if (store.selectedFeatures.length !== 1) {
+                      window.alert(
+                        'Cannot rename more than 1 region at a time'
+                      );
+                      return;
+                    }
+                    setEditOpen(true);
+                  }}
+                >
+                  <AbcIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Edit Vertices">
+                <Button
+                  sx={{ color: 'black', backgroundColor: 'white' }}
+                  // onClick={handleToggleEditVertices}
+                >
+                  <EditLocationAlt />
+                </Button>
+              </Tooltip>
+            </Stack>
+          </Control>
+          <ChangeNameModal
+            layer={currLayer}
+            show={editOpen}
+            feature={currFeature}
+            rename={(currFeature, name, layer) =>
+              rename(currFeature, name, layer)
+            }
+            close={() => setEditOpen(false)}
+          />
+          <PropertiesModal
+            layer={currLayer}
+            updateProperties={updateProperties}
+            addProperties={addProperties}
+            show={propOpen}
+            close={() => setPropOpen(false)}
+          />
+          <GeomanControl />
+        </div>
+      )}
       {/* <GeomanControls
         options={{
           position: 'topleft',

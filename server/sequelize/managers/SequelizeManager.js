@@ -235,7 +235,6 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
             tagName: {
               [Op.in]: searchTags,
             },
-            published: true,
           },
         },
         Likes,
@@ -243,6 +242,9 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
         Thumbnails,
         User,
       ],
+      where: {
+        published: true,
+      },
       order: orderBy,
     });
 
