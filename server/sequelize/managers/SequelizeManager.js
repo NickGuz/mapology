@@ -138,6 +138,17 @@ exports.updateMapDescription = async (mapId, desc) => {
   );
 };
 
+exports.updateMapProperty = async (mapId, data) => {
+    return await MapInfo.update(
+        { properties: data },
+        {
+            where: {
+                id: mapId,
+            },
+        }
+    );
+};
+
 exports.updateFeatureProperties = async (featureId, data) => {
   return await Features.update(
     { properties: data },

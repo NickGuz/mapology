@@ -56,8 +56,7 @@ module.exports = (sequelize, DataTypes) => {
             type : DataTypes.BOOLEAN, 
             allowNull: false,
             defaultValue: false
-        },
-      
+        },   
         textProps: {
             // type: DataTypes.JSON,
             type: DataTypes.TEXT,
@@ -73,7 +72,21 @@ module.exports = (sequelize, DataTypes) => {
                 return this.setDataValue('textProps', JSON.stringify(value));
             },
             allowNull: true
-        }
-
+        },
+        properties: {
+            // type: DataTypes.JSON,
+            type: DataTypes.TEXT,
+            get: function () {
+                let data = this.getDataValue("properties");
+                if (data) {
+                    return JSON.parse(data);
+                }
+                return null;
+            },
+            set: function (value) {
+                return this.setDataValue("properties", JSON.stringify(value));
+            },
+            allowNull: true,
+        },
     });
 }

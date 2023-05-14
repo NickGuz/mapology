@@ -219,6 +219,16 @@ exports.updateMapDescription = async (req, res) => {
   });
 };
 
+exports.updateMapProperty = async (req, res) => {
+    const mapProp = await SequelizeManager.updateMapProperty(
+        req.params.id,
+        req.body.data
+    );
+    return res.status(200).json({
+        data: mapProp,
+    });
+};
+
 exports.updateFeatureProperties = async (req, res) => {
   const feature = await SequelizeManager.updateFeatureProperties(
     req.params.id,
