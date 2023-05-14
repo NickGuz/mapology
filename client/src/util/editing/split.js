@@ -19,6 +19,9 @@ const splitRegion = async (line, store) => {
     endPoint,
     store.currentMap.json.features
   );
+  if (!featureToSplit) {
+    return;
+  }
   const isMultiPolygon = featureToSplit.geometry.type === 'MultiPolygon';
   console.log('featureToSplit', featureToSplit);
 
@@ -240,11 +243,73 @@ const findFeatureWithPoints = (point1, point2, storeFeatures) => {
 
     let contains = false;
 
-    console.log('polygons', polygons);
+    // console.log('polygons', polygons);
     polygons.forEach((feature) => {
-      if (contains) return;
+      if (contains) return true;
       if (feature.geometry.type === 'Point') return;
-      console.log('plygon', feature);
+      // console.log('polygon', feature);
+
+      let arePointsOnBoundary = false;
+      let ringIndex = -1;
+      let pointSegment1;
+      let pointSegment2;
+
+      feature.geometry.coordinates.forEach((ring, i) => {
+        if (arePointsOnBoundary) return true;
+
+        const lineString = turf.lineString(ring);
+        arePointsOnBoundary =
+          isPointOnLine(
+            turfPoint1.geometry.coordinates,
+            lineString.geometry.coordinates[0],
+            lineString.geometry.coordinates[1]
+          ) &&
+          isPointOnLine(
+            turfPoint2.geometry.coordinates,
+            lineString.geometry.coordinates[0],
+            lineString.geometry.coordinates[1]
+          );
+        // turf.booleanPointOnLine(
+        //   turfPoint1.geometry.coordinates,
+        //   lineString.geometry.coordinates,
+        //   {
+        //     epsilon: 0.0001,
+        //   }
+        // ) &&
+        // turf.booleanPointOnLine(
+        //   turfPoint2.geometry.coordinates,
+        //   lineString.geometry.coordinates,
+        //   {
+        //     epsilon: 0.0001,
+        //   }
+        // );
+
+        if (arePointsOnBoundary) {
+          console.log('feature we inserting in', feature);
+          console.log('point1', point1);
+          console.log('point2', point2);
+          ringIndex = i;
+          pointSegment1 = getLineLiesOn(
+            turfPoint1,
+            feature.geometry.coordinates[ringIndex]
+          );
+          pointSegment2 = getLineLiesOn(
+            turfPoint2,
+            feature.geometry.coordinates[ringIndex]
+          );
+          console.log('SEGMENT1', pointSegment1);
+          console.log('SEGMENT2', pointSegment2);
+          insertBetween(point1, pointSegment1, feature, ringIndex);
+          insertBetween(point2, pointSegment2, feature, ringIndex);
+          return;
+        }
+      });
+      // console.log('pointsOnBoundary', arePointsOnBoundary);
+
+      if (arePointsOnBoundary) {
+        contains = true;
+        return;
+      }
 
       contains =
         feature.geometry.coordinates[0].find((xy) => pointEquals(xy, point1)) &&
@@ -255,12 +320,95 @@ const findFeatureWithPoints = (point1, point2, storeFeatures) => {
   });
 
   if (features.length === 0) {
-    console.log('Did not find any feature to split');
+    window.alert(
+      'Did not find any feature to split. Please only select existing vertices'
+    );
+    return null;
+  }
+
+  if (features.length > 1) {
+    window.alert(
+      'Error finding feature to split. Please try a different location'
+    );
     return null;
   }
 
   console.log('returning features', features);
   return features[0];
+};
+
+const isPointOnLine = (point, start, end) => {
+  const v1 = [point[0] - start[0], point[1] - start[1]];
+  const v2 = [end[0] - start[0], end[1] - start[1]];
+  const dot = v1[0] * v2[0] + v1[1] * v2[1];
+  const length = Math.sqrt(v2[0] * v2[0] + v2[1] * v2[1]);
+  const projection = dot / length;
+  return projection >= 0 && projection <= 1;
+};
+
+const insertBetween = (point, segment, feature, ringIndex) => {
+  console.log('feature before', feature);
+  const ring = feature.geometry.coordinates[ringIndex];
+  const newRing = [];
+  const segmentCoords = segment.geometry.coordinates;
+  let coordPushed = false;
+
+  // Might break if coord is last in array
+  ring.forEach((coord) => {
+    newRing.push(coord);
+    if (!coordPushed && pointEquals(coord, segmentCoords[0])) {
+      console.log('inserting1');
+      newRing.push(point);
+      coordPushed = true;
+    }
+    // } else if (pointEquals(coord, segmentCoords[1])) {
+    //   console.log('inserting2');
+    //   newRing.push(point);
+    // }
+  });
+
+  feature.geometry.coordinates[ringIndex] = newRing;
+  console.log('feature after', feature);
+};
+
+const getLineLiesOn = (point, polygon) => {
+  let segment;
+
+  turf.segmentEach(
+    turf.polygon([polygon]),
+    (
+      currentSegment,
+      featureIndex,
+      multiFeatureIndex,
+      geometryIndex,
+      segmentIndex
+    ) => {
+      if (segment) {
+        return true;
+      }
+
+      console.log(
+        currentSegment,
+        featureIndex,
+        multiFeatureIndex,
+        geometryIndex,
+        segmentIndex
+      );
+
+      // if (turf.booleanPointOnLine(point, currentSegment, { epsilon: 0.0001 })) {
+      if (
+        isPointOnLine(
+          point,
+          currentSegment.geometry.coordinates[0],
+          currentSegment.geometry.coordinates[1]
+        )
+      ) {
+        segment = currentSegment;
+      }
+    }
+  );
+
+  return segment;
 };
 
 const pointEquals = (point1, point2) => {

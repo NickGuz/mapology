@@ -58,11 +58,13 @@ const GeomanControl = (props) => {
     map.pm.setGlobalOptions({
       limitMarkersToCount: 10,
       hideMiddleMarkers: false,
-      snapDistance: 10000, // essentially force snapping
+      // snapDistance: 10000, // essentially force snapping
+      snapDistance: 20,
     });
 
     map.pm.setPathOptions({
-      fillColor: 'blue',
+      fillOpacity: 0.5,
+      weight: 1.5,
     });
 
     // Create buttons for merge, edit attributes

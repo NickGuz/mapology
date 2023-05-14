@@ -6,22 +6,11 @@ import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import AuthContext from '../../auth/AuthContextProvider';
-import Control from 'react-leaflet-custom-control';
-import { Stack } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import MergeIcon from '@mui/icons-material/Merge';
-import EditAttributesIcon from '@mui/icons-material/EditAttributes';
-import AbcIcon from '@mui/icons-material/Abc';
-import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
-import NearMeIcon from '@mui/icons-material/NearMe';
 // import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
 import PropertiesModal from '../modals/RegionPropertyModal';
 import MapPropsModal from '../modals/MapPropsModal';
 import MapLegend from './MapLegend';
-import * as turf from '@turf/turf';
 import { splitRegion } from '../../util/editing/split';
 import { removeVertex, deleteFeature } from '../../util/editing/delete';
 import { moveVertex } from '../../util/editing/move';
@@ -125,11 +114,11 @@ const GeoJSONMap = (props) => {
     removeVertex(evt, store);
   };
 
-  const handleRenameRegion = (feature, layer) => {
-    setCurrFeature(feature);
-    setCurrLayer(layer);
-    setEditOpen(true);
-  };
+  // const handleRenameRegion = (feature, layer) => {
+  //   setCurrFeature(feature);
+  //   setCurrLayer(layer);
+  //   setEditOpen(true);
+  // };
 
   const rename = (feature, name /*, layer*/) => {
     let mapClone = JSON.parse(JSON.stringify(store.currentMap));
@@ -161,9 +150,9 @@ const GeoJSONMap = (props) => {
     deleteFeature(feature, store);
   };
 
-  const handleMerge = () => {
-    merge(store);
-  };
+  // const handleMerge = () => {
+  //   merge(store);
+  // };
 
   const getFeatureName = (feature) => {
     let featureName;
@@ -265,6 +254,8 @@ const GeoJSONMap = (props) => {
           [feature.properties.fillColor]: feature.properties.fillColor,
         });
       }
+    } else {
+      layer.setStyle({ fillColor: 'blue' });
     }
 
     // // Set border color
