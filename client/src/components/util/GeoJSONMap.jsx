@@ -36,7 +36,6 @@ const GeoJSONMap = (props) => {
   const [boundsSet, setBoundsSet] = useState(false);
   const [mapPropOpen, setMapPropOpen] = useState(false);
 
-
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const map = useMap();
@@ -471,7 +470,11 @@ const GeoJSONMap = (props) => {
             updateMapProperties={updateMapProperties}
             close={() => setMapPropOpen(false)}
           />
-          <GeomanControl setPropOpen={setPropOpen} setMapPropOpen={setMapPropOpen} />
+          <GeomanControl
+            setPropOpen={setPropOpen}
+            setMapPropOpen={setMapPropOpen}
+            setEditOpen={setEditOpen}
+          />
         </div>
       )}
       {/* <GeomanControls
