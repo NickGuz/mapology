@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import GlobalStoreContext from "../../store/store";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -14,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Alert } from "@mui/material";
-import { createMap } from "../../store/GlobalStoreHttpRequestApi";
+import { createMap, getAllMapsByUserId } from "../../store/GlobalStoreHttpRequestApi";
 import shp from "shpjs";
 import AuthContext from "../../auth/AuthContextProvider";
 
@@ -27,7 +28,7 @@ const ImportModal = (props) => {
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   const handleSubmit = () => {
     store.setOpenImportDialog(false);
 
@@ -62,7 +63,7 @@ const ImportModal = (props) => {
         userId = auth.user.id;
       }
       await createMap(null, userId, name, description, tags, data, compress);
-      store.displayAllMaps();
+      getAllMapsByUserId(auth.user.id);
     };
 
     fileReader.readAsText(file);
@@ -87,7 +88,7 @@ const ImportModal = (props) => {
           userId = auth.user.id;
         }
         await createMap(null, userId, name, description, tags, geojson, compress);
-        store.displayAllMaps();
+        getAllMapsByUserId(auth.user.id);
       };
     };
   };
