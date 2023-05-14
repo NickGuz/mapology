@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Grid, Box, TextField } from '@mui/material';
+import { Grid, Box, TextField, IconButton } from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import DeleteIcon from '@mui/icons-material/Delete';
 import GlobalStoreContext from '../../store/store';
 
 const style = {
@@ -23,29 +24,52 @@ const MapPropertiesModal = (props) => {
   const { store } = useContext(GlobalStoreContext);
   const [keyInput, setKeyInput] = useState('');
   const [valueInput, setValueInput] = useState('');
-  const [properties, setProperties] = useState({});
+  const [propertyList, setPropertyList] = useState(
+    Object.entries(store.currentMap.mapInfo.properties || {}).map(
+      ([key, value]) => ({
+        key,
+        value,
+      })
+    )
+  );
 
   function handleConfirm() {
-    // Update the map properties
-    props.updateMapProperties(store.currentMap.mapInfo.id, properties);
+    // Convert the propertyList back to an object
+    const updatedProperties = propertyList.reduce((result, property) => {
+      result[property.key] = property.value;
+      return result;
+    }, {});
     console.log(store.currentMap.mapInfo.properties);
+    console.log(store.currentMap.mapInfo);
+    console.log(Object.keys(store.currentMap.mapInfo.properties).length);
+    // Update the map properties
+    props.updateMapProperties(store.currentMap.mapInfo, updatedProperties);
     // Close the modal
     props.close();
   }
 
   useEffect(() => {
-    if (store.currentMap.mapInfo.properties !== properties) {
-      store.currentMap.mapInfo.properties = properties;
-    }
-  }, [properties, store.currentMap.mapInfo.properties]);
+    // Update the propertyList when the properties in store change
+    setPropertyList(
+      Object.entries(store.currentMap.mapInfo.properties || {}).map(
+        ([key, value]) => ({
+          key,
+          value,
+        })
+      )
+    );
+  }, [store.currentMap.mapInfo.properties]);
 
   function handleAddKeyValuePair() {
     // Check if both key and value are non-empty
     if (keyInput && valueInput) {
-      setProperties((prevProperties) => ({
-        ...prevProperties,
-        [keyInput]: valueInput,
-      }));
+      setPropertyList((prevPropertyList) => [
+        ...prevPropertyList,
+        {
+          key: keyInput,
+          value: valueInput,
+        },
+      ]);
 
       // Clear the input fields
       setKeyInput('');
@@ -53,6 +77,29 @@ const MapPropertiesModal = (props) => {
     }
   }
 
+  function handleKeyChange(index, newKey) {
+    setPropertyList((prevPropertyList) => {
+      const updatedPropertyList = [...prevPropertyList];
+      updatedPropertyList[index].key = newKey;
+      return updatedPropertyList;
+    });
+  }
+
+  function handleValueChange(index, newValue) {
+    setPropertyList((prevPropertyList) => {
+      const updatedPropertyList = [...prevPropertyList];
+      updatedPropertyList[index].value = newValue;
+      return updatedPropertyList;
+    });
+  }
+
+  function handleDeleteProperty(index) {
+    setPropertyList((prevPropertyList) => {
+      const updatedPropertyList = [...prevPropertyList];
+      updatedPropertyList.splice(index, 1);
+      return updatedPropertyList;
+    });
+  }
 
   return (
     <div>
@@ -77,27 +124,35 @@ const MapPropertiesModal = (props) => {
           </Box>
           <Box sx={{ p: 2 }}>
             <Grid container spacing={2}>
-              {Object.entries(properties || {}).map(([key, value]) => (
-                <React.Fragment key={key}>
-                  <Grid item xs={6}>
+              {propertyList.map((property, index) => (
+                <React.Fragment key={index}>
+                  <Grid item xs={5}>
                     <TextField
                       variant="outlined"
                       size="small"
                       fullWidth
                       label="Key"
-                      value={key}
-                      disabled
+                      value={property.key}
+                      onChange={(e) => handleKeyChange(index, e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={5}>
                     <TextField
                       variant="outlined"
                       size="small"
                       fullWidth
                       label="Value"
-                      value={value}
-                      disabled
+                      value={property.value}
+                      onChange={(e) => handleValueChange(index, e.target.value)}
                     />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <IconButton
+                      aria-label="Delete"
+                      onClick={() => handleDeleteProperty(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   </Grid>
                 </React.Fragment>
               ))}
@@ -135,7 +190,7 @@ const MapPropertiesModal = (props) => {
               className="modal-button"
               onClick={handleConfirm}
             >
-              Close
+              Confirm
             </Button>
           </Box>
         </Box>
@@ -145,3 +200,4 @@ const MapPropertiesModal = (props) => {
 };
 
 export default MapPropertiesModal;
+
