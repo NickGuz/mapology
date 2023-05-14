@@ -21,6 +21,8 @@ router.put("/map/title/:id", GlobalStoreController.updateMapTitle);
 
 router.put("/map/desc/:id", GlobalStoreController.updateMapDescription);
 
+router.put("/map/props/:id", GlobalStoreController.updateMapProperty);
+
 router.put("/feature/props/:id", GlobalStoreController.updateFeatureProperties);
 
 router.put("/feature/geo/:id", GlobalStoreController.updateFeatureGeometry);

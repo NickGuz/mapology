@@ -71,6 +71,12 @@ export const updateMapDescription = async (id, desc) => {
   });
 };
 
+export const updateMapProperty = async (id, propsData) => {
+  return await api.put(`/api/map/props/${id}`, {
+    data: propsData,
+  });
+};
+
 export const updateFeatureProperties = async (featureId, propsData) => {
   return await api.put(`/api/feature/props/${featureId}`, {
     data: propsData,

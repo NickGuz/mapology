@@ -15,9 +15,11 @@ import MergeIcon from '@mui/icons-material/Merge';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import AbcIcon from '@mui/icons-material/Abc';
 import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
+import NearMeIcon from '@mui/icons-material/NearMe';
 // import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
 import PropertiesModal from '../modals/RegionPropertyModal';
+import MapPropsModal from '../modals/MapPropsModal';
 import MapLegend from './MapLegend';
 import * as turf from '@turf/turf';
 import { splitRegion } from '../../util/editing/split';
@@ -32,6 +34,8 @@ const GeoJSONMap = (props) => {
   const [editOpen, setEditOpen] = useState(false);
   const [propOpen, setPropOpen] = useState(false);
   const [boundsSet, setBoundsSet] = useState(false);
+  const [mapPropOpen, setMapPropOpen] = useState(false);
+
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -300,6 +304,12 @@ const GeoJSONMap = (props) => {
     );
   };
 
+  const updateMapProperties = (map, properties) => {
+    map.properties = properties;
+
+    RequestApi.updateMapProperty(map.id, map.properties);
+  };
+
   const addProperties = (feature, newProperties) => {
     const updatedProperties = {
       ...feature.properties,
@@ -420,6 +430,16 @@ const GeoJSONMap = (props) => {
                   <EditAttributesIcon />
                 </Button>
               </Tooltip>
+              <Tooltip title="Edit Map Properties">
+                <Button
+                  onClick={() => {
+                    setMapPropOpen(true);
+                  }}
+                  sx={{ color: 'black', backgroundColor: 'white' }}
+                >
+                  <NearMeIcon />
+                </Button>
+              </Tooltip>
               <Tooltip title="Rename Region">
                 <Button
                   sx={{ color: 'black', backgroundColor: 'white' }}
@@ -461,6 +481,13 @@ const GeoJSONMap = (props) => {
             addProperties={addProperties}
             show={propOpen}
             close={() => setPropOpen(false)}
+          />
+          <MapPropsModal
+            show={mapPropOpen}
+            layer={currLayer}
+            feature={currFeature}
+            updateMapProperties={updateMapProperties}
+            close={() => setMapPropOpen(false)}
           />
           <GeomanControl />
         </div>
