@@ -9,8 +9,8 @@ describe('template spec', () => {
   beforeEach(() => {
     cy.session('login', () => {
       cy.visit('http://localhost:3000/login/');
-      cy.get('#userInfo').type('asdf');
-      cy.get('#password').type('123');
+      cy.get('#userInfo').type('CypressTest');
+      cy.get('#password').type('CypressTest');
       cy.get(
         '#root > div.MuiBox-root.css-i9gxme > div > div > main > div > form > button'
       ).click();
