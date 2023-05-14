@@ -93,6 +93,13 @@ const GeoJSONMap = (props) => {
           store.setCanSelectFeatures(!enabled);
         });
       }
+
+      if (!map.hasEventListeners('pm:globaldrawmodetoggled')) {
+        map.on('pm:globaldrawmodetoggled', (event) => {
+          const enabled = event.enabled;
+          store.setCanSelectFeatures(!enabled);
+        });
+      }
     }
     // console.log('useEffect', store.currentMap);
   }, [store.currentMap, store.currentLegend]);
@@ -353,31 +360,6 @@ const GeoJSONMap = (props) => {
     splitRegion(line, store);
   };
 
-  const disableClickHandlers = () => {
-    map.eachLayer((layer) => {
-      layer.off('click');
-    });
-  };
-
-  const enableClickHandlers = () => {
-    map.eachLayer((layer) => {
-      layer.on('click', handleLayerClick);
-    });
-  };
-
-  const handleGlobalDrawModeToggled = (event) => {
-    // store.setSelectedFeatures([]);
-    const enabled = event.enabled;
-    console.log('event', event);
-    // if (enabled) {
-    //   disableClickHandlers();
-    // } else {
-    //   // enableClickHandlers();
-    //   store.setMapUpdates(store.mapUpdates + 1);
-    // }
-    // setDrawModeEnabled(enabled);
-  };
-
   return (
     <div>
       {store.currentMap && (
@@ -392,7 +374,7 @@ const GeoJSONMap = (props) => {
       )}
       {props.authorized && (
         <div>
-          <Control position="topright">
+          {/* <Control position="topright">
             <Stack direction="column">
               <Tooltip title="Delete">
                 <Button
@@ -445,7 +427,7 @@ const GeoJSONMap = (props) => {
                 </Button>
               </Tooltip>
             </Stack>
-          </Control>
+          </Control> */}
           <ChangeNameModal
             layer={currLayer}
             show={editOpen}
@@ -462,7 +444,7 @@ const GeoJSONMap = (props) => {
             show={propOpen}
             close={() => setPropOpen(false)}
           />
-          <GeomanControl />
+          <GeomanControl setPropOpen={setPropOpen} />
         </div>
       )}
       {/* <GeomanControls

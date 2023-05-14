@@ -1,11 +1,14 @@
+import { useContext } from 'react';
 import {
   insertFeature,
   deleteFeature,
 } from '../../store/GlobalStoreHttpRequestApi';
 import * as turf from '@turf/turf';
+import GlobalStoreContext from '../../store/store';
 
 const merge = async (store) => {
   const firstGeom = store.selectedFeatures[0];
+  console.log('firstGeom', firstGeom);
 
   let name = window.prompt('Input a name for the merged region');
   if (!name) return;
@@ -16,6 +19,7 @@ const merge = async (store) => {
     return turf.union(merged, region);
   }, firstGeom);
 
+  console.log('mergedFeature', mergedFeature);
   mergedFeature.properties.NAME_0 = name;
 
   // Delete features from DB
