@@ -6,7 +6,6 @@ import Modal from '@mui/material/Modal';
 import GlobalStoreContext from '../../store/store';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -26,62 +25,70 @@ const PropertiesModal = (props) => {
   const selectedFeature = store.selectedFeatures[0];
   const properties = selectedFeature?.properties || {};
 
-
-  const [editedProperties, setEditedProperties] = useState(properties);
+  const [editedProperties, setEditedProperties] = useState([]);
   const [newKeyValuePair, setNewKeyValuePair] = useState({
     key: '',
     value: '',
   });
 
   useEffect(() => {
-    const properties = store.selectedFeatures[0]?.properties || {};
-    setEditedProperties(properties);
-  }, [store.selectedFeatures]);
+    const propertiesArray = Object.entries(properties).map(([key, value]) => ({
+      key,
+      value,
+    }));
+    setEditedProperties(propertiesArray);
+  }, [properties]);
 
   const handleConfirm = () => {
     if (store.selectedFeatures.length !== 1) {
       window.alert('Cannot edit properties of more than 1 region at a time');
       return;
     }
-    props.updateProperties(selectedFeature, editedProperties);
+    const updatedProperties = editedProperties.reduce((obj, { key, value }) => {
+      obj[key] = value;
+      return obj;
+    }, {});
+    props.updateProperties(selectedFeature, updatedProperties);
     props.close();
   };
 
-  const handleCancel = () => {
-    props.close();
-  }
+  const handleKeyChange = (event, index) => {
+    const newKey = event.target.value;
+    setEditedProperties((prevProperties) => {
+      const updatedProperties = [...prevProperties];
+      updatedProperties[index] = { ...updatedProperties[index], key: newKey };
+      return updatedProperties;
+    });
+  };
 
-   const handleKeyChange = (event, key) => {
-     const newKey = event.target.value;
-     const updatedProperties = { ...editedProperties };
-     if (newKey !== key) {
-       updatedProperties[newKey] = updatedProperties[key];
-       delete updatedProperties[key];
-     }
-     setEditedProperties(updatedProperties);
-   };
-
-  const handleValueChange = (event, key) => {
+  const handleValueChange = (event, index) => {
     const newValue = event.target.value;
-    const updatedProperties = { ...editedProperties, [key]: newValue };
-    setEditedProperties(updatedProperties);
+    setEditedProperties((prevProperties) => {
+      const updatedProperties = [...prevProperties];
+      updatedProperties[index] = {
+        ...updatedProperties[index],
+        value: newValue,
+      };
+      return updatedProperties;
+    });
   };
 
   const handleAddKeyValuePair = () => {
     if (newKeyValuePair.key !== '' && newKeyValuePair.value !== '') {
-      const updatedProperties = {
-        ...editedProperties,
-        [newKeyValuePair.key]: newKeyValuePair.value,
-      };
-      setEditedProperties(updatedProperties);
+      setEditedProperties((prevProperties) => [
+        ...prevProperties,
+        { ...newKeyValuePair },
+      ]);
       setNewKeyValuePair({ key: '', value: '' });
     }
   };
 
-  const handleDeleteKeyValuePair = (key) => {
-    const updatedProperties = { ...editedProperties };
-    delete updatedProperties[key];
-    setEditedProperties(updatedProperties);
+  const handleDeleteKeyValuePair = (index) => {
+    setEditedProperties((prevProperties) => {
+      const updatedProperties = [...prevProperties];
+      updatedProperties.splice(index, 1);
+      return updatedProperties;
+    });
   };
 
   return (
@@ -109,46 +116,42 @@ const PropertiesModal = (props) => {
             {selectedFeature ? (
               <div>
                 <Grid container spacing={2}>
-                  {Object.entries(editedProperties).map(
-                    ([key, value], index) => (
-                      <React.Fragment key={`${key}-${index}`}>
-                        <Grid item xs={5}>
-                          <TextField
-                            key={`key-${key}-${index}`}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            label="Key"
-                            name={key}
-                            value={key || ''}
-                            onChange={(event) => handleKeyChange(event, key)}
-                          />
-                        </Grid>
-                        <Grid item xs={5}>
-                          <TextField
-                            key={`value-${key}-${index}`}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            label="Value"
-                            name={key}
-                            value={value || ''}
-                            onChange={(event) => handleValueChange(event, key)}
-                          />
-                        </Grid>
-                        <Grid
-                          item
-                          xs={1}
-                          sx={{ display: 'flex', alignItems: 'center' }}
-                        >
-                          <DeleteIcon
-                            onClick={() => handleDeleteKeyValuePair(key)}
-                            sx={{ cursor: 'pointer' }}
-                          />
-                        </Grid>
-                      </React.Fragment>
-                    )
-                  )}
+                  {editedProperties.map((property, index) => (
+                    <React.Fragment key={index}>
+                      <Grid item xs={5}>
+                        <TextField
+                          key={`key-${index}`}
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          label="Key"
+                          value={property.key}
+                          onChange={(event) => handleKeyChange(event, index)}
+                        />
+                      </Grid>
+                      <Grid item xs={5}>
+                        <TextField
+                          key={`value-${index}`}
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          label="Value"
+                          value={property.value}
+                          onChange={(event) => handleValueChange(event, index)}
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={1}
+                        sx={{ display: 'flex', alignItems: 'center' }}
+                      >
+                        <DeleteIcon
+                          onClick={() => handleDeleteKeyValuePair(index)}
+                          sx={{ cursor: 'pointer' }}
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
                   <Grid item xs={5}>
                     <TextField
                       variant="outlined"
@@ -195,13 +198,6 @@ const PropertiesModal = (props) => {
               onClick={handleConfirm}
             >
               Confirm
-            </Button>
-            <Button
-              id="cancel-button"
-              className="modal-button"
-              onClick={handleCancel}
-            >
-              Cancel
             </Button>
           </Box>
         </Box>

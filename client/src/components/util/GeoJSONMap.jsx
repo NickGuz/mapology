@@ -310,18 +310,27 @@ const GeoJSONMap = (props) => {
     );
   };
 
-  const updateMapProperties = (map, properties) => {
-    map.properties = properties;
-
-    RequestApi.updateMapProperty(map.id, map.properties);
-  };
-
   const addProperties = (feature, newProperties) => {
     const updatedProperties = {
       ...feature.properties,
       ...newProperties,
     };
     updateProperties(feature, updatedProperties);
+  };
+
+  const updateMapProperties = (map, properties) => {
+    map.properties = properties;
+
+    RequestApi.updateMapProperty(map.id, map.properties);
+  };
+
+  const addMapProperties = async (map, newProperties) => {
+      // const map = await RequestApi.getMap(mapId)
+      const updatedProperties = {
+        ...map.properties,
+        ...newProperties,
+      };
+      updateMapProperties(map, updatedProperties);
   };
 
   const handleCreatePolygon = (event) => {
@@ -468,6 +477,7 @@ const GeoJSONMap = (props) => {
             layer={currLayer}
             feature={currFeature}
             updateMapProperties={updateMapProperties}
+            addMapProperties={addMapProperties}
             close={() => setMapPropOpen(false)}
           />
           <GeomanControl
