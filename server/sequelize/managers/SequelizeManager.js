@@ -485,6 +485,7 @@ exports.getComments = async (mapId) => {
     where:{
       mapId : mapId
     },
+    include: [User]
   });
 };
 
