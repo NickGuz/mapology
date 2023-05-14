@@ -255,7 +255,9 @@ const findFeatureWithPoints = (point1, point2, storeFeatures) => {
   });
 
   if (features.length === 0) {
-    console.log('Did not find any feature to split');
+    window.alert(
+      'Did not find any feature to split. Please make sure you only choose vertices that already exist'
+    );
     return null;
   }
 

@@ -58,7 +58,7 @@ const GeomanControl = (props) => {
     map.pm.setGlobalOptions({
       limitMarkersToCount: 10,
       hideMiddleMarkers: false,
-      snapDistance: 10000, // essentially force snapping
+      // snapDistance: 10000, // essentially force snapping
     });
 
     map.pm.setPathOptions({
