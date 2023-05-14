@@ -8,6 +8,7 @@ const {
   Dislikes,
   Thumbnails,
   Legends,
+  Comments
 } = require("../sequelize");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -469,4 +470,28 @@ exports.changePublish = async (mapId, published) => {
 
 exports.getPublished = async (mapId) => {
   return await MapInfo.findByPk(mapId, { attributes: ["published"] });
+};
+
+exports.addComment = async (mapId, userId, comment) => {
+  return await Comments.create({
+    userId: userId,
+    mapId: mapId,
+    text : comment,
+  });
+};
+
+exports.getComments = async (mapId) => {
+  return await Comments.findAll({
+    where:{
+      mapId : mapId
+    },
+  });
+};
+
+exports.deleteComment = async (id) => {
+  return await Comments.destroy({
+    where: {
+      id:id
+    },
+  });
 };

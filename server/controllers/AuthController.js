@@ -40,7 +40,12 @@ exports.login = async (req, res) => {
         .json({ errorMessage: "Please enter all required fields." });
     }
     // logging in with username
-    const user = await User.findOne({ where: { username: userInfo } });
+    const user = await User.findOne({ where: { 
+      [Op.or]: [
+        {username: userInfo},
+        {email: userInfo}
+      ]
+    } });
 
     if (!user) {
       return res.status(401).json({

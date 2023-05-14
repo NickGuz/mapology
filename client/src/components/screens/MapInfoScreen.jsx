@@ -200,7 +200,7 @@ const MapInfoScreen = () => {
         />
 
         <Paper sx={{ margin: 2 }} elevation={1}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: "60%"}}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end'}}>
             <Typography variant="subtitle1" sx={{ ml: 2, mt: 1, mr: 'auto' }}>
               {' '}
               {mapData && mapData.mapInfo.description}
@@ -286,7 +286,7 @@ const MapInfoScreen = () => {
         </DialogActions>
       </Dialog>
 
-      <Comment sx={{ flex: '1 0 25%' }} />
+      <Comment mapId = {routeParams.id} sx={{ flex: '1 0 25%' }} />
     </div>
   );
 };
