@@ -9,8 +9,8 @@ describe('template spec', () => {
   beforeEach(() => {
     cy.session('login', () => {
       cy.visit('http://localhost:3000/login/');
-      cy.get('#userInfo').type('asdf');
-      cy.get('#password').type('123');
+      cy.get('#userInfo').type('CypressTest');
+      cy.get('#password').type('CypressTest');
       cy.get(
         '#root > div.MuiBox-root.css-i9gxme > div > div > main > div > form > button'
       ).click();
@@ -120,6 +120,26 @@ describe('template spec', () => {
     cy.get('.MuiList-root > :nth-child(2)').click(); //download as shapefile
     cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '.geo.json');
     cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '_shp.zip');
+  });
+
+  it('Publish Map and Test Upvote/Downvote', () => {
+    cy.visit('http://localhost:3000/');
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .card-details-btn').click()
+    cy.wait(5000);
+    cy.get('.PrivateSwitchBase-input').click()
+    cy.get('.css-raggbt-MuiButtonBase-root-MuiIconButton-root').should('be.visible') //thumbs up should show
+    cy.get('.css-raggbt-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.css-1bvc4cc > .MuiBox-root > :nth-child(2)').should(($p) => {expect($p).to.contain('1')}) 
+    cy.get('.css-vi8f9j-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.css-1bvc4cc > .MuiBox-root > :nth-child(2)').should(($p) => {expect($p).to.contain('0')}) 
+    cy.get('.css-raggbt-MuiButtonBase-root-MuiIconButton-root').click()
+    cy.get('.css-1pbdpej-MuiButtonBase-root-MuiIconButton-root').should('be.visible') //thumbs down should show
+    cy.get('.css-1pbdpej-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.MuiBox-root > :nth-child(4)').should(($p) => {expect($p).to.contain('1')}) 
+    cy.get('.css-esgd14-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.MuiBox-root > :nth-child(4)').should(($p) => {expect($p).to.contain('0')})
+    cy.visit('http://localhost:3000/');
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardContent-root > :nth-child(4)').should(($p) => {expect($p).to.contain('Published Map')})
   });
 
   it('Merge 2 regions', () => {
