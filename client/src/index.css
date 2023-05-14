@@ -19,3 +19,7 @@ code {
 .edit-attributes-button {
   background-image: url('assets/edit-attributes-icon1.png');
 }
+
+.rename-region-button {
+  background-image: url('assets/rename-icon.png')
+}
