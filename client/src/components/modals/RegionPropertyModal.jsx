@@ -26,6 +26,7 @@ const PropertiesModal = (props) => {
   const selectedFeature = store.selectedFeatures[0];
   const properties = selectedFeature?.properties || {};
 
+
   const [editedProperties, setEditedProperties] = useState(properties);
   const [newKeyValuePair, setNewKeyValuePair] = useState({
     key: '',
@@ -33,8 +34,9 @@ const PropertiesModal = (props) => {
   });
 
   useEffect(() => {
+    const properties = store.selectedFeatures[0]?.properties || {};
     setEditedProperties(properties);
-  }, [properties]);
+  }, [store.selectedFeatures]);
 
   const handleConfirm = () => {
     if (store.selectedFeatures.length !== 1) {
@@ -44,6 +46,10 @@ const PropertiesModal = (props) => {
     props.updateProperties(selectedFeature, editedProperties);
     props.close();
   };
+
+  const handleCancel = () => {
+    props.close();
+  }
 
    const handleKeyChange = (event, key) => {
      const newKey = event.target.value;
@@ -114,7 +120,7 @@ const PropertiesModal = (props) => {
                             fullWidth
                             label="Key"
                             name={key}
-                            value={key}
+                            value={key || ''}
                             onChange={(event) => handleKeyChange(event, key)}
                           />
                         </Grid>
@@ -126,7 +132,7 @@ const PropertiesModal = (props) => {
                             fullWidth
                             label="Value"
                             name={key}
-                            value={value}
+                            value={value || ''}
                             onChange={(event) => handleValueChange(event, key)}
                           />
                         </Grid>
@@ -149,7 +155,7 @@ const PropertiesModal = (props) => {
                       size="small"
                       fullWidth
                       label="New Key"
-                      value={newKeyValuePair.key}
+                      value={newKeyValuePair.key || ''}
                       onChange={(event) =>
                         setNewKeyValuePair({
                           ...newKeyValuePair,
@@ -164,7 +170,7 @@ const PropertiesModal = (props) => {
                       size="small"
                       fullWidth
                       label="New Value"
-                      value={newKeyValuePair.value}
+                      value={newKeyValuePair.value || ''}
                       onChange={(event) =>
                         setNewKeyValuePair({
                           ...newKeyValuePair,
@@ -189,6 +195,13 @@ const PropertiesModal = (props) => {
               onClick={handleConfirm}
             >
               Confirm
+            </Button>
+            <Button
+              id="cancel-button"
+              className="modal-button"
+              onClick={handleCancel}
+            >
+              Cancel
             </Button>
           </Box>
         </Box>
