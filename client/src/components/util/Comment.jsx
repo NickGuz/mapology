@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   Box,
   Button,
@@ -15,37 +15,70 @@ import {
   Grid,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  addComment,
+  getComments,
+  deleteComment
+} from '../../store/GlobalStoreHttpRequestApi';
+import AuthContext from '../../auth/AuthContextProvider';
 
-const Comment = () => {
+const Comment = (props) => {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState([]);
-  const [selectedCommentIndex, setSelectedCommentIndex] = useState(null);
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [mapComments, setMapComments] = useState([]);
+  const { auth } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      let fetchedComments = await getComments(props.mapId);
+      console.log(fetchedComments);
+      if (fetchedComments){
+        setMapComments(fetchedComments.data);
+      }
+    }
+    fetchComments();
+    
+  }, []);
 
   const handleCommentChange = (event) => {
     setCommentText(event.target.value);
   };
-
+  
   const handleCommentSubmit = () => {
-    setComments([...comments, commentText]);
+    const helper = async () => {
+      let comment = await addComment(auth.user.id, props.mapId, commentText);
+      if (comment){
+        let fetchedComments = await getComments(props.mapId);
+        setMapComments(fetchedComments.data);
+      }
+    }
+    if (commentText != ""){
+      helper();
+    }
     setCommentText("");
   };
 
   const handleCommentDelete = () => {
-    const updatedComments = [...comments];
-    updatedComments.splice(selectedCommentIndex, 1);
-    setComments(updatedComments);
-    setSelectedCommentIndex(null);
-    setConfirmDeleteOpen(false);
+    const asyncDeleteComment = async () =>{
+      let deleted = await deleteComment(selectedCommentId);
+      if (deleted){
+        let fetchedComments = await getComments(props.mapId);
+        setMapComments(fetchedComments.data);
+      }
+      
+    }
+    asyncDeleteComment();
+    handleConfirmDeleteClose();
   };
 
-  const handleCommentDeleteClick = (index) => {
-    setSelectedCommentIndex(index);
+  const handleCommentDeleteClick = (id) => {
+    setSelectedCommentId(id);
     setConfirmDeleteOpen(true);
   };
 
   const handleConfirmDeleteClose = () => {
-    setSelectedCommentIndex(null);
+    setSelectedCommentId(null);
     setConfirmDeleteOpen(false);
   };
 
@@ -67,8 +100,8 @@ const Comment = () => {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto", paddingTop: "10px" }}>
-        {comments.length > 0 ? (
-          comments.map((comment, index) => (
+        {mapComments.length > 0 ? (
+          mapComments.map((comment, index) => (
             <Box
               key={index}
               sx={{
@@ -82,11 +115,14 @@ const Comment = () => {
               }}
             >
               <Avatar alt="User Profile Image" src={require("../../assets/avatar.jpg")} />
-              <Typography sx={{ marginLeft: 1 }}>John:</Typography>
-              <Typography sx={{ flex: 1, marginLeft: 1 }}>{comment}</Typography>
+              <Typography sx={{ marginLeft: 1 }}>{comment.userId}: </Typography>
+              <Typography sx={{ flex: 1, marginLeft: 1 }}>{comment.text}</Typography>
               <IconButton
-                onClick={() => handleCommentDeleteClick(index)}
-                sx={{ marginLeft: "auto" }}
+                onClick={() => handleCommentDeleteClick(comment.id)}
+                sx={{
+                  marginLeft: "auto",
+                  visibility: auth.user.id == comment.userId ? '' : 'hidden',
+                }}
               >
                 <DeleteIcon />
               </IconButton>
@@ -110,7 +146,7 @@ const Comment = () => {
           />
         </Grid>
         <Grid item xs={4}>
-          <Button sx={{ height: "100%" }} variant="contained" onClick={handleCommentSubmit}>
+          <Button sx={{ height: "100%" }} variant="contained" onClick={handleCommentSubmit} disabled = {commentText == ""}>
             Comment
           </Button>
         </Grid>

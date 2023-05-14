@@ -227,3 +227,22 @@ export const compress = async (json) => {
     return err.response
   });
 }
+
+export const addComment = async (userId, mapId, comment) => {
+  return await api.post(`/api/addComment`,
+  { userId : userId,
+    mapId : mapId,
+    comment : comment}).catch((err) => { return err.response });
+}
+
+export const getComments = async (mapId) => {
+  return await api.get(`/api/getComments/${mapId}`).catch((err) => {
+    return err.response;
+  });
+}
+
+export const deleteComment = async (id) => {
+  return await api.delete(`/api/deleteComment/${id}`).catch((err) => {
+    return err.response
+  });
+}

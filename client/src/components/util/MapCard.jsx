@@ -198,21 +198,24 @@ const MapCard = (props) => {
           </Typography>
         )}
       </CardContent>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        {tags &&
-          tags.map((tag) => (
-            <Chip
-              key={tag.tagName}
-              sx={{ marginTop: '4px', marginRight: '4px', marginLeft: '4px' }}
-              label={tag.tagName}
-              onClick={handleTagClick}
-            />
-          ))}
+      <Box sx = {{display: "flex"}}>
+        <Box sx={{ justifyContent: 'flex-start'}}>
+          {tags &&
+            tags.map((tag) => (
+              <Chip
+                key={tag.tagName}
+                sx={{ marginTop: '4px', marginRight: '4px', marginLeft: '4px' }}
+                label={tag.tagName}
+                onClick={handleTagClick}
+              />
+            ))}
+        </Box>
         <Box
           sx={{
             visibility: published ? '' : 'hidden',
-            display: 'flex',
-            justifyContent: 'flex-end',
+            ml: "auto",
+            mr: 1,
+            display: "flex"
           }}
         >
           <IconButton
@@ -241,7 +244,9 @@ const MapCard = (props) => {
             {dislikes.length}
           </Typography>
         </Box>
+      
       </Box>
+      
 
       <CardActions>
         <Button
