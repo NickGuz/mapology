@@ -166,7 +166,7 @@ const ImportModal = (props) => {
               <MenuItem value={1}>Small</MenuItem>
               <MenuItem value={.01}>Medium</MenuItem>
               <MenuItem value={.0001}>Large</MenuItem>
-              <MenuItem value={Number.MIN_VALUE}>Full</MenuItem>
+              <MenuItem value={Number.MIN_VALUE}>No Compression</MenuItem>
             </Select>
           </FormControl>
         </Box>

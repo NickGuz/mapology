@@ -59,7 +59,7 @@ exports.compressMap = (req, res) => {
     });
   }
 
-  const map = doCompressMap(req.body.json, 0.5);
+  const map = doCompressMap(req.body.json, 0.01);
   return res.status(200).json({
     data: map,
   });
