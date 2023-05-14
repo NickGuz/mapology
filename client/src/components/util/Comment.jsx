@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -13,61 +13,61 @@ import {
   Avatar,
   Paper,
   Grid,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   addComment,
   getComments,
-  deleteComment
+  deleteComment,
 } from '../../store/GlobalStoreHttpRequestApi';
 import AuthContext from '../../auth/AuthContextProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Comment = (props) => {
-  const [commentText, setCommentText] = useState("");
+  const [commentText, setCommentText] = useState('');
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [mapComments, setMapComments] = useState([]);
   const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchComments = async () => {
       let fetchedComments = await getComments(props.mapId);
       console.log(fetchedComments);
-      if (fetchedComments){
+      if (fetchedComments) {
         setMapComments(fetchedComments.data);
       }
-    }
+    };
     fetchComments();
-    
   }, []);
 
   const handleCommentChange = (event) => {
     setCommentText(event.target.value);
   };
-  
+
   const handleCommentSubmit = () => {
     const helper = async () => {
       let comment = await addComment(auth.user.id, props.mapId, commentText);
-      if (comment){
+      if (comment) {
         let fetchedComments = await getComments(props.mapId);
         setMapComments(fetchedComments.data);
       }
-    }
-    if (commentText != ""){
+    };
+    if (commentText != '') {
       helper();
     }
-    setCommentText("");
+    setCommentText('');
   };
 
   const handleCommentDelete = () => {
-    const asyncDeleteComment = async () =>{
+    const asyncDeleteComment = async () => {
       let deleted = await deleteComment(selectedCommentId);
-      if (deleted){
+      if (deleted) {
         let fetchedComments = await getComments(props.mapId);
         setMapComments(fetchedComments.data);
       }
-      
-    }
+    };
     asyncDeleteComment();
     handleConfirmDeleteClose();
   };
@@ -88,39 +88,60 @@ const Comment = (props) => {
       sx={{
         marginRight: 5,
         marginTop: 2,
-        display: "flex",
-        flexDirection: "column",
-        height: "80vh",
-        alignItems: "center",
-        justifyContent: "space-between",
+        display: 'flex',
+        flexDirection: 'column',
+        height: '80vh',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         maxWidth: 600,
         paddingLeft: 1,
         paddingBottom: 1,
         paddingRight: 1,
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 600, flex: 1, overflowY: "auto", paddingTop: "10px" }}>
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: 600,
+          flex: 1,
+          overflowY: 'auto',
+          paddingTop: '10px',
+        }}
+      >
         {mapComments.length > 0 ? (
           mapComments.map((comment, index) => (
             <Box
               key={index}
               sx={{
                 border: 1,
-                borderColor: "grey.300",
-                borderRadius: "5px",
-                padding: "10px",
-                margin: "10px 0",
-                display: "flex",
-                alignItems: "center",
+                borderColor: 'grey.300',
+                borderRadius: '5px',
+                padding: '10px',
+                margin: '10px 0',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
-              <Avatar alt="User Profile Image" src={require("../../assets/avatar.jpg")} />
-              <Typography sx={{ marginLeft: 1 }}>{comment.userId}: </Typography>
-              <Typography sx={{ flex: 1, marginLeft: 1 }}>{comment.text}</Typography>
+              <Avatar
+                alt="User Profile Image"
+                onClick={() => navigate(`/profile/${comment.userId}`)}
+                // src={require('../../assets/avatar.jpg')}
+              >
+                {comment.user.username[0].toUpperCase()}
+              </Avatar>
+              <Typography
+                sx={{ marginLeft: 1 }}
+                onClick={() => navigate(`/profile/${comment.userId}`)}
+              >
+                {comment.user.username}:{' '}
+              </Typography>
+              <Typography sx={{ flex: 1, marginLeft: 1 }}>
+                {comment.text}
+              </Typography>
               <IconButton
                 onClick={() => handleCommentDeleteClick(comment.id)}
                 sx={{
-                  marginLeft: "auto",
+                  marginLeft: 'auto',
                   visibility: auth.user.id == comment.userId ? '' : 'hidden',
                 }}
               >
@@ -146,7 +167,12 @@ const Comment = (props) => {
           />
         </Grid>
         <Grid item xs={4}>
-          <Button sx={{ height: "100%" }} variant="contained" onClick={handleCommentSubmit} disabled = {commentText == ""}>
+          <Button
+            sx={{ height: '100%' }}
+            variant="contained"
+            onClick={handleCommentSubmit}
+            disabled={commentText == ''}
+          >
             Comment
           </Button>
         </Grid>
@@ -154,7 +180,9 @@ const Comment = (props) => {
       <Dialog open={confirmDeleteOpen} onClose={handleConfirmDeleteClose}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to delete this comment?</DialogContentText>
+          <DialogContentText>
+            Are you sure you want to delete this comment?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleConfirmDeleteClose}>Cancel</Button>
