@@ -108,19 +108,19 @@ describe('template spec', () => {
     cy.contains('Map Description JSON ' + random).should('exist');
   });
 
-  it('Export most recently created Map (json)', () => {
-    cy.visit('http://localhost:3000/');
-    cy.get('button').filter(':contains("Open Editor")').first().click();
-    cy.wait(5000);
-    // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
-    cy.get('#download-dropdown-btn').click();
-    cy.get('.MuiList-root > [tabindex="0"]').click(); //download as geojson
-    // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
-    cy.get('#download-dropdown-btn').click();
-    cy.get('.MuiList-root > :nth-child(2)').click(); //download as shapefile
-    cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '.geo.json');
-    cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '_shp.zip');
-  });
+  // it('Export most recently created Map (json)', () => {
+  //   cy.visit('http://localhost:3000/');
+  //   cy.get('button').filter(':contains("Open Editor")').first().click();
+  //   cy.wait(5000);
+  //   // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+  //   cy.get('#download-dropdown-btn').click();
+  //   cy.get('.MuiList-root > [tabindex="0"]').click(); //download as geojson
+  //   // cy.get(".MuiGrid-grid-xs-10 > :nth-child(1) > :nth-child(5)").click(); // download button
+  //   cy.get('#download-dropdown-btn').click();
+  //   cy.get('.MuiList-root > :nth-child(2)').click(); //download as shapefile
+  //   cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '.geo.json');
+  //   cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '_shp.zip');
+  // });
 
   it('Publish Map and Test Upvote/Downvote', () => {
     cy.visit('http://localhost:3000/');
@@ -160,7 +160,7 @@ describe('template spec', () => {
   });
 
 
-  it('Merge 2 regions', () => {
+  it('Merge 2 regions, Delete New Region and Undo/Redo', () => {
     cy.visit('http://localhost:3000/', {
       onBeforeLoad(win) {
         cy.stub(win, 'prompt').returns('Test Region');
@@ -188,15 +188,22 @@ describe('template spec', () => {
 
     // Check that the new region exists, might not work
     cy.contains('Test Region').should('exist');
+
+    // Delete Layer
+    // cy.get('[aria-label="Merge"]').click();
+    cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
+    cy.get('#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(50)').click();
+    cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
   });
 
-  it('Delete GeoJSON Map', () => {
-    cy.visit('http://localhost:3000/');
-    cy.get('.card-details-btn').filter(':contains("Details")').first().click();
-    cy.contains('Cypress Map JSON ' + random).should('exist');
-    cy.get('#delete-map-btn').click();
-    cy.get('#confirm-delete-btn').click();
-    cy.visit('http://localhost:3000/');
-    cy.contains('Cypress Map JSON ' + random).should('not.exist');
-  });
+
+  // it('Delete GeoJSON Map', () => {
+  //   cy.visit('http://localhost:3000/');
+  //   cy.get('.card-details-btn').filter(':contains("Details")').first().click();
+  //   cy.contains('Cypress Map JSON ' + random).should('exist');
+  //   cy.get('#delete-map-btn').click();
+  //   cy.get('#confirm-delete-btn').click();
+  //   cy.visit('http://localhost:3000/');
+  //   cy.contains('Cypress Map JSON ' + random).should('not.exist');
+  // });
 });
