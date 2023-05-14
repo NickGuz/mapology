@@ -14,6 +14,8 @@ import GlobalStoreContext from '../../store/store';
 import AuthContext from '../../auth/AuthContextProvider';
 import CompressIcon from '@mui/icons-material/Compress';
 import CompressModal from '../modals/CompressModal';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 const TopToolbar = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -73,6 +75,27 @@ const TopToolbar = (props) => {
     );
     setAnchorEl(null);
   };
+
+  const handleEditTitle = async () => {
+    const newTitle = await prompt('Enter a new title');
+
+    if (newTitle) {
+      try {
+        RequestApi.updateMapTitle(store.currentMap.mapInfo.id, newTitle);
+        const updatedMapInfo = { ...store.currentMap.mapInfo, title: newTitle };
+        const updatedCurrentMap = {
+          ...store.currentMap,
+          mapInfo: updatedMapInfo,
+        };
+        // console.log(updatedMapInfo)
+        // console.log(updatedCurrentMap)
+        store.setCurrentMap(updatedCurrentMap);
+      } catch (error) {
+        console.log('Error updating map title:', error);
+      }
+    }
+  };
+
   const handleUndo = () => {
     store.undo();
   };
@@ -80,7 +103,7 @@ const TopToolbar = (props) => {
     store.redo();
   };
   return (
-    <Box>
+    <Box display="flex" alignItems="center">
       {authorized && (
         <>
           <IconButton onClick={handleUndo}>
@@ -128,6 +151,16 @@ const TopToolbar = (props) => {
         close={() => setCompressOpen(false)}
         confirm={() => handleCompress()}
       />
+      <Box flexGrow={1} textAlign="center">
+        <span>
+          {store.currentMap &&
+            store.currentMap.mapInfo &&
+            store.currentMap.mapInfo.title}
+        </span>
+        <IconButton onClick={handleEditTitle}>
+          <EditIcon />
+        </IconButton>
+      </Box>
     </Box>
   );
 };
