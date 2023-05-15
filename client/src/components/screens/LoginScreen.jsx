@@ -30,6 +30,10 @@ export default function LoginScreen() {
     navigate("/account-recovery/");
   };
 
+  const handleCreateAccount = () => {
+    navigate("/register/");
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
@@ -87,7 +91,7 @@ export default function LoginScreen() {
                   Sign In
                 </Button>
               </Box>
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 0, mb: 2 }}>
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 0, mb: 2 }} onClick={handleCreateAccount}>
                 Create Account
               </Button>
 
