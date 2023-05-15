@@ -174,6 +174,9 @@ const MapCard = (props) => {
             </Link>
           </Typography>
         )}
+        <Typography variant="body2" color="text.secondary" align="left">
+          {published ? 'Published Map' : 'Private Map'}
+        </Typography>
       </CardContent>
       <Box sx={{ display: 'flex' }}>
         <Box
