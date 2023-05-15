@@ -14,6 +14,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import IncorrectLoginModal from "../modals/IncorrectLoginModal";
 
 export default function LoginScreen() {
   const { auth } = useContext(AuthContext);
@@ -40,6 +41,7 @@ export default function LoginScreen() {
         <Grid item xs={12}>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
+            <IncorrectLoginModal/>
             <Box
               sx={{
                 marginTop: 20,

@@ -13,6 +13,7 @@ const AuthActionType = {
   LOGIN_USER: 'LOGIN_USER',
   LOGOUT_USER: 'LOGOUT_USER',
   SET_DISPLAYED_USERS: 'SET_DISPLAYED_USERS',
+  LOGIN_USER_FAIL: 'LOGIN_USER_FAIL',
 };
 
 function AuthContextProvider(props) {
@@ -92,6 +93,13 @@ function AuthContextProvider(props) {
           ...auth,
           user: payload.user,
           loggedIn: true,
+        });
+      }
+      case AuthActionType.LOGIN_USER_FAIL: {
+        return setAuth({
+          ...auth,
+          incorrectInfo: payload.incorrectInfo,
+          emptyInfo: payload.emptyInfo
         });
       }
       case AuthActionType.LOGOUT_USER: {
@@ -181,6 +189,24 @@ function AuthContextProvider(props) {
         },
       });
       navigate('/');
+    }
+    else if (response.status === 400){
+      authReducer({
+        type: AuthActionType.LOGIN_USER_FAIL,
+        payload: {
+          incorrectInfo: false,
+          emptyInfo: true,
+        }
+      });
+    }
+    else if (response.status === 401){
+      authReducer({
+        type: AuthActionType.LOGIN_USER_FAIL,
+        payload: {
+          incorrectInfo: true,
+          emptyInfo: false,
+        }
+      });
     }
   };
 
@@ -343,6 +369,15 @@ function AuthContextProvider(props) {
         registered: false,
         invalidEmail: false,
       },
+    })
+  }
+  auth.hideLoginModal = () => {
+    authReducer({
+      type: AuthActionType.LOGIN_USER_FAIL,
+      payload: {
+        incorrectInfo: false,
+        emptyInfo: false,
+      }
     })
   }
 
