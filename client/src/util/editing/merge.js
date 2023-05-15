@@ -40,8 +40,9 @@ const merge = async (store) => {
   );
 
   // Update the store to rerender
-  store.setCurrentMap(store.currentMap);
+  // store.setCurrentMap(store.currentMap);
   store.setSelectedFeatures([]);
+  // store.setMapUpdates(store.mapUpdates + 1);
   store.addEditMapTransaction(mapClone, store.currentMap);
 };
 

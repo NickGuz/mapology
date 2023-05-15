@@ -260,13 +260,15 @@ const MapInfoScreen = () => {
           <Box display="flex" justifyContent="right" sx={{ mt: 'auto'}}>
             <Button>Duplicate</Button>
             <Button onClick={handleOpenEditor}>Open Editor</Button>
+            {auth.user && mapData && auth.user.id == mapData.author.id && 
             <Button
               id="delete-map-btn"
               onClick={handleDeleteMapDialog}
-              sx={{ mr: 1, visibility: auth.user.id == mapData.author.id? "":"hidden" }}
+              sx={{ mr: 1}}
             >
               Delete Map
-            </Button>
+            </Button>}
+            
           </Box>
         </Paper>
       </Paper>

@@ -20,7 +20,9 @@ const ScreenShooter = () => {
     position: 'topleft', // position of take screen icon
     screenName: 'screen', // string or function
     // iconUrl: ICON_SVG_BASE64, // screen btn icon base64 or url
-    hideElementsWithSelectors: ['.leaflet-control-container', '.countryLabel'], // by default hide map controls All els must be child of _map._container
+    hideElementsWithSelectors: [
+      '.leaflet-control-container' /*, '.countryLabel'*/,
+    ], // by default hide map controls All els must be child of _map._container
     mimeType: 'image/png', // used if format == image,
     caption: null, // string or function, added caption to bottom of screen
     captionFontSize: 15,

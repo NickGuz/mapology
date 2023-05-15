@@ -1,15 +1,15 @@
-import React, { useContext, useState } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { BlockPicker } from "react-color";
-import Slider from "@mui/material/Slider";
-import GlobalStoreContext from "../../store/store";
-import * as RequestApi from "../../store/GlobalStoreHttpRequestApi";
-import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { Button } from "@mui/material";
-import reactCSS from "reactcss";
-import Popover from "@mui/material/Popover";
+import React, { useContext, useState } from 'react';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { BlockPicker } from 'react-color';
+import Slider from '@mui/material/Slider';
+import GlobalStoreContext from '../../store/store';
+import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
+import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import { Button } from '@mui/material';
+import reactCSS from 'reactcss';
+import Popover from '@mui/material/Popover';
 
 const RegionEditor = (props) => {
   const [value, setValue] = useState(50);
@@ -17,7 +17,7 @@ const RegionEditor = (props) => {
   const [fillColorActive, setFillColorActive] = useState(null);
   const [borderColorActive, setBorderColorActive] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [color, setColor] = useState("#6e6eee");
+  const [color, setColor] = useState('#6e6eee');
 
   const { store } = useContext(GlobalStoreContext);
 
@@ -31,33 +31,33 @@ const RegionEditor = (props) => {
     if (store.selectedFeatures.length <= 0) {
       return;
     }
-    let oldColor
+    let oldColor;
     // Set fillColor property in each feature.properties and update backend
     store.selectedFeatures.forEach((feature) => {
-      oldColor = feature.properties['fillColor']
+      oldColor = feature.properties['fillColor'];
       if (fillColorActive) {
-        feature.properties["fillColor"] = event.hex;
+        feature.properties['fillColor'] = event.hex;
       } else {
-        feature.properties["borderColor"] = event.hex;
+        feature.properties['borderColor'] = event.hex;
       }
       RequestApi.updateFeatureProperties(feature.id, feature.properties);
     });
-    if(fillColorActive){
-      RequestApi.upsertLegend(props.mapId, event.hex, event.hex)
+    if (fillColorActive) {
+      RequestApi.upsertLegend(props.mapId, event.hex, event.hex);
 
       //update store
       const temp = store.currentLegend;
       delete temp[oldColor];
-  
+
       store.setCurrentLegend({
-        temp
+        temp,
       });
     }
 
     // Empty selectedFeatures after the change
     store.setSelectedFeatures([]);
     handleClose();
-    console.log(store.currentLegend)
+    console.log(store.currentLegend);
   };
 
   const handleFillColorClick = (event) => {
@@ -77,25 +77,25 @@ const RegionEditor = (props) => {
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <Box>
       <p
         id="text-header"
         style={{
-          paddingTop: "0px",
-          color: "dimgray",
-          fontSize: "120%",
-          borderTop: "1px solid",
-          borderBottom: "1px solid",
-          borderColor: "darkgray",
-          backgroundColor: "silver",
+          paddingTop: '0px',
+          color: 'dimgray',
+          fontSize: '120%',
+          borderTop: '1px solid',
+          borderBottom: '1px solid',
+          borderColor: 'darkgray',
+          backgroundColor: 'silver',
         }}
       >
         Color
       </p>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Button onClick={handleFillColorClick}>
           <FormatColorFillIcon />
         </Button>
@@ -108,14 +108,14 @@ const RegionEditor = (props) => {
           anchorEl={anchorEl}
           onClose={handleClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
         >
           <BlockPicker color={color} onChangeComplete={handleChangeComplete} />
         </Popover>
       </div>
-      <p
+      {/* <p
         id="text-header"
         style={{
           paddingTop: "0px",
@@ -134,7 +134,7 @@ const RegionEditor = (props) => {
           <Slider value={value} onChange={handleSliderChange} aria-label="opacity slider" />
         </div>
         <div>{value}</div>
-      </Grid>
+      </Grid> */}
     </Box>
   );
 };

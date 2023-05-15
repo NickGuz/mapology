@@ -5,12 +5,13 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
 describe('template spec', () => {
   const random = Math.trunc(Math.random() * 1000);
+  const changedRandom = Math.trunc(Math.random() * 1000);
 
   beforeEach(() => {
     cy.session('login', () => {
       cy.visit('http://localhost:3000/login/');
-      cy.get('#userInfo').type('asdf');
-      cy.get('#password').type('123');
+      cy.get('#userInfo').type('CypressTest');
+      cy.get('#password').type('CypressTest');
       cy.get(
         '#root > div.MuiBox-root.css-i9gxme > div > div > main > div > form > button'
       ).click();
@@ -37,7 +38,7 @@ describe('template spec', () => {
     cy.contains('h2', 'Import').should('exist');
   });
 
-  it('Import Map using dbf/shp', () => {
+  it('Import Map using dbf/shp - Cypress Map Shapefile ' + random, () => {
     cy.visit('http://localhost:3000/');
     cy.wait(5000); // wait as an attempt to prevent re-rendering removing the import modal when we click
     cy.get('.MuiAppBar-root').should('exist');
@@ -60,7 +61,7 @@ describe('template spec', () => {
     cy.contains('Map Description Shapefile ' + random).should('exist');
   });
 
-  it('Export most recently created Map (dbf/shp)', () => {
+  it('Export created DBF/SHP map - Cypress Map Shapefile ' + random, () => {
     cy.visit('http://localhost:3000/');
     cy.get('button').filter(':contains("Open Editor")').first().click();
     cy.wait(5000);
@@ -88,7 +89,7 @@ describe('template spec', () => {
     cy.contains('Cypress Map Shapefile ' + random).should('not.exist');
   });
 
-  it('Import Map using json', () => {
+  it('Import Map using json - Cypress Map JSON ' + random, () => {
     cy.visit('http://localhost:3000/');
     cy.wait(5000); // wait as an attempt to prevent re-rendering removing the import modal when we click
     cy.get('.MuiAppBar-root').should('exist');
@@ -108,7 +109,7 @@ describe('template spec', () => {
     cy.contains('Map Description JSON ' + random).should('exist');
   });
 
-  it('Export most recently created Map (json)', () => {
+  it('Export created JSON map - Cypress Map JSON ' + random, () => {
     cy.visit('http://localhost:3000/');
     cy.get('button').filter(':contains("Open Editor")').first().click();
     cy.wait(5000);
@@ -122,7 +123,58 @@ describe('template spec', () => {
     cy.readFile('cypress/downloads/Cypress Map JSON ' + random + '_shp.zip');
   });
 
-  it('Merge 2 regions', () => {
+  it('Publish Map and Test Upvote/Downvote', () => {
+    cy.visit('http://localhost:3000/');
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardContent-root > :nth-child(4)').should(($p) => {expect($p).to.contain('Private Map')})
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .card-details-btn').click()
+    cy.wait(5000);
+    cy.get('.PrivateSwitchBase-input').click()
+    cy.get('.css-raggbt-MuiButtonBase-root-MuiIconButton-root').should('be.visible') //thumbs up should show
+    cy.get('.css-raggbt-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.css-1bvc4cc > .MuiBox-root > :nth-child(2)').should(($p) => {expect($p).to.contain('1')}) 
+    cy.get('.css-vi8f9j-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.css-1bvc4cc > .MuiBox-root > :nth-child(2)').should(($p) => {expect($p).to.contain('0')}) 
+    cy.get('.css-raggbt-MuiButtonBase-root-MuiIconButton-root').click()
+    cy.get('.css-1pbdpej-MuiButtonBase-root-MuiIconButton-root').should('be.visible') //thumbs down should show
+    cy.get('.css-1pbdpej-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.MuiBox-root > :nth-child(4)').should(($p) => {expect($p).to.contain('1')}) 
+    cy.get('.css-esgd14-MuiButtonBase-root-MuiIconButton-root').click() 
+    cy.get('.MuiBox-root > :nth-child(4)').should(($p) => {expect($p).to.contain('0')})
+    cy.visit('http://localhost:3000/');
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardContent-root > :nth-child(4)').should(($p) => {expect($p).to.contain('Published Map')})
+  });
+
+  it('Comment Testing', () => {
+    cy.visit('http://localhost:3000/');
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > .card-details-btn').click()
+    cy.wait(5000);
+    cy.get('.MuiFormControl-root > .MuiInputBase-root').type('This is Cypress testing comments') //type comment
+    cy.get('.MuiGrid-grid-xs-4 > .MuiButtonBase-root').click() //click comment
+    cy.get('.css-yyvcc2-MuiTypography-root').should(($p) => {expect($p).to.contain('CypressTest')})
+    cy.get('.css-axkxne-MuiTypography-root').should(($p) => {expect($p).to.contain('This is Cypress testing comments')})
+    cy.get('.css-1hcyk1z > .MuiBox-root > .MuiButtonBase-root').click() //open delete modal
+    cy.get('.MuiDialogActions-root > :nth-child(1)').click() //cancel 
+    cy.get('.css-1hcyk1z > .MuiBox-root > .MuiButtonBase-root').click() //open delete modal
+    cy.get('.MuiDialogActions-root > :nth-child(2)').click() //delete
+    cy.get('.css-yyvcc2-MuiTypography-root').should('not.exist'); //check not there
+    cy.get('.css-axkxne-MuiTypography-root').should('not.exist'); //check not there
+  });
+
+  it('Edit Map Name to Cypress Map JSON ' + changedRandom, () => {
+    cy.visit('http://localhost:3000/', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'prompt').returns('Cypress Map JSON ' + changedRandom);
+      },
+    });
+    cy.get('button').filter(':contains("Open Editor")').first().click();
+    cy.wait(5000);
+    cy.contains('Cypress Map JSON ' + random).should('exist');
+    cy.get('.css-70qvj9 > .MuiBox-root > .MuiButtonBase-root').click()
+    cy.contains('Cypress Map JSON ' + random).should('not.exist');
+    cy.contains('Cypress Map JSON ' + changedRandom).should('exist');
+  });
+
+  it('Merge 2 regions, Delete Merged Region w/ Undo+Redo for both', () => {
     cy.visit('http://localhost:3000/', {
       onBeforeLoad(win) {
         cy.stub(win, 'prompt').returns('Test Region');
@@ -150,15 +202,71 @@ describe('template spec', () => {
 
     // Check that the new region exists, might not work
     cy.contains('Test Region').should('exist');
+
+    //Undo Merge 
+    cy.get('.css-70qvj9 > :nth-child(1)').click() // undo click
+    cy.contains('Test Region').should('not.exist');
+
+    //Redo Merge
+    cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
+    cy.contains('Test Region').should('exist');
+
+    // Delete Merged
+    cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
+    cy.get('#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(50)').click();
+    cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
+
+    //Undo Delete 
+    cy.get('.css-70qvj9 > :nth-child(1)').click() // undo click
+    cy.contains('Test Region').should('exist');
+
+    //Redo Delete
+    cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
+    cy.contains('Test Region').should('not.exist');
   });
 
-  it('Delete GeoJSON Map', () => {
+  it('Delete Existing Region (Algeria) w/ Undo/Redo', () => {
+    cy.visit('http://localhost:3000/')
+    cy.get('button').filter(':contains("Open Editor")').first().click();
+    cy.wait(5000);
+
+    // Delete Existing Region (Algeria)
+    cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
+    cy.get('#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(32)').click();
+    cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()     
+    cy.contains('Algeria').should('not.exist');
+
+    //Undo Delete (Algeria)
+    cy.get('.css-70qvj9 > :nth-child(1)').click() // undo click
+    cy.contains('Algeria').should('exist');
+
+    //Redo Delete (Algeria)
+    cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
+    cy.contains('Algeria').should('not.exist');
+  });
+
+  it('Duplicate Cypress Map JSON ' + changedRandom, () => {
+    cy.visit('http://localhost:3000/')
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > :nth-child(1)').click();
+    cy.wait(5000);
+    cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
+    cy.visit('http://localhost:3000/')
+    cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
+  });
+
+  it('Delete Copy and Original Cypress Map JSON ' + changedRandom, () => {
     cy.visit('http://localhost:3000/');
     cy.get('.card-details-btn').filter(':contains("Details")').first().click();
-    cy.contains('Cypress Map JSON ' + random).should('exist');
+    cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
     cy.get('#delete-map-btn').click();
     cy.get('#confirm-delete-btn').click();
     cy.visit('http://localhost:3000/');
-    cy.contains('Cypress Map JSON ' + random).should('not.exist');
+    cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('not.exist');
+    cy.get('.card-details-btn').filter(':contains("Details")').first().click();
+    cy.contains('Cypress Map JSON ' + changedRandom).should('exist');
+    cy.get('#delete-map-btn').click();
+    cy.get('#confirm-delete-btn').click();
+    cy.visit('http://localhost:3000/');
+    cy.contains('Cypress Map JSON ' + changedRandom).should('not.exist');
   });
 });

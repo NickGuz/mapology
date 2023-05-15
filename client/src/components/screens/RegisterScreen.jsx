@@ -13,10 +13,11 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterScreen() {
   const { auth } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -29,7 +30,7 @@ export default function RegisterScreen() {
   };
 
   const handleLogin = () => {
-    auth.openLoginDialog();
+    navigate("/login/");
   };
 
   return (

@@ -342,7 +342,11 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
 };
 
 exports.getAllTags = async () => {
-  return await Tags.findAll();
+  return await Tags.findAll({
+    attributes: [
+      [Sequelize.fn("DISTINCT", Sequelize.col("tagName")), "tagName"],
+    ],
+  });
 };
 
 exports.getFeatureById = async (fid) => {

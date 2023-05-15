@@ -10,12 +10,11 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthContext from '../../auth/AuthContextProvider';
 import GlobalStoreContext, { SearchByValue } from '../../store/store';
 import LoginModal from '../modals/LoginModal';
 import ImportModal from '../modals/ImportModal';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import SettingsModal from '../modals/SettingsModal';
 import SearchBar from '@mkyy/mui-search-bar';
 
@@ -23,11 +22,15 @@ const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
 
   const handleHome = () => {
     store.setCurrentMap(null);
+    if (location.pathname !== '/') {
+      store.setDisplayedMaps([]);
+    }
     navigate('/');
   };
   const handleOpenUserMenu = (event) => {
@@ -162,22 +165,24 @@ const Navbar = () => {
               <Button
                 key="Home"
                 onClick={handleHome}
-                sx={{ mt: 2, color: 'white', display: 'block' }}
+                sx={{ color: 'white', display: 'block' }}
               >
                 Home
               </Button>
-              <Button
-                key="Import"
-                onClick={handleImport}
-                sx={{ mt: 2, color: 'white', display: 'block' }}
-              >
-                Import
-              </Button>
+              {auth.user && (
+                <Button
+                  key="Import"
+                  onClick={handleImport}
+                  sx={{ color: 'white', display: 'block' }}
+                >
+                  Import
+                </Button>
+              )}
 
               <Button
                 key="Browse"
                 onClick={handleBrowse}
-                sx={{ mt: 2, color: 'white', display: 'block' }}
+                sx={{ color: 'white', display: 'block' }}
               >
                 Browse
               </Button>
@@ -189,7 +194,7 @@ const Navbar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: 20, // I literally can't figure out how to center it so doing this idk
+                marginRight: 27, // I literally can't figure out how to center it so doing this idk
               }}
             >
               <SearchBar
@@ -205,7 +210,6 @@ const Navbar = () => {
             </Box>
 
             <Box sx={{ display: 'flex', flexGrow: 0, alignItems: 'center' }}>
-              <DarkModeIcon sx={{ width: 30, height: 30, mr: 1 }} />
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Avatar" src="">

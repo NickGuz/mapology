@@ -60,7 +60,23 @@ const HomeScreen = () => {
           ))}
         </Carousel>
       </div>
-      <MapGrid mapData={store.displayedMaps} type={MapGridType.BROWSE} />
+      {auth.user ? (
+        store.displayedMaps.length > 0 ? (
+          <MapGrid mapData={store.displayedMaps} type={MapGridType.BROWSE} />
+        ) : (
+          <div style={{ textAlign: 'center', marginTop: 50 }}>
+            <Typography color="#171717" sx={{ opacity: 0.8 }} variant="h4">
+              You have no uploaded maps
+            </Typography>
+          </div>
+        )
+      ) : (
+        <div style={{ textAlign: 'center', marginTop: 50 }}>
+          <Typography color="#171717" sx={{ opacity: 0.8 }} variant="h4">
+            Sign in to create your own maps!
+          </Typography>
+        </div>
+      )}
     </div>
   );
 };

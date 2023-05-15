@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { MapContainer, ZoomControl, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useTheme } from '@mui/material/styles';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
 import ScreenShooter from '../util/ScreenShooter';

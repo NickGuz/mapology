@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { useMap, GeoJSON } from 'react-leaflet';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
@@ -6,22 +6,10 @@ import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import AuthContext from '../../auth/AuthContextProvider';
-import Control from 'react-leaflet-custom-control';
-import { Stack } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import MergeIcon from '@mui/icons-material/Merge';
-import EditAttributesIcon from '@mui/icons-material/EditAttributes';
-import AbcIcon from '@mui/icons-material/Abc';
-import EditLocationAlt from '@mui/icons-material/EditLocationAlt';
-import NearMeIcon from '@mui/icons-material/NearMe';
-// import { GeomanControls } from 'react-leaflet-geoman-v2';
 import ChangeNameModal from '../modals/ChangeNameModal';
 import PropertiesModal from '../modals/RegionPropertyModal';
 import MapPropsModal from '../modals/MapPropsModal';
 import MapLegend from './MapLegend';
-import * as turf from '@turf/turf';
 import { splitRegion } from '../../util/editing/split';
 import { removeVertex, deleteFeature } from '../../util/editing/delete';
 import { moveVertex } from '../../util/editing/move';
@@ -35,31 +23,19 @@ const GeoJSONMap = (props) => {
   const [propOpen, setPropOpen] = useState(false);
   const [boundsSet, setBoundsSet] = useState(false);
   const [mapPropOpen, setMapPropOpen] = useState(false);
+  const [canSelectFeatures, setCanSelectFeatures] = useState(true);
 
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const map = useMap();
 
-  useEffect(() => {
-    // map.pm.addControls({
-    //   position: 'topleft',
-    //   drawCircle: false,
-    //   drawText: true,
-    //   rotateMode: false,
-    //   drawMarker: false,
-    //   drawPolyline: false,
-    //   drawCircleMarker: false,
-    //   drawRectangle: false,
-    //   cutPolygon: false,
-    // });
-    // if (!map.pm.Toolbar.options.Split) {
-    //   map.pm.Toolbar.copyDrawControl('Polyline', {
-    //     name: 'Split',
-    //     block: 'draw',
-    //     title: 'Split',
-    //   });
-    // }
-  }, []);
+  const handleGlobalModeToggled = useCallback(
+    (event) => {
+      const enabled = event.enabled;
+      setCanSelectFeatures(!enabled);
+    },
+    [canSelectFeatures]
+  );
 
   useEffect(() => {
     store.setCurrentMap(store.currentMap);
@@ -92,20 +68,18 @@ const GeoJSONMap = (props) => {
 
       if (!map.hasEventListeners('pm:globaldragmodetoggled')) {
         map.on('pm:globaldragmodetoggled', (event) => {
-          const enabled = event.enabled;
-          store.setCanSelectFeatures(!enabled);
+          handleGlobalModeToggled(event);
         });
       }
 
       if (!map.hasEventListeners('pm:globaldrawmodetoggled')) {
         map.on('pm:globaldrawmodetoggled', (event) => {
-          const enabled = event.enabled;
-          store.setCanSelectFeatures(!enabled);
+          handleGlobalModeToggled(event);
         });
       }
     }
     // console.log('useEffect', store.currentMap);
-  }, [store.currentMap, store.currentLegend]);
+  }, [store.currentMap, store.currentLegend, handleGlobalModeToggled]);
 
   useEffect(() => {
     console.log('selected', store.selectedFeatures);
@@ -184,7 +158,8 @@ const GeoJSONMap = (props) => {
   // };
 
   const selectRegion = (event) => {
-    if (!store.canSelectFeatures) {
+    console.log('canSelectFeatures', canSelectFeatures);
+    if (!canSelectFeatures) {
       return;
     }
 
@@ -211,7 +186,6 @@ const GeoJSONMap = (props) => {
 
   const onFeature = (feature, layer) => {
     let country = getFeatureName(feature);
-    // if (!country) throw new Error('Could not find region name');
     if (!country) country = '';
 
     if (feature.properties.textValue && feature.geometry.type === 'Point') {
@@ -255,14 +229,6 @@ const GeoJSONMap = (props) => {
       },
     });
 
-    // set selected features
-    // if (layer.editEnabled()) {
-    //   console.log("edit enabled");
-    //   layer.setStyle({ fillColor: "green" });
-    // }
-
-    // console.log("calling on each feature");
-
     // Points fail when trying to setStyle, so just return early if it's a point
     if (feature.geometry.type === 'Point') {
       return;
@@ -277,6 +243,8 @@ const GeoJSONMap = (props) => {
           [feature.properties.fillColor]: feature.properties.fillColor,
         });
       }
+    } else {
+      layer.setStyle({ fillColor: 'blue' });
     }
 
     // // Set border color
@@ -337,12 +305,12 @@ const GeoJSONMap = (props) => {
   };
 
   const addMapProperties = async (map, newProperties) => {
-      // const map = await RequestApi.getMap(mapId)
-      const updatedProperties = {
-        ...map.properties,
-        ...newProperties,
-      };
-      updateMapProperties(map, updatedProperties);
+    // const map = await RequestApi.getMap(mapId)
+    const updatedProperties = {
+      ...map.properties,
+      ...newProperties,
+    };
+    updateMapProperties(map, updatedProperties);
   };
 
   const handleCreatePolygon = (event) => {
@@ -398,80 +366,14 @@ const GeoJSONMap = (props) => {
     <div>
       {store.currentMap && (
         <GeoJSON
-          // key={store.mapUpdates}
           key={store.selectedFeatures.length + store.mapUpdates}
           style={mapStyle}
-          // map={map}
           data={store.currentMap.json.features}
           onEachFeature={onFeature}
         />
       )}
       {props.authorized && (
         <div>
-          {/* <Control position="topright">
-            <Stack direction="column">
-              <Tooltip title="Delete">
-                <Button
-                  sx={{ color: 'black', backgroundColor: 'white' }}
-                  onClick={() => {}}
-                >
-                  <DeleteIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Merge">
-                <Button
-                  sx={{ color: 'black', backgroundColor: 'white' }}
-                  onClick={handleMerge}
-                >
-                  <MergeIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Edit Attributes">
-                <Button
-                  onClick={() => {
-                    setPropOpen(true);
-                  }}
-                  sx={{ color: 'black', backgroundColor: 'white' }}
-                >
-                  <EditAttributesIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Edit Map Properties">
-                <Button
-                  onClick={() => {
-                    setMapPropOpen(true);
-                  }}
-                  sx={{ color: 'black', backgroundColor: 'white' }}
-                >
-                  <NearMeIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Rename Region">
-                <Button
-                  sx={{ color: 'black', backgroundColor: 'white' }}
-                  onClick={() => {
-                    if (store.selectedFeatures.length !== 1) {
-                      window.alert(
-                        'Cannot rename more than 1 region at a time'
-                      );
-                      return;
-                    }
-                    setEditOpen(true);
-                  }}
-                >
-                  <AbcIcon />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Edit Vertices">
-                <Button
-                  sx={{ color: 'black', backgroundColor: 'white' }}
-                  // onClick={handleToggleEditVertices}
-                >
-                  <EditLocationAlt />
-                </Button>
-              </Tooltip>
-            </Stack>
-          </Control> */}
           <ChangeNameModal
             layer={currLayer}
             show={editOpen}
@@ -503,37 +405,6 @@ const GeoJSONMap = (props) => {
           />
         </div>
       )}
-      {/* <GeomanControls
-        options={{
-          position: 'topleft',
-          drawText: true,
-          rotateMode: false,
-          drawMarker: false,
-          drawPolyline: true,
-          drawCircle: false,
-          drawCircleMarker: false,
-          drawRectangle: false,
-          cutPolygon: false,
-        }}
-        globalOptions={{
-          continueDrawing: true,
-          editable: false,
-          limitMarkersToCount: 10,
-          hideMiddleMarkers: true,
-          // limitMarkersToClick: true,
-          // limitMarkersToViewport: true,
-        }}
-        pathOptions={mapStyle}
-        // onVertexClick={(e) => console.log('vertex clicked', e)}
-        // onDragEnd={(e) => console.log('drag end', e)}
-        // onCreate={handleCreatePolygon}
-        // onCreate={() => console.log('asdfasdf', store.currentMap)}
-        // onChange={(e) => console.log('changed', e)}
-        // onEdit={(e) => console.log('edited', e)}
-        onGlobalDrawModeToggled={handleGlobalDrawModeToggled}
-        // onMarkerDragEnd={(e) => console.log('marker drag end')}
-      />
-      <GeomanControl /> */}
       <MapLegend currentLegend={store.currentLegend} />
     </div>
   );

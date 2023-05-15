@@ -127,6 +127,8 @@ const MapCard = (props) => {
         backgroundImage: published
           ? 'linear-gradient(to bottom right, white, 80%, #bbdefb)'
           : 'white',
+        maxHeight: 550,
+        minHeight: 550,
       }}
     >
       <CardMedia
@@ -146,7 +148,13 @@ const MapCard = (props) => {
         <Typography gutterBottom variant="h5" component="div" align="left">
           {props.data.title || 'Map'}
         </Typography>
-        <Typography variant="body2" color="text.secondary" align="left">
+        <Typography
+          sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+          variant="body2"
+          color="text.secondary"
+          align="left"
+          noWrap
+        >
           {props.data.description || 'Description'}
         </Typography>
         {author && (
@@ -166,9 +174,19 @@ const MapCard = (props) => {
             </Link>
           </Typography>
         )}
+        <Typography variant="body2" color="text.secondary" align="left">
+          {published ? 'Published Map' : 'Private Map'}
+        </Typography>
       </CardContent>
       <Box sx={{ display: 'flex' }}>
-        <Box sx={{ justifyContent: 'flex-start' }}>
+        <Box
+          sx={{
+            justifyContent: 'flex-start',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {tags &&
             tags.map((tag) => (
               <Chip
