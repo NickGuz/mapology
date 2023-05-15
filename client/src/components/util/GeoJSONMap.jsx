@@ -214,14 +214,26 @@ const GeoJSONMap = (props) => {
     // if (!country) throw new Error('Could not find region name');
     if (!country) country = '';
 
-    layer
-      .bindTooltip(country, {
-        className: 'countryLabel',
-        permanent: true,
-        opacity: 0.7,
-        direction: 'center',
-      })
-      .openTooltip();
+    if (feature.properties.textValue && feature.geometry.type === 'Point') {
+      layer
+        .bindTooltip(feature.properties.textValue, {
+          className: 'textLabel',
+          permanent: true,
+          opacity: 1.0,
+          direction: 'center',
+        })
+        .openTooltip();
+      layer.options.opacity = 0;
+    } else {
+      layer
+        .bindTooltip(country, {
+          className: 'countryLabel',
+          permanent: true,
+          opacity: 0.7,
+          direction: 'center',
+        })
+        .openTooltip();
+    }
 
     // layer.pm.setOptions({
     //   limitMarkersToCount: 10,
@@ -341,9 +353,13 @@ const GeoJSONMap = (props) => {
     // TODO Handle create text box here
     if (feature.geometry.type === 'Point') {
       if (!layer.hasEventListeners('pm:textblur')) {
-        console.log('created');
         layer.on('pm:textblur', (event) => {
-          console.log(event);
+          // console.log(layer)
+          const text = event.layer.options.text;
+          const textBox = event.layer.toGeoJSON();
+          // console.log(textBox)
+          textBox.properties['textValue'] = text;
+          RequestApi.insertFeature(store.currentMap.mapInfo.id, textBox);
         });
       }
       return;

@@ -27,3 +27,12 @@ code {
 .map-prop-button {
   background-image: url('assets/map-props-icon.jpeg');
 }
+
+.textValue {
+  /* background-color: transparent; */
+  /* border: transparent; */
+  box-shadow: none;
+  /* font-weight: bold; */
+  font-family: sans-serif;
+  font-size: 12px;
+}
