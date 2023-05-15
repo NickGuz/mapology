@@ -34,6 +34,9 @@ router.post("/changePassword", AuthController.changePassword);
 // TODO
 router.post("/deleteUser", AuthController.deleteUser);
 
+// Change Username
+router.post("/changeUsername", AuthController.changeUsername);
+
 //Handles sending recovery email
 router.post("/sendRecoveryEmail", AuthController.sendRecoveryEmail);
 

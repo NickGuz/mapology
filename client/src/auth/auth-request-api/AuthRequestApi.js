@@ -90,6 +90,17 @@ export const deleteUser = (email) => {
     });
 };
 
+export const changeUsername = (username, email) => {
+  return api
+    .post(`/auth/changeUsername`, {
+      username: username,
+      email: email,
+    })
+    .catch(function (error) {
+      return error.response;
+    });
+};
+
 const apis = {
   registerUser,
   getAllUsers,
@@ -99,7 +110,8 @@ const apis = {
   getLoggedIn,
   sendRecoveryEmail,
   changePassword,
-  deleteUser
+  deleteUser,
+  changeUsername
 };
 
 export default apis;

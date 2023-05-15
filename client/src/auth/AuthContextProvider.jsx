@@ -330,6 +330,10 @@ function AuthContextProvider(props) {
     await api.deleteUser(email);
   };
 
+  auth.changeUsername = async function (username, email) {
+    await api.changeUsername(username, email);
+  } 
+
   auth.setDisplayedUsers = (users) => {
     authReducer({
       type: AuthActionType.SET_DISPLAYED_USERS,
