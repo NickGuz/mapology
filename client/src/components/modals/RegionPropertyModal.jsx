@@ -12,7 +12,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 500,
-  maxHeight: '30vh', // set max height to 90% of viewport height
+  maxHeight: '60vh', // set max height to 90% of viewport height
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -63,6 +63,7 @@ const PropertiesModal = (props) => {
       return obj;
     }, {});
     props.updateProperties(selectedFeature, updatedProperties);
+    setNewKeyValuePair({ key: '', value: '' });
     props.close();
   };
 
@@ -210,8 +211,9 @@ const PropertiesModal = (props) => {
               id="change-name-button"
               className="modal-button"
               onClick={handleConfirm}
+              color="error"
             >
-              Confirm
+              Close
             </Button>
           </Box>
         </Box>
