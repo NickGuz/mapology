@@ -242,11 +242,15 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
   }
 
   const rating = [
-    Sequelize.literal(
-      "(SELECT COALESCE(COUNT(distinct likes.id), 0) - COALESCE(COUNT(distinct dislikes.id), 0) from likes left join dislikes on likes.mapId = dislikes.mapId where likes.mapId = map_info.id)"
-    ),
+    Sequelize.literal("count(distinct likes.id) - count(distinct dislikes.id)"),
     "rating",
   ];
+  // const rating = [
+  //   Sequelize.literal(
+  //     "(SELECT COALESCE(COUNT(distinct likes.id), 0) - COALESCE(COUNT(distinct dislikes.id), 0) from likes left join dislikes on likes.mapId = dislikes.mapId where likes.mapId = map_info.id)"
+  //   ),
+  //   "rating",
+  // ];
 
   // If we don't have a search term, but we have tags
   if (!searchTerm && searchTags) {
@@ -272,6 +276,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
         published: true,
       },
       order: orderBy,
+      group: "map_info.id",
     });
 
     console.log("RESULTS", results);
@@ -285,6 +290,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
       where: { published: true },
       include: [Tags, Likes, Dislikes, Thumbnails, User],
       order: orderBy,
+      group: "map_info.id",
     });
 
     // If we have a search term, but not tags
@@ -310,6 +316,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
       },
       include: [Tags, Likes, Dislikes, Thumbnails, User],
       order: orderBy,
+      group: "map_info.id",
     });
 
     // If we have both a search term and tags
@@ -348,6 +355,7 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
         ],
       },
       order: orderBy,
+      group: "map_info.id",
     });
   }
 };
