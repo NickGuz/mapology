@@ -155,6 +155,12 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
+exports.deleteUser = async (req, res) => {
+  // const user = await User.findByPk(req.params.id);
+  await User.destroy({
+    where: { email: req.body.email },
+  });};
+
 exports.changePassword = async (req, res) => {
   if (
     !req.body.email ||
@@ -218,9 +224,6 @@ exports.changePassword = async (req, res) => {
   return res.status(200);
 };
 
-exports.deleteUser = () => {
-  // TODO
-};
 
 exports.sendRecoveryEmail = async (req, res) => {
   const user = await User.findOne({ where: { email: req.body.email } });
