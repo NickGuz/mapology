@@ -112,12 +112,12 @@ const Navbar = () => {
           <Typography textAlign="center">Register</Typography>
         </MenuItem>
         {/* TEMPORARY */}
-        <MenuItem key="Profile" onClick={handleProfile}>
+        {/* <MenuItem key="Profile" onClick={handleProfile}>
           <Typography textAlign="center">Profile</Typography>
         </MenuItem>
         <MenuItem key={'Settings'} onClick={handleSettings}>
           <Typography textAlign="center">Settings</Typography>
-        </MenuItem>
+        </MenuItem> */}
       </div>
     );
   };
