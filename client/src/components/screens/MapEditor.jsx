@@ -59,7 +59,7 @@ export default function MapEditor() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
-        <Grid item xs={authorized ? 10 : 12}>
+        <Grid item xs={authorized ? 10.5 : 12}>
           <TopToolbar />
           <Box>
             <MapContainer
@@ -83,7 +83,7 @@ export default function MapEditor() {
           </Box>
         </Grid>
         {authorized && (
-          <Grid item xs={2}>
+          <Grid item xs={1.5}>
             <Box
               sx={{
                 borderLeft: '1px solid',
@@ -91,7 +91,7 @@ export default function MapEditor() {
                 borderColor: 'darkgray',
               }}
             >
-              <TextEditor />
+              {/* <TextEditor /> */}
               <RegionEditor mapId={routeParams.id} />
               <LegendEditor
                 rename={(color, name) => handleRenameLegend(color, name)}
