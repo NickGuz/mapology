@@ -46,13 +46,10 @@ export default function MapEditor() {
     }
     RequestApi.upsertLegend(routeParams.id, color, name);
 
-    // store.setCurrentLegend({});'
-
-    const temp = store.currentLegend;
-    delete temp[color];
+    delete store.currentLegend[color];
 
     store.setCurrentLegend({
-      temp,
+      ...store.currentLegend,
     });
   };
 
