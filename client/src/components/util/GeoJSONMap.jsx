@@ -85,6 +85,10 @@ const GeoJSONMap = (props) => {
         });
       }
     }
+
+    if(store.currentLegend != {})
+      store.currentLegend = {}
+
     // console.log('useEffect', store.currentMap);
   }, [store.currentMap, store.currentLegend, handleGlobalModeToggled]);
 
