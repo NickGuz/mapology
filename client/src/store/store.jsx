@@ -26,6 +26,7 @@ export const GlobalStoreActionType = {
   SET_SORT_BY_VALUE: 'SET_SORT_BY_VALUE',
   SET_CURR_MAP_ID: 'SET_CURR_MAP_ID',
   SET_CAN_SELECT_FEATURES: 'SET_CAN_SELECT_FEATURES',
+  SET_PAGE: 'SET_PAGE',
 };
 
 export const PageViewTypes = {
@@ -63,6 +64,7 @@ function GlobalStoreContextProvider(props) {
     searchByValue: SearchByValue.MAP,
     sortByValue: SortByValue.RELEVANCE,
     canSelectFeatures: true,
+    page: 1,
   });
 
   // const navigate = useNavigate();
@@ -160,6 +162,12 @@ function GlobalStoreContextProvider(props) {
         return setStore({
           ...store,
           canSelectFeatures: payload,
+        });
+      }
+      case GlobalStoreActionType.SET_PAGE: {
+        return setStore({
+          ...store,
+          page: payload,
         });
       }
       default: {
@@ -312,6 +320,13 @@ function GlobalStoreContextProvider(props) {
     storeReducer({
       type: GlobalStoreActionType.SET_CAN_SELECT_FEATURES,
       payload: val,
+    });
+  };
+
+  store.setPage = (page) => {
+    storeReducer({
+      type: GlobalStoreActionType.SET_PAGE,
+      payload: page,
     });
   };
 

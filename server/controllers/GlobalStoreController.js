@@ -122,7 +122,8 @@ exports.getAllMaps = async (req, res) => {
 
 exports.getAllMapsByUserId = async (req, res) => {
   const userId = req.params.id;
-  const maps = await SequelizeManager.getAllMapsByUserId(userId);
+  const page = req.params.page;
+  const maps = await SequelizeManager.getAllMapsByUserId(userId, page);
   if (maps) {
     return res.status(200).json({
       data: maps,

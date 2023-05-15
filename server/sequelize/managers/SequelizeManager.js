@@ -85,11 +85,13 @@ exports.getAllMaps = async () => {
   });
 };
 
-exports.getAllMapsByUserId = async (userId) => {
+exports.getAllMapsByUserId = async (userId, page) => {
   return await MapInfo.findAll({
     where: { authorId: userId },
     order: [["createdAt", "DESC"]],
     include: [User, Tags, Likes, Dislikes, Thumbnails],
+    offset: (page - 1) * 8,
+    limit: 8,
   });
 };
 

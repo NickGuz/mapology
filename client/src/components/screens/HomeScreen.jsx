@@ -19,12 +19,12 @@ const HomeScreen = () => {
   useEffect(() => {
     const getData = async () => {
       if (auth.user) {
-        const userMaps = await getAllMapsByUserId(auth.user.id);
+        const userMaps = await getAllMapsByUserId(auth.user.id, store.page);
         store.setDisplayedMaps(userMaps.data.data);
       }
     };
     getData();
-  }, [auth.user]);
+  }, [auth.user, store.page]);
 
   useEffect(() => {
     const getData = async () => {

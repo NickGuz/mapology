@@ -39,8 +39,8 @@ export const getAllMaps = async () => {
   return await api.get('/api/maps');
 };
 //TEST
-export const getAllMapsByUserId = async (userId) => {
-  return await api.get(`/api/maps/user/${userId}`);
+export const getAllMapsByUserId = async (userId, page) => {
+  return await api.get(`/api/maps/user/${userId}/${page}`);
 };
 
 export const duplicateMap = async (userId, mapId) => {
@@ -145,28 +145,27 @@ export const insertThumbnail = async (mapId, blob) => {
   });
 };
 
-
 export const hasLike = async (userId, mapId) => {
   return await api.get(`/api/hasLike/${userId}/${mapId}`).catch((err) => {
     return err.response;
   });
-}
+};
 
 export const addLike = async (userId, mapId) => {
   return await api.post(`/api/addLike`, { userId, mapId }).catch((err) => {
     return err.response;
   });
-}
+};
 
-export const getAllMapLikes = async (mapId) =>{
+export const getAllMapLikes = async (mapId) => {
   return await api.get(`/api/getAllMapLikes/${mapId}`).catch((err) => {
     return err.response;
   });
-}
+};
 
 export const deleteLike = async (userId, mapId) => {
   return await api.delete(`/api/deleteLike/${userId}/${mapId}`).catch((err) => {
-    return err.response
+    return err.response;
   });
 };
 
@@ -174,31 +173,29 @@ export const hasDislike = async (userId, mapId) => {
   return await api.get(`/api/hasDislike/${userId}/${mapId}`).catch((err) => {
     return err.response;
   });
-}
+};
 
 export const addDislike = async (userId, mapId) => {
   return await api.post(`/api/addDislike`, { userId, mapId }).catch((err) => {
     return err.response;
   });
-}
+};
 
-export const getAllMapDislikes = async (mapId) =>{
+export const getAllMapDislikes = async (mapId) => {
   return await api.get(`/api/getAllMapDislikes/${mapId}`).catch((err) => {
     return err.response;
   });
-}
-
-export const deleteDislike = async (userId, mapId) => {
-  return await api.delete(`/api/deleteDislike/${userId}/${mapId}`).catch((err) => {
-    return err.response
-  });
 };
 
-export const upsertLegend = async (
-  mapId,
-  color,
-  label,
-) => {
+export const deleteDislike = async (userId, mapId) => {
+  return await api
+    .delete(`/api/deleteDislike/${userId}/${mapId}`)
+    .catch((err) => {
+      return err.response;
+    });
+};
+
+export const upsertLegend = async (mapId, color, label) => {
   return await api.post('/api/legend', {
     mapId: mapId,
     color: color,
@@ -211,38 +208,41 @@ export const getAllLegendsByMapId = async (mapId) => {
 };
 
 export const changePublish = async (mapId, published) => {
-  return await api.post(`/api/publish`, {mapId: mapId, published: published}).catch((err) => {
-    return err.response
-  });
-}
+  return await api
+    .post(`/api/publish`, { mapId: mapId, published: published })
+    .catch((err) => {
+      return err.response;
+    });
+};
 
 export const getPublished = async (mapId) => {
   return await api.get(`/api/getPublished/${mapId}`).catch((err) => {
     return err.response;
   });
-}
+};
 
 export const compress = async (json) => {
-  return await api.post(`/api/compress`, {json: json}).catch((err) => {
-    return err.response
+  return await api.post(`/api/compress`, { json: json }).catch((err) => {
+    return err.response;
   });
-}
+};
 
 export const addComment = async (userId, mapId, comment) => {
-  return await api.post(`/api/addComment`,
-  { userId : userId,
-    mapId : mapId,
-    comment : comment}).catch((err) => { return err.response });
-}
+  return await api
+    .post(`/api/addComment`, { userId: userId, mapId: mapId, comment: comment })
+    .catch((err) => {
+      return err.response;
+    });
+};
 
 export const getComments = async (mapId) => {
   return await api.get(`/api/getComments/${mapId}`).catch((err) => {
     return err.response;
   });
-}
+};
 
 export const deleteComment = async (id) => {
   return await api.delete(`/api/deleteComment/${id}`).catch((err) => {
-    return err.response
+    return err.response;
   });
-}
+};

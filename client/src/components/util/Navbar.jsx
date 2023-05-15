@@ -28,6 +28,7 @@ const Navbar = () => {
 
   const handleHome = () => {
     store.setCurrentMap(null);
+    store.setPage(1);
     if (location.pathname !== '/') {
       store.setDisplayedMaps([]);
     }
@@ -68,6 +69,7 @@ const Navbar = () => {
   const handleBrowse = () => {
     store.setCurrentMap(null);
     store.setSearchTerm(null);
+    store.setPage(1);
     store.setSearchByValue(SearchByValue.MAP);
     auth.setDisplayedUsers([]);
     // store.setSearchTags([]);
@@ -78,17 +80,20 @@ const Navbar = () => {
   const handleProfile = () => {
     setAnchorElUser(null);
     store.setCurrentMap(null);
+    store.setPage(1);
     navigate(`/profile/${auth.user.id}`);
   };
 
   const handleSettings = () => {
     store.setOpenSettingsModal(true);
+    store.setPage(1);
     setAnchorElUser(null);
   };
 
   const handleSearch = () => {
     store.setCurrentMap(null);
     store.setDisplayedMaps([]);
+    store.setPage(1);
     console.log('setting search term', searchValue);
     store.setSearchTerm(searchValue);
     // if (location.pathname !== "/map-listings/") {

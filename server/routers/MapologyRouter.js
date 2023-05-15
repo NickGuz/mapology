@@ -11,7 +11,7 @@ router.delete("/map/:id", GlobalStoreController.deleteMap);
 
 router.get("/maps", GlobalStoreController.getAllMaps);
 
-router.get("/maps/user/:id", GlobalStoreController.getAllMapsByUserId);
+router.get("/maps/user/:id/:page", GlobalStoreController.getAllMapsByUserId);
 
 router.get("/map/:id", GlobalStoreController.getMapById);
 
