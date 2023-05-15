@@ -14,8 +14,8 @@ import GlobalStoreContext from '../../store/store';
 const InfoBanner = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   textAlign: 'left',
-  backgroundColor: '#d7d7d7',
-  height: 60,
+  backgroundColor: '#bbdefb',
+  height: 50,
   lineHeight: '60px',
   marginTop: '-5px', // Hide whitespace on top
   paddingLeft: '5%',
@@ -43,7 +43,7 @@ const ProfileScreen = (props) => {
 
   return (
     <>
-      <Banner src={require('../../assets/tree.jpg')} />
+      <Banner src={require('../../assets/banner.jpg')} />
       <InfoBanner key="user-info" elevation={4}>
         <Grid container spacing={2}>
           <Grid item xs={1}>
