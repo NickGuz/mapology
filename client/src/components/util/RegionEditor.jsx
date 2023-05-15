@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { BlockPicker } from 'react-color';
+import { CompactPicker } from 'react-color';
 import Slider from '@mui/material/Slider';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
@@ -112,7 +112,7 @@ const RegionEditor = (props) => {
             horizontal: 'left',
           }}
         >
-          <BlockPicker color={color} onChangeComplete={handleChangeComplete} />
+          <CompactPicker color={color} onChangeComplete={handleChangeComplete} />
         </Popover>
       </div>
       {/* <p
