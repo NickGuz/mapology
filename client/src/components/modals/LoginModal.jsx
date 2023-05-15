@@ -20,6 +20,7 @@ const LoginModal = (props) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     auth.loginUser(formData.get("userInfo"), formData.get("password"));
+    auth.closeLoginDialog();
   };
 
   const handleForgotPassword = () => {
