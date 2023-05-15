@@ -13,6 +13,8 @@ router.get("/maps", GlobalStoreController.getAllMaps);
 
 router.get("/maps/user/:id", GlobalStoreController.getAllMapsByUserId);
 
+router.get("/publicMaps/user/:id", GlobalStoreController.getAllPublicMapsByUserId);
+
 router.get("/map/:id", GlobalStoreController.getMapById);
 
 router.get("/tags/:id", GlobalStoreController.getTagsByMapId);
