@@ -25,7 +25,8 @@ const removeVertex = (evt, store) => {
             toRemove.push(f);
           }
         });
-      } else {
+      } else if (f.geometry.type === 'Polygon') {
+        console.log('polygon', polygon);
         polygon.forEach((coord) => {
           if (
             Math.abs(coord[0] - lng) < 0.0001 &&

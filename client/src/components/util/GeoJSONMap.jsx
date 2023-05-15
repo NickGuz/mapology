@@ -86,8 +86,7 @@ const GeoJSONMap = (props) => {
       }
     }
 
-    if(store.currentLegend != {})
-      store.currentLegend = {}
+    if (store.currentLegend != {}) store.currentLegend = {};
 
     // console.log('useEffect', store.currentMap);
   }, [store.currentMap, store.currentLegend, handleGlobalModeToggled]);
@@ -107,6 +106,11 @@ const GeoJSONMap = (props) => {
 
   const handleVertexRawClick = (evt) => {
     // removeVertex(evt.vertex.latlng);
+    if (!evt.indexPath) {
+      console.log('event', evt);
+      // moveVertex(evt, store);
+      return;
+    }
     removeVertex(evt, store);
   };
 
@@ -232,6 +236,7 @@ const GeoJSONMap = (props) => {
         handleVertexDragEnd(event);
       },
       'pm:vertexclick': (event) => {
+        console.log(event);
         handleVertexRawClick(event);
       },
       'pm:remove': (event) => {
