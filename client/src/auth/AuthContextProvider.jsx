@@ -54,7 +54,7 @@ function AuthContextProvider(props) {
         return setAuth({
           ...auth,
           user: payload.user,
-          emailEmpt: payload.acctEmpt,
+          acctEmpt: payload.acctEmpt,
           shortPass: payload.shortPass,
           notSamePass: payload.notSamePass,
           registered: payload.registered,
@@ -333,6 +333,19 @@ function AuthContextProvider(props) {
     });
   };
 
+  auth.hideModal = () => {
+    authReducer({
+      type: AuthActionType.REGISTER_USER_FAIL,
+      payload: {
+        acctEmpt: false,
+        shortPass: false,
+        notSamePass: false,
+        registered: false,
+        invalidEmail: false,
+      },
+    })
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -343,6 +356,7 @@ function AuthContextProvider(props) {
     </AuthContext.Provider>
   );
 }
+
 
 export default AuthContext;
 export { AuthContextProvider };
