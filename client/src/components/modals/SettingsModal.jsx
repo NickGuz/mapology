@@ -81,10 +81,6 @@ const SettingsModal = () => {
         </ListItem>
 
         <ListItem>
-          <Button>Change Password</Button>
-        </ListItem>
-
-        <ListItem>
           <Button variant="outlined" color="error" onClick={()=> {setDeleteOpen(true)}}>Delete Account</Button>
         </ListItem>
 
