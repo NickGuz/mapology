@@ -36,7 +36,7 @@ const GeomanControl = (props) => {
     map.pm.addControls({
       position: 'topright',
       drawCircle: false,
-      drawText: true,
+      drawText: false,
       rotateMode: false,
       drawMarker: false,
       drawPolyline: false,
@@ -44,8 +44,16 @@ const GeomanControl = (props) => {
       drawRectangle: false,
       cutPolygon: false,
       dragMode: true,
-      oneBlock: true,
+      oneBlock: false,
     });
+
+    if (!map.pm.Toolbar.options.drawTextBox) {
+      map.pm.Toolbar.copyDrawControl('Text', {
+        name: 'drawTextBox',
+        block: 'custom',
+        title: 'Insert Text Box',
+      });
+    }
 
     if (!map.pm.Toolbar.options.split) {
       map.pm.Toolbar.copyDrawControl('Polyline', {
@@ -80,7 +88,7 @@ const GeomanControl = (props) => {
     if (!map.pm.Toolbar.options.editAttributes) {
       map.pm.Toolbar.createCustomControl({
         name: 'editAttributes',
-        block: 'edit',
+        block: 'custom',
         title: 'Edit Attributes',
         className: 'edit-attributes-button',
         toggle: false,
@@ -91,7 +99,7 @@ const GeomanControl = (props) => {
     if (!map.pm.Toolbar.options.editMapProps) {
       map.pm.Toolbar.createCustomControl({
         name: 'editMapProps',
-        block: 'edit',
+        block: 'custom',
         title: 'Edit Map Props',
         className: 'map-prop-button',
         toggle: false,
@@ -102,23 +110,16 @@ const GeomanControl = (props) => {
     if (!map.pm.Toolbar.options.renameRegion) {
       map.pm.Toolbar.createCustomControl({
         name: 'renameRegion',
-        block: 'edit',
+        block: 'custom',
         title: 'Rename Region',
         className: 'rename-region-button',
         toggle: false,
-        // onClick: () => {
-        //   if (store.selectedFeatures.length > 1) {
-        //     window.alert('Cannot rename more than 1 region at a time');
-        //     return;
-        //   }
-        //   if (store.selectedFeatures.length === 0) {
-        //     window.alert('Must select a region to rename first');
-        //     return;
-        //   }
-        //   props.setEditOpen(true);
-        // },
       });
     }
+
+    // Set block positions
+    // map.pm.Toolbar.setBlockPosition('draw', 'topleft');
+    // map.pm.Toolbar.setBlockPosition('edit', 'topright');
 
     map.pm.Toolbar.changeControlOrder([
       'drawPolygon',
