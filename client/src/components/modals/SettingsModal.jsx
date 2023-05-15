@@ -8,17 +8,22 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import GlobalStoreContext from "../../store/store";
 import SketchColorPicker from "../util/SketchColorPicker";
-
+import { useState } from 'react';
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AuthContext from '../../auth/AuthContextProvider';
 import { useNavigate } from 'react-router-dom';
 
 const SettingsModal = () => {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -34,6 +39,7 @@ const SettingsModal = () => {
     auth.logoutUser();
     navigate('/');
     handleClose()
+    setDeleteOpen(false)
   };
 
   return (
@@ -79,8 +85,24 @@ const SettingsModal = () => {
         </ListItem>
 
         <ListItem>
-          <Button variant="outlined" color="error" onClick={()=> {handleDeleteAccount()}}>Delete Account</Button>
+          <Button variant="outlined" color="error" onClick={()=> {setDeleteOpen(true)}}>Delete Account</Button>
         </ListItem>
+
+        <Dialog open={deleteOpen} onClose={()=> {setDeleteOpen(false)}}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to PERMANENTLY your account?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=> {setDeleteOpen(false)}}>Cancel</Button>
+          <Button id="confirm-delete-btn" onClick={()=> {handleDeleteAccount()}} autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       </List>
     </Dialog>
   );
