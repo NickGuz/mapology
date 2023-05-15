@@ -53,6 +53,7 @@ const ScreenShooter = () => {
       await new Promise((r) => setTimeout(r, 500));
       let format = 'image';
       screenshoter.takeScreen(format).then((base64) => {
+        console.log('inserting thumbnail for map', store.currentMap.mapInfo.id);
         insertThumbnail(store.currentMap.mapInfo.id, base64);
       });
       setHasTakenSS(true);

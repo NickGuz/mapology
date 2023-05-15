@@ -2,7 +2,10 @@ import { useState, useContext, useEffect, useCallback } from 'react';
 import { useMap, GeoJSON } from 'react-leaflet';
 import GlobalStoreContext from '../../store/store';
 import * as RequestApi from '../../store/GlobalStoreHttpRequestApi';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css';
 import * as L from 'leaflet';
+import 'leaflet-defaulticon-compatibility';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import AuthContext from '../../auth/AuthContextProvider';
@@ -38,9 +41,8 @@ const GeoJSONMap = (props) => {
   );
 
   useEffect(() => {
-    store.setCurrentMap(store.currentMap);
-
-    if (store.currentMap && !boundsSet) {
+    if (store.currentMap) {
+      console.log('setting bounds');
       const latlngs = [];
       store.currentMap.json.features.forEach((f) => {
         f.geometry.coordinates.forEach((polygon) => {
@@ -55,9 +57,14 @@ const GeoJSONMap = (props) => {
       });
 
       let bounds = new L.LatLngBounds(latlngs);
+      console.log('fitting bounds');
       map.fitBounds(bounds);
       setBoundsSet(true);
     }
+  }, [store.currentMap?.mapInfo.id]);
+
+  useEffect(() => {
+    store.setCurrentMap(store.currentMap);
 
     if (store.currentMap) {
       if (!map.hasEventListeners('pm:create')) {
@@ -146,6 +153,8 @@ const GeoJSONMap = (props) => {
     else if (feature.properties.NAME_1) featureName = feature.properties.NAME_1;
     else if (feature.properties.NAME_0) featureName = feature.properties.NAME_0;
     else if (feature.properties.name) featureName = feature.properties.name;
+    else if (feature.properties.shapeName)
+      featureName = feature.properties.shapeName;
 
     return featureName;
   };
@@ -264,6 +273,7 @@ const GeoJSONMap = (props) => {
     const mapClone = JSON.parse(JSON.stringify(store.currentMap));
 
     const updatedFeature = event.target.toGeoJSON();
+    console.log('updated', updatedFeature);
     RequestApi.updateFeatureGeometry(
       updatedFeature.id,
       updatedFeature.geometry
