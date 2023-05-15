@@ -160,7 +160,7 @@ describe('template spec', () => {
   });
 
 
-  it('Merge 2 regions, Delete Merged Region, Delete Existing Region w/ Undo/Redo for all', () => {
+  it('Merge 2 regions, Delete Merged Region w/ Undo/Redo for both', () => {
     cy.visit('http://localhost:3000/', {
       onBeforeLoad(win) {
         cy.stub(win, 'prompt').returns('Test Region');
@@ -209,18 +209,28 @@ describe('template spec', () => {
     //Redo Delete
     cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
     cy.contains('Test Region').should('not.exist');
+  });
 
-    // Delete Existing Region
+  it('Delete Existing Region (Algeria) w/ Undo/Redo', () => {
+    cy.visit('http://localhost:3000/', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'prompt').returns('Test Region');
+      },
+    });
+    cy.get('button').filter(':contains("Open Editor")').first().click();
+    cy.wait(5000);
+
+    // Delete Existing Region (Algeria)
     cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
     cy.get('#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(32)').click();
     cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()     
     cy.contains('Algeria').should('not.exist');
 
-    //Undo Delete 
+    //Undo Delete (Algeria)
     cy.get('.css-70qvj9 > :nth-child(1)').click() // undo click
     cy.contains('Algeria').should('exist');
 
-    //Redo Delete
+    //Redo Delete (Algeria)
     cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
     cy.contains('Algeria').should('not.exist');
   });
