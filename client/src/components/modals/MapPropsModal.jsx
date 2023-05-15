@@ -12,7 +12,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  maxHeight: '30vh', // set max height to 90% of viewport height
+  maxHeight: '50vh', // set max height to 90% of viewport height
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -40,6 +40,8 @@ const MapPropertiesModal = (props) => {
     }, {});
     props.updateMapProperties(store.currentMap.mapInfo, updatedProperties);
     // Close the modal
+    setKeyInput('');
+    setValueInput('');
     props.close();
   }
 
@@ -182,9 +184,10 @@ const MapPropertiesModal = (props) => {
             <Button
               id="change-name-button"
               className="modal-button"
+              color="error"
               onClick={handleConfirm}
             >
-              Confirm
+              Close
             </Button>
           </Box>
         </Box>
