@@ -27,3 +27,7 @@ code {
 .map-prop-button {
   background-image: url('assets/map-props-icon.jpeg');
 }
+
+.textLabel {
+  background-color: transparent;
+}
