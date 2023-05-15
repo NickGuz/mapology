@@ -65,7 +65,7 @@ const ScreenShooter = () => {
     } else if (store.currentMap && !hasTakenSS) {
       takeScreenshot();
     }
-  }, [screenshoter, store.currentMap]);
+  }, [screenshoter /*, store.currentMap*/]);
 
   return <></>;
 };
