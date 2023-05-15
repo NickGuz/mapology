@@ -32,7 +32,7 @@ router.post("/changePassword", AuthController.changePassword);
 
 // Handles user deleting their account
 // TODO
-router.delete("/delete", AuthController.deleteUser);
+router.post("/deleteUser", AuthController.deleteUser);
 
 //Handles sending recovery email
 router.post("/sendRecoveryEmail", AuthController.sendRecoveryEmail);

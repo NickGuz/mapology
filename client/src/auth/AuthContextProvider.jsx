@@ -326,6 +326,10 @@ function AuthContextProvider(props) {
     }
   };
 
+  auth.deleteUser = async function (email) {
+    await api.deleteUser(email);
+  };
+
   auth.setDisplayedUsers = (users) => {
     authReducer({
       type: AuthActionType.SET_DISPLAYED_USERS,

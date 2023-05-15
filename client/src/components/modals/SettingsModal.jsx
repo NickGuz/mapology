@@ -15,15 +15,26 @@ import SketchColorPicker from "../util/SketchColorPicker";
 
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import AuthContext from '../../auth/AuthContextProvider';
+import { useNavigate } from 'react-router-dom';
 
 const SettingsModal = () => {
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleClose = () => {
     store.setOpenSettingsModal(false);
   };
 
   const handleColorPickerChange = () => {};
+
+  const handleDeleteAccount = () => {
+    auth.deleteUser(auth.user.email);
+    auth.logoutUser();
+    navigate('/');
+    handleClose()
+  };
 
   return (
     <Dialog onClose={handleClose} open={store.settingsModalOpen} fullWidth maxWidth="sm">
@@ -65,6 +76,10 @@ const SettingsModal = () => {
 
         <ListItem>
           <Button>Change Password</Button>
+        </ListItem>
+
+        <ListItem>
+          <Button variant="outlined" color="error" onClick={()=> {handleDeleteAccount()}}>Delete Account</Button>
         </ListItem>
       </List>
     </Dialog>

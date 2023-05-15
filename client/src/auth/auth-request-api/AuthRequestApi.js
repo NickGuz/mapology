@@ -80,6 +80,16 @@ export const searchUsers = async (searchTerm) => {
   return api.get(`/auth/users/${searchTerm}`);
 };
 
+export const deleteUser = (email) => {
+  return api
+    .post(`/auth/deleteUser`, {
+      email: email,
+    })
+    .catch(function (error) {
+      return error.response;
+    });
+};
+
 const apis = {
   registerUser,
   getAllUsers,
@@ -89,6 +99,7 @@ const apis = {
   getLoggedIn,
   sendRecoveryEmail,
   changePassword,
+  deleteUser
 };
 
 export default apis;
