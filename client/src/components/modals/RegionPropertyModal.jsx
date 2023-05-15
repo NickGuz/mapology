@@ -54,6 +54,11 @@ const PropertiesModal = (props) => {
   }
 
   const handleConfirm = () => {
+    if (!selectedFeature) {
+      window.alert('Please select a feature before editing properties.');
+      props.close()
+      return;
+    }
     if (store.selectedFeatures.length !== 1) {
       window.alert('Cannot edit properties of more than 1 region at a time');
       return;
