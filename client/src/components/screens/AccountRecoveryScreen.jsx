@@ -157,19 +157,10 @@ const AccountRecoveryScreen = (props) => {
                         sx={{ mt: 3, mb: 2 }}
                         // sx={{ mt: 3, mb: 2, mr: 4 }}
                       >
-                        {flag ? 'CHANGE PASSWORD' : 'SEND PASSWORD'}
+                        {flag ? 'CHANGE PASSWORD' : 'SEND OTP/ONE TIME PASSWORD'}
                       </Button>
                     </Box>
                   </Box>
-                  {/* <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2, mr: 4 }}
-                        onClick={() => handleRecoveryEmail()}
-                      >
-                        SEND PASSWORD TEST BUTTON
-                      </Button> */}
                 </Box>
               </Container>
             </Grid>
