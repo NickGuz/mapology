@@ -134,6 +134,19 @@ exports.getAllMapsByUserId = async (req, res) => {
   });
 };
 
+exports.getAllPublicMapsByUserId = async (req, res) => {
+  const userId = req.params.id;
+  const maps = await SequelizeManager.getAllPublicMapsByUserId(userId);
+  if (maps) {
+    return res.status(200).json({
+      data: maps,
+    });
+  }
+
+  return res.status(500).json({
+    errorMessage: "No maps",
+  });
+};
 // Local helper function since we'll need this multiple times
 const getMapByIdHelper = async (mapId) => {
   const mapInfo = await SequelizeManager.getMapById(mapId);

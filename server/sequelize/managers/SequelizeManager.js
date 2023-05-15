@@ -93,6 +93,17 @@ exports.getAllMapsByUserId = async (userId) => {
   });
 };
 
+exports.getAllPublicMapsByUserId = async (userId) => {
+  return await MapInfo.findAll({
+    where: { 
+      authorId: userId,
+      published: true,
+     },
+    order: [["createdAt", "DESC"]],
+    include: [User, Tags, Likes, Dislikes, Thumbnails],
+  });
+};
+
 exports.getMapById = async (id) => {
   return await MapInfo.findByPk(id, {
     include: [Likes, Dislikes, Thumbnails],

@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles';
 import { Avatar, Grid } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import api from '../../auth/auth-request-api/AuthRequestApi';
-import { getAllMapsByUserId } from '../../store/GlobalStoreHttpRequestApi';
+import { getPublicMapById } from '../../store/GlobalStoreHttpRequestApi';
 import GlobalStoreContext from '../../store/store';
 
 const InfoBanner = styled(Paper)(({ theme }) => ({
@@ -33,7 +33,7 @@ const ProfileScreen = (props) => {
       const res = await api.getUserById(routeParams.id);
       setUser(res.data);
       if (res.data) {
-        const allMaps = await getAllMapsByUserId(res.data.id);
+        const allMaps = await getPublicMapById(res.data.id);
 
         store.setDisplayedMaps(allMaps.data.data);
       }

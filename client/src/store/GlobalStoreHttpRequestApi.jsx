@@ -246,3 +246,7 @@ export const deleteComment = async (id) => {
     return err.response
   });
 }
+
+export const getPublicMapById = async (userId) => {
+  return await api.get(`/api/publicMaps/user/${userId}`);
+}
