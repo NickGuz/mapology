@@ -48,7 +48,10 @@ const SettingsModal = () => {
   const handleChangeUsername = (username) => {
     auth.changeUsername(username, auth.user.email);
     setUsername('')
+    handleClose()
     setchangeOpen(false)
+    // navigate('/');
+    // handleClose()
   };
 
   return (
@@ -59,30 +62,31 @@ const SettingsModal = () => {
           pr: 0,
         }}
       >
-        <ListItem divider>
+        {/* <ListItem divider>
           <SentimentSatisfiedAltIcon />
           <ListItemText>Profile</ListItemText>
         </ListItem>
 
-        <ListItem>
-          <ListItemText>Banner Here</ListItemText>
-        </ListItem>
 
         <ListItem>
           <ListItemAvatar>
             <Avatar />
           </ListItemAvatar>
           <Button sx={{ ml: "30%" }}>Edit Bio</Button>
-        </ListItem>
+        </ListItem> */}
 
-        <ListItem>
+        {/* <ListItem>
           <ListItemText>Color Theme</ListItemText>
           <SketchColorPicker />
-        </ListItem>
+        </ListItem> */}
 
         <ListItem divider>
           <AccountBoxIcon />
           <ListItemText>Account Information</ListItemText>
+        </ListItem>
+
+        <ListItem>
+          <ListItemText>Username: {auth.loggedIn && auth.user.username}</ListItemText>
         </ListItem>
 
         <ListItem>
