@@ -127,11 +127,11 @@ const TopToolbar = (props) => {
       <IconButton onClick={handleDuplicate}>
         <ContentCopyIcon />
       </IconButton>
-      {authorized && (
+      {/* {authorized && (
         <IconButton>
           <SaveIcon />
         </IconButton>
-      )}
+      )} */}
       <IconButton id="download-dropdown-btn" onClick={handleOpenDownload}>
         <DownloadIcon />
       </IconButton>
