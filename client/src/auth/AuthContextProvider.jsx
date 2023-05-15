@@ -13,6 +13,7 @@ const AuthActionType = {
   LOGIN_USER: 'LOGIN_USER',
   LOGOUT_USER: 'LOGOUT_USER',
   SET_DISPLAYED_USERS: 'SET_DISPLAYED_USERS',
+  LOGIN_USER_FAIL: 'LOGIN_USER_FAIL',
 };
 
 function AuthContextProvider(props) {
@@ -54,7 +55,7 @@ function AuthContextProvider(props) {
         return setAuth({
           ...auth,
           user: payload.user,
-          emailEmpt: payload.acctEmpt,
+          acctEmpt: payload.acctEmpt,
           shortPass: payload.shortPass,
           notSamePass: payload.notSamePass,
           registered: payload.registered,
@@ -92,6 +93,13 @@ function AuthContextProvider(props) {
           ...auth,
           user: payload.user,
           loggedIn: true,
+        });
+      }
+      case AuthActionType.LOGIN_USER_FAIL: {
+        return setAuth({
+          ...auth,
+          incorrectInfo: payload.incorrectInfo,
+          emptyInfo: payload.emptyInfo
         });
       }
       case AuthActionType.LOGOUT_USER: {
@@ -181,6 +189,24 @@ function AuthContextProvider(props) {
         },
       });
       navigate('/');
+    }
+    else if (response.status === 400){
+      authReducer({
+        type: AuthActionType.LOGIN_USER_FAIL,
+        payload: {
+          incorrectInfo: false,
+          emptyInfo: true,
+        }
+      });
+    }
+    else if (response.status === 401){
+      authReducer({
+        type: AuthActionType.LOGIN_USER_FAIL,
+        payload: {
+          incorrectInfo: true,
+          emptyInfo: false,
+        }
+      });
     }
   };
 
@@ -333,6 +359,28 @@ function AuthContextProvider(props) {
     });
   };
 
+  auth.hideModal = () => {
+    authReducer({
+      type: AuthActionType.REGISTER_USER_FAIL,
+      payload: {
+        acctEmpt: false,
+        shortPass: false,
+        notSamePass: false,
+        registered: false,
+        invalidEmail: false,
+      },
+    })
+  }
+  auth.hideLoginModal = () => {
+    authReducer({
+      type: AuthActionType.LOGIN_USER_FAIL,
+      payload: {
+        incorrectInfo: false,
+        emptyInfo: false,
+      }
+    })
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -343,6 +391,7 @@ function AuthContextProvider(props) {
     </AuthContext.Provider>
   );
 }
+
 
 export default AuthContext;
 export { AuthContextProvider };

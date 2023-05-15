@@ -14,6 +14,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import IncorrectLoginModal from "../modals/IncorrectLoginModal";
 
 export default function LoginScreen() {
   const { auth } = useContext(AuthContext);
@@ -30,12 +31,17 @@ export default function LoginScreen() {
     navigate("/account-recovery/");
   };
 
+  const handleCreateAccount = () => {
+    navigate("/register/");
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
+            <IncorrectLoginModal/>
             <Box
               sx={{
                 marginTop: 20,
@@ -87,7 +93,7 @@ export default function LoginScreen() {
                   Sign In
                 </Button>
               </Box>
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 0, mb: 2 }}>
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 0, mb: 2 }} onClick={handleCreateAccount}>
                 Create Account
               </Button>
 

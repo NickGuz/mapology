@@ -28,6 +28,11 @@ code {
   background-image: url('assets/map-props-icon.jpeg');
 }
 
-.textLabel {
-  background-color: transparent;
+.textValue {
+  /* background-color: transparent; */
+  /* border: transparent; */
+  box-shadow: none;
+  /* font-weight: bold; */
+  font-family: sans-serif;
+  font-size: 12px;
 }

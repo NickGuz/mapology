@@ -13,10 +13,12 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import CreateAccountErrorModal from "../modals/CreateAccountErrorModal";
 
 export default function RegisterScreen() {
   const { auth } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -29,15 +31,17 @@ export default function RegisterScreen() {
   };
 
   const handleLogin = () => {
-    auth.openLoginDialog();
+    navigate("/login/");
   };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
+            <CreateAccountErrorModal/>
             <Box
               sx={{
                 marginTop: 20,

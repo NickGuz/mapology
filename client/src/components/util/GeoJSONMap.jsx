@@ -206,7 +206,6 @@ const GeoJSONMap = (props) => {
           direction: 'center',
         })
         .openTooltip();
-
       layer.options.opacity = 0;
     } else {
       layer
@@ -332,10 +331,11 @@ const GeoJSONMap = (props) => {
     // TODO Handle create text box here
     if (feature.geometry.type === 'Point') {
       if (!layer.hasEventListeners('pm:textblur')) {
-        console.log('created');
         layer.on('pm:textblur', (event) => {
+          // console.log(layer)
           const text = event.layer.options.text;
           const textBox = event.layer.toGeoJSON();
+          // console.log(textBox)
           textBox.properties['textValue'] = text;
           RequestApi.insertFeature(store.currentMap.mapInfo.id, textBox);
         });
