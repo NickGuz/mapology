@@ -254,7 +254,7 @@ describe('template spec', () => {
     cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
   });
 
-  it('Delete Both GeoJSON Maps', () => {
+  it('Delete Copy and Original Cypress Map JSON ' + changedRandom, () => {
     cy.visit('http://localhost:3000/');
     cy.get('.card-details-btn').filter(':contains("Details")').first().click();
     cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
