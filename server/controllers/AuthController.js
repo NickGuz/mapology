@@ -161,6 +161,17 @@ exports.deleteUser = async (req, res) => {
     where: { email: req.body.email },
   });};
 
+exports.changeUsername = async (req, res) => {
+  // const user = await User.findByPk(req.params.id);
+  const user = await User.findOne({
+    where: { email: req.body.email },
+  });
+
+  user.username = req.body.username;
+  await user.save();
+};
+  
+
 exports.changePassword = async (req, res) => {
   if (
     !req.body.email ||
