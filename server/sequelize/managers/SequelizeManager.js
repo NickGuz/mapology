@@ -343,8 +343,9 @@ exports.searchMaps = async (searchTerm, searchTags, sortType) => {
 
 exports.getAllTags = async () => {
   return await Tags.findAll({
-    attributes: ["tagName"],
-    distinct: true,
+    attributes: [
+      [Sequelize.fn("DISTINCT", Sequelize.col("tagName")), "tagName"],
+    ],
   });
 };
 

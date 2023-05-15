@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Autocomplete, TextField } from "@mui/material";
-import Chip from "@mui/material/Chip";
-import GlobalStoreContext from "../../store/store";
-import { getAllTags } from "../../store/GlobalStoreHttpRequestApi";
+import React, { useContext, useEffect, useState } from 'react';
+import { Autocomplete, TextField } from '@mui/material';
+import Chip from '@mui/material/Chip';
+import GlobalStoreContext from '../../store/store';
+import { getAllTags } from '../../store/GlobalStoreHttpRequestApi';
 
 const TagsInput = (props) => {
   const [data, setData] = useState([]);
@@ -36,10 +36,17 @@ const TagsInput = (props) => {
       freeSolo
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
-          <Chip key={index} variant="outlined" label={option} {...getTagProps({ index })} />
+          <Chip
+            key={index}
+            variant="outlined"
+            label={option}
+            {...getTagProps({ index })}
+          />
         ))
       }
-      renderInput={(params) => <TextField {...params} label="Tags" placeholder="" />}
+      renderInput={(params) => (
+        <TextField {...params} label="Tags" placeholder="" />
+      )}
     />
   );
 };
