@@ -5,6 +5,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
 describe('template spec', () => {
   const random = Math.trunc(Math.random() * 1000);
+  const changedRandom = Math.trunc(Math.random() * 1000);
 
   beforeEach(() => {
     cy.session('login', () => {
@@ -37,7 +38,7 @@ describe('template spec', () => {
   //   cy.contains('h2', 'Import').should('exist');
   // });
 
-  // it('Import Map using dbf/shp', () => {
+  // it('Import Map using dbf/shp - Cypress Map Shapefile ' + random, () => {
   //   cy.visit('http://localhost:3000/');
   //   cy.wait(5000); // wait as an attempt to prevent re-rendering removing the import modal when we click
   //   cy.get('.MuiAppBar-root').should('exist');
@@ -60,7 +61,7 @@ describe('template spec', () => {
   //   cy.contains('Map Description Shapefile ' + random).should('exist');
   // });
 
-  // it('Export most recently created Map (dbf/shp)', () => {
+  // it('Export created DBF/SHP map - Cypress Map Shapefile ' + random, () => {
   //   cy.visit('http://localhost:3000/');
   //   cy.get('button').filter(':contains("Open Editor")').first().click();
   //   cy.wait(5000);
@@ -88,7 +89,7 @@ describe('template spec', () => {
   //   cy.contains('Cypress Map Shapefile ' + random).should('not.exist');
   // });
 
-  it('Import Map using json', () => {
+  it('Import Map using json - Cypress Map JSON ' + random, () => {
     cy.visit('http://localhost:3000/');
     cy.wait(5000); // wait as an attempt to prevent re-rendering removing the import modal when we click
     cy.get('.MuiAppBar-root').should('exist');
@@ -108,7 +109,7 @@ describe('template spec', () => {
     cy.contains('Map Description JSON ' + random).should('exist');
   });
 
-  // it('Export most recently created Map (json)', () => {
+  // it('Export created JSON map - Cypress Map JSON ' + random, () => {
   //   cy.visit('http://localhost:3000/');
   //   cy.get('button').filter(':contains("Open Editor")').first().click();
   //   cy.wait(5000);
@@ -159,6 +160,19 @@ describe('template spec', () => {
     cy.get('.css-axkxne-MuiTypography-root').should('not.exist'); //check not there
   });
 
+  it('Edit Map Name to Cypress Map JSON ' + changedRandom, () => {
+    cy.visit('http://localhost:3000/', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'prompt').returns('Cypress Map JSON ' + changedRandom);
+      },
+    });
+    cy.get('button').filter(':contains("Open Editor")').first().click();
+    cy.wait(5000);
+    cy.contains('Cypress Map JSON ' + random).should('exist');
+    cy.get('.css-70qvj9 > .MuiBox-root > .MuiButtonBase-root').click()
+    cy.contains('Cypress Map JSON ' + random).should('not.exist');
+    cy.contains('Cypress Map JSON ' + changedRandom).should('exist');
+  });
 
   it('Merge 2 regions, Delete Merged Region w/ Undo/Redo for both', () => {
     cy.visit('http://localhost:3000/', {
@@ -212,11 +226,7 @@ describe('template spec', () => {
   });
 
   it('Delete Existing Region (Algeria) w/ Undo/Redo', () => {
-    cy.visit('http://localhost:3000/', {
-      onBeforeLoad(win) {
-        cy.stub(win, 'prompt').returns('Test Region');
-      },
-    });
+    cy.visit('http://localhost:3000/')
     cy.get('button').filter(':contains("Open Editor")').first().click();
     cy.wait(5000);
 
@@ -235,14 +245,28 @@ describe('template spec', () => {
     cy.contains('Algeria').should('not.exist');
   });
 
+  it('Duplicate Cypress Map JSON ' + changedRandom, () => {
+    cy.visit('http://localhost:3000/')
+    cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > :nth-child(1)').click();
+    cy.wait(5000);
+    cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
+    cy.visit('http://localhost:3000/')
+    cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
+  });
 
   // it('Delete GeoJSON Map', () => {
   //   cy.visit('http://localhost:3000/');
   //   cy.get('.card-details-btn').filter(':contains("Details")').first().click();
-  //   cy.contains('Cypress Map JSON ' + random).should('exist');
+  //   cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('exist');
   //   cy.get('#delete-map-btn').click();
   //   cy.get('#confirm-delete-btn').click();
   //   cy.visit('http://localhost:3000/');
-  //   cy.contains('Cypress Map JSON ' + random).should('not.exist');
+  //   cy.contains('Copy of Cypress Map JSON ' + changedRandom).should('not.exist');
+  //   cy.get('.card-details-btn').filter(':contains("Details")').first().click();
+  //   cy.contains('Cypress Map JSON ' + changedRandom).should('exist');
+  //   cy.get('#delete-map-btn').click();
+  //   cy.get('#confirm-delete-btn').click();
+  //   cy.visit('http://localhost:3000/');
+  //   cy.contains('Cypress Map JSON ' + changedRandom).should('not.exist');
   // });
 });
