@@ -160,7 +160,7 @@ describe('template spec', () => {
   });
 
 
-  it('Merge 2 regions, Delete New Region and Undo/Redo', () => {
+  it('Merge 2 regions, Delete Merged Region w/ Undo/Redo for all', () => {
     cy.visit('http://localhost:3000/', {
       onBeforeLoad(win) {
         cy.stub(win, 'prompt').returns('Test Region');
@@ -189,8 +189,15 @@ describe('template spec', () => {
     // Check that the new region exists, might not work
     cy.contains('Test Region').should('exist');
 
-    // Delete Layer
-    // cy.get('[aria-label="Merge"]').click();
+    //Undo Merge 
+    cy.get('.css-70qvj9 > :nth-child(1)').click() // undo click
+    cy.contains('Test Region').should('not.exist');
+
+    //Redo Merge
+    cy.get('.css-70qvj9 > :nth-child(2)').click()// redo click
+    cy.contains('Test Region').should('exist');
+
+    // Delete Merged
     cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
     cy.get('#leaflet-canvas > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(50)').click();
     cy.get('[title="Remove Layers"] > .leaflet-buttons-control-button > .control-icon').click()
